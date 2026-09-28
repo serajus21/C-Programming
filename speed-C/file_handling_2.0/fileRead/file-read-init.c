@@ -16,7 +16,7 @@ int main(void)
     else
     {
         puts("Reading File...");
-        while (!feof(_file_read_init_txt)) // file end of reading
+        while (!feof(_file_read_init_txt)) // file "end of file" reading
         {
             fileChars = fgetc(_file_read_init_txt);
             printf("%c", fileChars);
