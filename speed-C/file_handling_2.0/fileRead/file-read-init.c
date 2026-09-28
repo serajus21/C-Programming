@@ -7,7 +7,7 @@ int main(void)
 {
     /* reading from file */
     FILE *_file_read_init_txt = fopen("file-read-init-db.txt", "r");
-    char fileChars;
+    // char fileChars;
 
     if (_file_read_init_txt == NULL)
     {
@@ -18,8 +18,8 @@ int main(void)
         puts("Reading File...");
         while (!feof(_file_read_init_txt)) // file "end of file" reading
         {
-            fileChars = fgetc(_file_read_init_txt);
-            printf("%c", fileChars);
+            // fileChars = fgetc(_file_read_init_txt);
+            printf("%c", fgetc(_file_read_init_txt));
         }
         fclose(_file_read_init_txt);
     }
