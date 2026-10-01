@@ -15,6 +15,6 @@ int main(int operandCount, char **operands) {
         result += toBeIncreased;
         counter += timesToIncrease;
     }
-
+    
     printf("%.2f\n", result);   
 }
