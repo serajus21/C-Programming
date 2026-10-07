@@ -42,8 +42,6 @@ int main(void)
 }
 */
 
-
-
 /* will we get incremented 'a' in main? | call by argument
 
 void increment(int a)
@@ -70,7 +68,6 @@ int main(void)
 }
 */
 
-
 /* function-return-type vs pointer-argument
 void calculation(int value, int* sq, int *qb) {
     *sq = value*value;
@@ -84,3 +81,19 @@ int main(void) {
     printf("sq = %d | qb = %d\n", sq, qb);
 }
 */
+
+/* why it was 52? Or anything else? | Undetected error*/
+void increment(int *a)
+{
+    *a = (*a) + 1;
+    printf("Address of a in increment function: %p\n", &a);
+}
+
+int main(void)
+{
+    int a = 10;
+    increment(&a);
+    printf("a = %d\n", a);
+    printf("Address of a in main function: %p\n", &a);
+    return 0;
+}
