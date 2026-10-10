@@ -68,6 +68,7 @@ void doubleArray(int *A, int size) // pointer to integer, equiv to A[]; receives
 {
     for (int mainArrayIndex = 0; mainArrayIndex < size; mainArrayIndex++)
     {
+        // *(A + mainArrayIndex) = 2 * *(A+mainArrayIndex);
         A[mainArrayIndex] = 2 * A[mainArrayIndex]; // A only stores address of &A[0] | &A[0][mainArrayIndex] point to memory => *(&A[0])[mainArrayIndex] change inside memory
                                                    // goes to A[0]'s address, deref it to double
                                                    // then performs pointer arithmetic to jump 4 bytes [cause int] to fetch data
@@ -140,3 +141,61 @@ int main(void)
     puts("");
 }
 */
+
+/* minor-test */
+/*
+int sumOfElements(int *addressFirstElement, int size) // alternative addressFirstElement[];
+{
+    int total = 0;
+    for (int mainArrayIndex = 0; mainArrayIndex < size; mainArrayIndex++)
+    {
+        total += *(addressFirstElement + mainArrayIndex); // total += A[index]
+                                                          // as, *(addressFirstElement) = A[0]
+                                                          // *(addressFirstElement + 1) = A[1]; pointer arithmetic
+                                                          // list goes on...
+                                                          // alternative statement 'total += addressFirstElement[mainArrayIndex];'
+    }
+    return total;
+}
+
+int main(void)
+{
+    int A[5] = {1, 2, 3, 4, 5};
+    int arrayLength = sizeof(A) / sizeof(A[0]);
+    // int *addressOfA_0 = &A[0];                            // this line can be excluded
+    int total = sumOfElements(&A[0], arrayLength); // we can directly send &A[] to function; like, sumOfElements(A, arrayLength);
+                                                   // it's array-to-pointer conversion, called arrayDecay
+    printf("Total = %d\n", total);
+}
+*/
+
+/*testing arrayDecay | in this case, we won't even assign A[0]'s address to a ponter-to-int in main()*/
+// /*
+void doubleArray(int *A, int size) // pointer to integer, equiv to A[]; receives only &A[0];
+                                   // recieves the pointer-to-array's first element
+{
+    for (int mainArrayIndex = 0; mainArrayIndex < size; mainArrayIndex++)
+    {
+        // *(A + mainArrayIndex) = 2 * *(A+mainArrayIndex);
+        A[mainArrayIndex] = 2 * A[mainArrayIndex]; // A only stores address of &A[0] | &A[0][mainArrayIndex] point to memory => *(&A[0])[mainArrayIndex] change inside memory
+                                                   // goes to A[0]'s address, deref it to double
+                                                   // then performs pointer arithmetic to jump 4 bytes [cause int] to fetch data
+                                                   // then deref every four byte data to double
+    }
+}
+
+int main(void)
+{
+    int A[5] = {1, 2, 3, 4, 5};                 // main's array
+    int arrayLength = sizeof(A) / sizeof(A[0]); // size calculation
+    doubleArray(A, arrayLength);                // A = arrayDecay | equiv to &A[0], sends a copy of address to doubleArray
+                                                // by now doubleArray() reaches to every element's address of A[5], doubled them all
+
+    for (int index = 0; index < arrayLength; index++) // as result this loop prints all elements of A[5], as doubled
+    {
+        printf("%d\t", A[index]);
+    }
+    puts("");
+    return 0;
+}
+// */
