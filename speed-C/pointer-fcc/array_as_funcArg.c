@@ -170,7 +170,7 @@ int main(void)
 */
 
 /*testing arrayDecay | in this case, we won't even assign A[0]'s address to a ponter-to-int in main()*/
-// /*
+/*
 void doubleArray(int *A, int size) // pointer to integer, equiv to A[]; receives only &A[0];
                                    // recieves the pointer-to-array's first element
 {
@@ -198,4 +198,24 @@ int main(void)
     puts("");
     return 0;
 }
-// */
+*/
+
+/* can pointer-to-array be incremented by ++ or not? */
+int sum(int* arrayAddress) {
+    int total = 0;
+    while (*arrayAddress != -1)
+    {
+        total += *arrayAddress;
+        arrayAddress++; // pointer can advace through incrementOperator ++/--
+    }
+    return total;
+}
+
+int main(void) {
+    int eles[6] = {1,2,3,4,5,-1};
+    int total = sum(eles);
+    printf("total = %d\n", total);
+    
+    return 0;
+}
+
