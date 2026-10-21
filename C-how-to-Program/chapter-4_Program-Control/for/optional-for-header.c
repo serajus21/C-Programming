@@ -4,7 +4,7 @@
 int main(void) {
     int i = 0;
     
-    for() {
+    for(;;) {
         printf("Serajus");
     }
 }

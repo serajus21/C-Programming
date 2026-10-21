@@ -4,7 +4,8 @@
 #include <stdio.h>
 int main(void)
 {
-    /* floating-point value controls the counter | floating-point is displayed
+    /* floating-point value controls the counter | floating-point is displayed */
+    // /*
     double counter = 0.00;
     // while (counter <= 1.00)
     while (counter <= 1.01)
@@ -13,9 +14,10 @@ int main(void)
         counter += 0.05;
     }
     puts("");
-    */
+    // */
 
     /* integer controls the counter | floating-point is displayed */
+    /*
     int counter = 0;
     while (counter <= 20)
     {
@@ -23,4 +25,5 @@ int main(void)
         ++counter;
     }
     puts("");
+    */
 }
