@@ -6,7 +6,7 @@
 
 void arithmetic()
 {
-    puts("EXPERIMENTING ARDUINO");
+    puts("EXPERIMENTING ARDUINO CODE");
     printf("Sum: %d\n", sum(2,3));
     printf("Sub: %d\n", sub(3,2));
 }
