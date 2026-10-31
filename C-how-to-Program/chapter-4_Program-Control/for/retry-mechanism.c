@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#define divider "\n-----------------------------------------------------------------\n"
 
 /*A simulation*/
 /*
@@ -104,64 +107,40 @@ int main(void)
 }
 */
 
-
 int main(void)
 {
-    const int MAX_ATTEMPTS = 3;
-
-    int attempts = 0;
-    int fileOpened = 0;
-
-    char filename[100];
+    int MAX_ATTEMPTS = 3;
+    char fileName[100] = {};
     FILE *file = NULL;
 
-    // Retry until the file opens or attempts are exhausted.
-    while (attempts < MAX_ATTEMPTS && !fileOpened)
+    printf("Enter filename: ");
+    fgets(fileName, sizeof fileName, stdin);
+
+    for (int attempt = 1; attempt <= MAX_ATTEMPTS;)
     {
-        printf("\nEnter the filename to open: ");
+        puts("Please while we are searching for your file...");
+        sleep(5);
 
-        if (fgets(filename, sizeof filename, stdin) == NULL)
-        {
-            printf("Input error.\n");
-            break;
-        }
-
-        // Remove the newline from the filename.
-        filename[strcspn(filename, "\n")] = '\0';
-
-        attempts++;
-
-        printf("Attempt %d of %d\n", attempts, MAX_ATTEMPTS);
-
-        // Attempt to open the actual file.
-        file = fopen(filename, "r");
-
+        fileName[strcspn(fileName, "\n")] = '\0';
+        file = fopen(fileName, "r");
         if (file != NULL)
         {
-            fileOpened = 1;
-            printf("Success! File '%s' was opened.\n", filename);
+            printf("%s opening at attempt %d\n", fileName, attempt);
+            puts(divider);
+            while (!feof(file))
+            {
+                printf("%c", fgetc(file));
+            }
+            puts(divider);
+            fclose(file);
+            break;
         }
         else
         {
-            printf("Failed to open '%s'.\n", filename);
+            puts("We could not open file");
         }
+        attempt++;
     }
-
-    if (fileOpened)
-    {
-        printf("\nThe file is ready for reading.\n");
-
-        fclose(file);  // Release the file resources.
-    }
-    else
-    {
-        printf("\nCould not open a file after %d attempts.\n",
-               attempts);
-
-        printf("Abandoning this operation.\n");
-    }
-
-    puts("\nProgram finished.");
 
     return 0;
 }
