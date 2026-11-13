@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "headers.h"
+#include "memory_map.h"
 
 int main(void)
 {
@@ -24,8 +25,19 @@ int main(void)
         return 1;
     }
 
+    const MemoryEntry main_entries[] = {
+        MEMORY_ENTRY(selection, "int", MEMORY_INT),
+        MEMORY_ENTRY(left, "long long", MEMORY_LONG_LONG),
+        MEMORY_ENTRY(right, "long long", MEMORY_LONG_LONG),
+        MEMORY_ENTRY(integer_result, "long long", MEMORY_LONG_LONG),
+        MEMORY_ENTRY(division_result, "double", MEMORY_DOUBLE),
+        MEMORY_ENTRY(status, "int", MEMORY_INT)
+    };
+
     status = calculate((Operation)selection, left, right,
                        &integer_result, &division_result);
+    memory_map_show("main (after calculate)", main_entries,
+                    sizeof(main_entries) / sizeof(main_entries[0]));
     if (status == 1) {
         fputs("Cannot divide by zero.\n", stderr);
         return 1;
