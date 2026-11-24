@@ -1,0 +1,4913 @@
+{
+ "front": [
+  {
+   "num": "00",
+   "title": "Before the Journey",
+   "short": "Before-the-Journey",
+   "sections": [
+    {
+     "ref": "00.01",
+     "title": "How This Book Teaches",
+     "builds": "—",
+     "bullets": [
+      {
+       "lvl": 0,
+       "text": "Why this book exists, and how it differs from a reference manual."
+      },
+      {
+       "lvl": 0,
+       "text": "The method: question → experiment → mechanism → precise rule → connection."
+      },
+      {
+       "lvl": 0,
+       "text": "How claims are labelled: established fact, standard text, implementation behaviour, and the author's inference."
+      },
+      {
+       "lvl": 0,
+       "text": "How to use the experiments, self-checks and boxes; notation and conventions."
+      },
+      {
+       "lvl": 0,
+       "text": "How to study it by hand: what to copy, what to sketch, what to run."
+      }
+     ],
+     "file": "00-Before-the-Journey-01-How-This-Book-Teaches.docx"
+    },
+    {
+     "ref": "00.02",
+     "title": "Setting Up the Workbench on Fedora",
+     "builds": "§00.01",
+     "bullets": [
+      {
+       "lvl": 0,
+       "text": "What each tool is for: `gcc`, `gdb`, `make`, `binutils` (`nm`, `objdump`, `readelf`), `valgrind`."
+      },
+      {
+       "lvl": 0,
+       "text": "VS Code as a text editor and terminal, and why the book builds from the command line rather than with a \"Run\" button."
+      },
+      {
+       "lvl": 0,
+       "text": "The flags the book uses (`-std=c23 -Wall -Wextra -pedantic -g`) and what each one changes."
+      },
+      {
+       "lvl": 0,
+       "text": "The AVR toolchain (`avr-gcc`, `avr-libc`, `avrdude`) and the ESP32 toolchain (ESP-IDF), installed lightly on an 8 GB machine."
+      },
+      {
+       "lvl": 0,
+       "text": "Checking versions, and why the version matters (`gcc --version`, `__STDC_VERSION__`)."
+      }
+     ],
+     "file": "00-Before-the-Journey-02-Setting-Up-the-Workbench-on-Fedora.docx"
+    }
+   ]
+  }
+ ],
+ "parts": [
+  {
+   "id": "PART I",
+   "title": "THE MACHINE BENEATH C",
+   "chapters": [
+    {
+     "num": "01",
+     "title": "What a Computer Physically Is",
+     "short": "What-a-Computer-Physically-Is",
+     "sections": [
+      {
+       "ref": "01.01",
+       "title": "Information as Physical States",
+       "builds": "§00.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why a computer stores information as voltages, and why two states (noise margins and reliability)."
+        },
+        {
+         "lvl": 0,
+         "text": "The bit as a choice between two states; bytes and words."
+        },
+        {
+         "lvl": 0,
+         "text": "The real voltage levels on the ATmega328P's 5 V logic."
+        },
+        {
+         "lvl": 0,
+         "text": "History: decimal machines (ENIAC) against binary machines, and why binary won."
+        },
+        {
+         "lvl": 0,
+         "text": "In orbit: why the physical nature of a bit makes radiation a threat."
+        }
+       ],
+       "file": "01-What-a-Computer-Physically-Is-01-Information-as-Physical-States.docx"
+      },
+      {
+       "ref": "01.02",
+       "title": "Switches That Compute: From Transistors to Logic",
+       "builds": "§01.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The transistor (MOSFET) as a voltage-controlled switch, explained intuitively."
+        },
+        {
+         "lvl": 0,
+         "text": "Building NOT, AND, OR, NAND and NOR from switches."
+        },
+        {
+         "lvl": 0,
+         "text": "Truth tables and Boolean algebra: Boole (1854), and Shannon (1937), who showed that switching circuits obey it."
+        },
+        {
+         "lvl": 0,
+         "text": "Why NAND alone can build everything (universality)."
+        },
+        {
+         "lvl": 0,
+         "text": "Combinational logic: outputs that depend only on the present inputs."
+        }
+       ],
+       "file": "01-What-a-Computer-Physically-Is-02-Switches-That-Compute.docx"
+      },
+      {
+       "ref": "01.03",
+       "title": "Building Arithmetic from Logic",
+       "builds": "§01.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Adding binary digits by hand, then by gates: the half adder and the full adder."
+        },
+        {
+         "lvl": 0,
+         "text": "Ripple-carry adders and why their delay matters."
+        },
+        {
+         "lvl": 0,
+         "text": "Subtraction with the same adder (a preview of two's complement)."
+        },
+        {
+         "lvl": 0,
+         "text": "The ALU, and the status flags it produces: carry, zero, negative, overflow."
+        },
+        {
+         "lvl": 0,
+         "text": "On the metal: the AVR status register (SREG)."
+        }
+       ],
+       "file": "01-What-a-Computer-Physically-Is-03-Building-Arithmetic-from-Logic.docx"
+      },
+      {
+       "ref": "01.04",
+       "title": "Remembering: Latches, Registers and Memory",
+       "builds": "§01.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Feedback creates memory: the SR latch, D latch and flip-flop; the clock."
+        },
+        {
+         "lvl": 0,
+         "text": "Registers as rows of flip-flops."
+        },
+        {
+         "lvl": 0,
+         "text": "Memory arrays: how an address, as a pattern of wires, selects one cell (address decoding)."
+        },
+        {
+         "lvl": 0,
+         "text": "SRAM, flash and EEPROM: how each physically holds a bit, and the ATmega328P's 32 KB / 2 KB / 1 KB."
+        },
+        {
+         "lvl": 0,
+         "text": "Volatile against non-volatile storage; in orbit: single-event upsets in memory."
+        }
+       ],
+       "file": "01-What-a-Computer-Physically-Is-04-Latches-Registers-and-Memory.docx"
+      },
+      {
+       "ref": "01.05",
+       "title": "The Stored-Program Machine",
+       "builds": "§01.03, §01.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Instructions as numbers held in memory."
+        },
+        {
+         "lvl": 0,
+         "text": "The fetch–decode–execute cycle; the program counter and the instruction register."
+        },
+        {
+         "lvl": 0,
+         "text": "Von Neumann against Harvard architecture, and why the AVR is a (modified) Harvard machine."
+        },
+        {
+         "lvl": 0,
+         "text": "The instruction set architecture (ISA) as a contract between hardware and software."
+        },
+        {
+         "lvl": 0,
+         "text": "Three ISAs used in this book: AVR, x86-64 and Xtensa."
+        }
+       ],
+       "file": "01-What-a-Computer-Physically-Is-05-The-Stored-Program-Machine.docx"
+      },
+      {
+       "ref": "01.06",
+       "title": "Machine Code and Assembly Language",
+       "builds": "§01.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Encoding a real AVR instruction (e.g. `LDI`, `ADD`) bit by bit."
+        },
+        {
+         "lvl": 0,
+         "text": "The assembler as a translator of names into numbers."
+        },
+        {
+         "lvl": 0,
+         "text": "Writing a tiny AVR program in assembly."
+        },
+        {
+         "lvl": 0,
+         "text": "Why assembly ties a program to one machine, and the cost of that."
+        },
+        {
+         "lvl": 0,
+         "text": "The problem that high-level languages were invented to solve."
+        }
+       ],
+       "file": "01-What-a-Computer-Physically-Is-06-Machine-Code-and-Assembly-Language.docx"
+      }
+     ]
+    },
+    {
+     "num": "02",
+     "title": "Why C Exists",
+     "short": "Why-C-Exists",
+     "sections": [
+      {
+       "ref": "02.01",
+       "title": "The Road to C",
+       "builds": "§01.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The first high-level languages (FORTRAN, COBOL, ALGOL) and what they could not do."
+        },
+        {
+         "lvl": 0,
+         "text": "BCPL (Richards, 1967) and B (Thompson, 1969): typeless languages, and why that failed on byte-addressed machines."
+        },
+        {
+         "lvl": 0,
+         "text": "C at Bell Labs (Ritchie, early 1970s), and Unix rewritten in C (1973)."
+        },
+        {
+         "lvl": 0,
+         "text": "Portability: one program for many machines."
+        },
+        {
+         "lvl": 0,
+         "text": "How C came to underlie operating systems, firmware and other languages."
+        }
+       ],
+       "file": "02-Why-C-Exists-01-The-Road-to-C.docx"
+      },
+      {
+       "ref": "02.02",
+       "title": "The Design Philosophy of C",
+       "builds": "§02.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "\"Close to the machine, yet portable\": what that demands of a language."
+        },
+        {
+         "lvl": 0,
+         "text": "Trusting the programmer: no bounds checks and no garbage collector, and the price paid for that."
+        },
+        {
+         "lvl": 0,
+         "text": "A small language with a separate library."
+        },
+        {
+         "lvl": 0,
+         "text": "What C deliberately leaves to the implementation, and why."
+        },
+        {
+         "lvl": 0,
+         "text": "C's strengths and weaknesses for spacecraft and embedded systems."
+        }
+       ],
+       "file": "02-Why-C-Exists-02-The-Design-Philosophy-of-C.docx"
+      },
+      {
+       "ref": "02.03",
+       "title": "The C Abstract Machine",
+       "builds": "§02.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The standard does not describe your CPU; it describes an *abstract machine*."
+        },
+        {
+         "lvl": 0,
+         "text": "Observable behaviour, and the \"as-if\" rule."
+        },
+        {
+         "lvl": 0,
+         "text": "Why this gives compilers the freedom to optimize."
+        },
+        {
+         "lvl": 0,
+         "text": "The gap between \"what C means\" and \"what the CPU does\", and how to reason across it."
+        }
+       ],
+       "file": "02-Why-C-Exists-03-The-C-Abstract-Machine.docx"
+      },
+      {
+       "ref": "02.04",
+       "title": "Four Kinds of Behaviour",
+       "builds": "§02.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Defined, implementation-defined, unspecified and undefined behaviour, plus locale-specific behaviour."
+        },
+        {
+         "lvl": 0,
+         "text": "Why undefined behaviour exists: the diversity of hardware, and room for optimization."
+        },
+        {
+         "lvl": 0,
+         "text": "First examples, which return later in the book in depth."
+        },
+        {
+         "lvl": 0,
+         "text": "Where to find an implementation's choices (the GCC manual, the ABI documents)."
+        },
+        {
+         "lvl": 0,
+         "text": "The engineer's habit: always asking \"which kind of behaviour is this?\""
+        }
+       ],
+       "file": "02-Why-C-Exists-04-Four-Kinds-of-Behaviour.docx"
+      },
+      {
+       "ref": "02.05",
+       "title": "Standards and Dialects: K&R to C23",
+       "builds": "§02.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "K&R (1978), C89/C90, C95, C99, C11, C17 and C23: what each changed, and why."
+        },
+        {
+         "lvl": 0,
+         "text": "GNU dialects and extensions (`gnu11`, `gnu17`, `gnu23`)."
+        },
+        {
+         "lvl": 0,
+         "text": "Compiler defaults over time, and why your laptop and the Arduino IDE disagree."
+        },
+        {
+         "lvl": 0,
+         "text": "Checking `__STDC_VERSION__` in a program."
+        },
+        {
+         "lvl": 0,
+         "text": "The book's baseline, and how it marks the differences between versions."
+        }
+       ],
+       "file": "02-Why-C-Exists-05-Standards-and-Dialects-K-and-R-to-C23.docx"
+      },
+      {
+       "ref": "02.06",
+       "title": "Hosted and Freestanding Implementations",
+       "builds": "§02.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "With an operating system, and without one: what changes."
+        },
+        {
+         "lvl": 0,
+         "text": "The library a freestanding implementation must still provide."
+        },
+        {
+         "lvl": 0,
+         "text": "`__STDC_HOSTED__`."
+        },
+        {
+         "lvl": 0,
+         "text": "The meaning of `main` on Linux, on a bare ATmega328P, and under ESP-IDF/FreeRTOS."
+        },
+        {
+         "lvl": 0,
+         "text": "Why \"the program starts at `main`\" is only a convenient simplification."
+        }
+       ],
+       "file": "02-Why-C-Exists-06-Hosted-and-Freestanding-Implementations.docx"
+      }
+     ]
+    },
+    {
+     "num": "03",
+     "title": "From Source Text to Running Program",
+     "short": "From-Source-to-Running-Program",
+     "sections": [
+      {
+       "ref": "03.01",
+       "title": "The First Program, Dissected",
+       "builds": "§02.06, §00.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Every token of a \"hello\" program explained: `#include`, `int main(void)`, braces, the call, the string literal, the statement and the return."
+        },
+        {
+         "lvl": 0,
+         "text": "Why `main` returns `int`, and to whom."
+        },
+        {
+         "lvl": 0,
+         "text": "Whitespace, comments and layout: what the compiler ignores, and why humans need them."
+        },
+        {
+         "lvl": 0,
+         "text": "What the program does *not* show: the startup code before it and the library code after it."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-01-The-First-Program-Dissected.docx"
+      },
+      {
+       "ref": "03.02",
+       "title": "The Phases of Translation",
+       "builds": "§03.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "From characters to tokens to syntax to meaning: the standard's phases of translation, explained intuitively."
+        },
+        {
+         "lvl": 0,
+         "text": "The `gcc` *driver* and the separate programs it runs (`cpp`, `cc1`, `as`, `ld`), seen with `-v`."
+        },
+        {
+         "lvl": 0,
+         "text": "Stopping at each stage with `-E`, `-S` and `-c`."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-02-The-Phases-of-Translation.docx"
+      },
+      {
+       "ref": "03.03",
+       "title": "Preprocessing: Text Before Language",
+       "builds": "§03.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What `#include` physically does: pasting text into the file."
+        },
+        {
+         "lvl": 0,
+         "text": "Looking at the result with `gcc -E`."
+        },
+        {
+         "lvl": 0,
+         "text": "A header (declarations) against a library (definitions); correcting the common confusion between the two."
+        },
+        {
+         "lvl": 0,
+         "text": "A first look at macros (treated fully in Chapter 22)."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-03-Preprocessing-Text-Before-Language.docx"
+      },
+      {
+       "ref": "03.04",
+       "title": "Compiling: From C to Assembly",
+       "builds": "§03.03, §01.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Reading `gcc -S` output on x86-64: registers, instructions and the call to `printf`."
+        },
+        {
+         "lvl": 0,
+         "text": "The same source through `avr-gcc -S`."
+        },
+        {
+         "lvl": 0,
+         "text": "How optimization levels (`-O0`, `-O2`, `-Os`) change the output."
+        },
+        {
+         "lvl": 0,
+         "text": "The compiler as a translator that must preserve observable behaviour."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-04-Compiling-From-C-to-Assembly.docx"
+      },
+      {
+       "ref": "03.05",
+       "title": "Assembling: Object Files",
+       "builds": "§03.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What an object file contains: ELF sections (`.text`, `.data`, `.bss`, `.rodata`), the symbol table and relocations."
+        },
+        {
+         "lvl": 0,
+         "text": "Inspecting object files with `nm`, `objdump` and `readelf`."
+        },
+        {
+         "lvl": 0,
+         "text": "Why an object file is not yet a program."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-05-Assembling-Object-Files.docx"
+      },
+      {
+       "ref": "03.06",
+       "title": "Linking: Completing the Program",
+       "builds": "§03.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Resolving symbols: how the call to `printf` finds its code."
+        },
+        {
+         "lvl": 0,
+         "text": "The C library, the startup files (`crt1.o` and others), and `-lm`."
+        },
+        {
+         "lvl": 0,
+         "text": "Link order, and testing a famous textbook command (`gcc -lm file.c`)."
+        },
+        {
+         "lvl": 0,
+         "text": "Static against dynamic linking, at a first glance (`ldd`)."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-06-Linking-Completing-the-Program.docx"
+      },
+      {
+       "ref": "03.07",
+       "title": "Loading and Running",
+       "builds": "§03.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`execve`, the loader, and `_start` → `__libc_start_main` → `main`."
+        },
+        {
+         "lvl": 0,
+         "text": "Where `main`'s return value goes: the exit status, seen as `$?` in the shell."
+        },
+        {
+         "lvl": 0,
+         "text": "The same journey on the AVR: reset vector → `.data` copy → `.bss` clear → `main`."
+        },
+        {
+         "lvl": 0,
+         "text": "What happens when `main` returns on a microcontroller."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-07-Loading-and-Running.docx"
+      },
+      {
+       "ref": "03.08",
+       "title": "Diagnostics: Listening to the Compiler",
+       "builds": "§03.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Errors against warnings, and what each means."
+        },
+        {
+         "lvl": 0,
+         "text": "Reading GCC's messages precisely."
+        },
+        {
+         "lvl": 0,
+         "text": "`-Wall`, `-Wextra`, `-pedantic` and `-Werror`."
+        },
+        {
+         "lvl": 0,
+         "text": "Warnings as the earliest bug detector; the warning-free discipline."
+        }
+       ],
+       "file": "03-From-Source-to-Running-Program-08-Diagnostics-Listening-to-the-Compiler.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART II",
+   "title": "DATA: HOW C SEES BITS",
+   "chapters": [
+    {
+     "num": "04",
+     "title": "Numbers as Patterns of Bits",
+     "short": "Numbers-as-Bit-Patterns",
+     "sections": [
+      {
+       "ref": "04.01",
+       "title": "Positional Notation from First Principles",
+       "builds": "§01.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What a \"digit in a place\" means: place values in base 10."
+        },
+        {
+         "lvl": 0,
+         "text": "Base 2, and converting between bases (repeated division; place-value sums)."
+        },
+        {
+         "lvl": 0,
+         "text": "Why hexadecimal and octal exist: grouping bits for human eyes."
+        },
+        {
+         "lvl": 0,
+         "text": "Fluency in reading hex."
+        }
+       ],
+       "file": "04-Numbers-as-Bit-Patterns-01-Positional-Notation.docx"
+      },
+      {
+       "ref": "04.02",
+       "title": "Unsigned Integers and Modular Arithmetic",
+       "builds": "§04.01, §01.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "*n* bits give 2ⁿ values."
+        },
+        {
+         "lvl": 0,
+         "text": "The odometer model of wraparound."
+        },
+        {
+         "lvl": 0,
+         "text": "Arithmetic modulo 2ⁿ, and the carry flag."
+        },
+        {
+         "lvl": 0,
+         "text": "Why C defines unsigned wraparound exactly."
+        }
+       ],
+       "file": "04-Numbers-as-Bit-Patterns-02-Unsigned-Integers-and-Modular-Arithmetic.docx"
+      },
+      {
+       "ref": "04.03",
+       "title": "Representing Negative Numbers",
+       "builds": "§04.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Sign-magnitude and ones' complement, and the problem of two zeros."
+        },
+        {
+         "lvl": 0,
+         "text": "Two's complement: why it won (the same adder does both jobs); negation as \"invert and add one\"."
+        },
+        {
+         "lvl": 0,
+         "text": "The asymmetric range: why −128 has no positive partner."
+        },
+        {
+         "lvl": 0,
+         "text": "History: machines that used ones' complement."
+        },
+        {
+         "lvl": 0,
+         "text": "C23 now mandates two's complement; what earlier standards allowed."
+        }
+       ],
+       "file": "04-Numbers-as-Bit-Patterns-03-Representing-Negative-Numbers.docx"
+      },
+      {
+       "ref": "04.04",
+       "title": "Signed Overflow: Where Hardware and C Part Ways",
+       "builds": "§04.03, §02.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The hardware's overflow flag, set against C's undefined behaviour."
+        },
+        {
+         "lvl": 0,
+         "text": "Why C made signed overflow undefined."
+        },
+        {
+         "lvl": 0,
+         "text": "How optimizers exploit it, shown with a loop example."
+        },
+        {
+         "lvl": 0,
+         "text": "The compiler options `-fwrapv` and `-ftrapv`, and the undefined-behaviour sanitizer."
+        },
+        {
+         "lvl": 0,
+         "text": "Checked arithmetic in C23 (`<stdckdint.h>`: `ckd_add` and related macros)."
+        }
+       ],
+       "file": "04-Numbers-as-Bit-Patterns-04-Signed-Overflow.docx"
+      },
+      {
+       "ref": "04.05",
+       "title": "Width, Sign Extension and Truncation",
+       "builds": "§04.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Widening signed and unsigned values: sign extension against zero extension."
+        },
+        {
+         "lvl": 0,
+         "text": "Narrowing: what happens to the bits that do not fit."
+        },
+        {
+         "lvl": 0,
+         "text": "Watching the bits with experiments."
+        }
+       ],
+       "file": "04-Numbers-as-Bit-Patterns-05-Width-Sign-Extension-and-Truncation.docx"
+      }
+     ]
+    },
+    {
+     "num": "05",
+     "title": "C's Integer Types",
+     "short": "Integer-Types",
+     "sections": [
+      {
+       "ref": "05.01",
+       "title": "Why C Has So Many Integer Types",
+       "builds": "§04.05, §02.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Matching the hardware's word sizes; the PDP-11 legacy."
+        },
+        {
+         "lvl": 0,
+         "text": "The standard guarantees minimum ranges, not exact sizes."
+        },
+        {
+         "lvl": 0,
+         "text": "The ordering of sizes: `char` ≤ `short` ≤ `int` ≤ `long` ≤ `long long`."
+        }
+       ],
+       "file": "05-Integer-Types-01-Why-C-Has-So-Many-Integer-Types.docx"
+      },
+      {
+       "ref": "05.02",
+       "title": "char: The Byte and Its Three Faces",
+       "builds": "§05.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`char`, `signed char` and `unsigned char`."
+        },
+        {
+         "lvl": 0,
+         "text": "`CHAR_BIT`, and what \"byte\" means in C."
+        },
+        {
+         "lvl": 0,
+         "text": "The signedness of plain `char` is implementation-defined, and differs between platforms."
+        }
+       ],
+       "file": "05-Integer-Types-02-char-the-Byte-and-Its-Three-Faces.docx"
+      },
+      {
+       "ref": "05.03",
+       "title": "short, int, long and long long Across Machines",
+       "builds": "§05.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The LP64 model on x86-64 Linux."
+        },
+        {
+         "lvl": 0,
+         "text": "16-bit `int` on the AVR; 32-bit on the ESP32."
+        },
+        {
+         "lvl": 0,
+         "text": "`<limits.h>`."
+        },
+        {
+         "lvl": 0,
+         "text": "Experiment: printing the sizes on all three machines."
+        }
+       ],
+       "file": "05-Integer-Types-03-short-int-long-Across-Machines.docx"
+      },
+      {
+       "ref": "05.04",
+       "title": "Exact-Width, Fast and Special-Purpose Types",
+       "builds": "§05.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`<stdint.h>`: `uint8_t`, `int32_t`, the `fast` and `least` types, `intptr_t`."
+        },
+        {
+         "lvl": 0,
+         "text": "`size_t` and `ptrdiff_t`."
+        },
+        {
+         "lvl": 0,
+         "text": "Printing them with the `<inttypes.h>` macros."
+        },
+        {
+         "lvl": 0,
+         "text": "`_BitInt(N)` (C23)."
+        },
+        {
+         "lvl": 0,
+         "text": "Why embedded code is written with exact-width types."
+        }
+       ],
+       "file": "05-Integer-Types-04-Exact-Width-and-Special-Types.docx"
+      },
+      {
+       "ref": "05.05",
+       "title": "bool: Truth Becomes a Type",
+       "builds": "§05.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "From `int` used as truth, to `_Bool` (C99), to `bool` as a keyword (C23)."
+        },
+        {
+         "lvl": 0,
+         "text": "What happens when other values are converted to `bool`."
+        }
+       ],
+       "file": "05-Integer-Types-05-bool-Truth-Becomes-a-Type.docx"
+      },
+      {
+       "ref": "05.06",
+       "title": "Integer Constants",
+       "builds": "§05.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Decimal, octal, hexadecimal and binary (C23) literals."
+        },
+        {
+         "lvl": 0,
+         "text": "The suffixes `U`, `L` and `LL`, and the rule that decides a literal's type."
+        },
+        {
+         "lvl": 0,
+         "text": "C23 digit separators (`'`)."
+        },
+        {
+         "lvl": 0,
+         "text": "The leading-zero octal trap."
+        },
+        {
+         "lvl": 0,
+         "text": "Why a character constant such as `'A'` has type `int`."
+        }
+       ],
+       "file": "05-Integer-Types-06-Integer-Constants.docx"
+      }
+     ]
+    },
+    {
+     "num": "06",
+     "title": "Objects, Variables and Memory",
+     "short": "Objects-Variables-and-Memory",
+     "sections": [
+      {
+       "ref": "06.01",
+       "title": "What a Variable Really Is",
+       "builds": "§05.06, §01.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "An *object* as a region of storage, with a name, type, value, address and lifetime."
+        },
+        {
+         "lvl": 0,
+         "text": "The rules for identifiers."
+        },
+        {
+         "lvl": 0,
+         "text": "Declaration, definition and initialization, carefully distinguished."
+        }
+       ],
+       "file": "06-Objects-Variables-and-Memory-01-What-a-Variable-Really-Is.docx"
+      },
+      {
+       "ref": "06.02",
+       "title": "Types as Interpretations of Bits",
+       "builds": "§06.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The same bits read as different values."
+        },
+        {
+         "lvl": 0,
+         "text": "What a type decides: the size, the operations allowed, and the meaning of the bits."
+        },
+        {
+         "lvl": 0,
+         "text": "The `sizeof` operator: evaluated at compile time, with result type `size_t`."
+        }
+       ],
+       "file": "06-Objects-Variables-and-Memory-02-Types-as-Interpretations-of-Bits.docx"
+      },
+      {
+       "ref": "06.03",
+       "title": "Addresses and Byte Order",
+       "builds": "§06.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Memory as numbered bytes; the `&` operator and the `%p` conversion."
+        },
+        {
+         "lvl": 0,
+         "text": "Multi-byte objects, and little-endian against big-endian byte order."
+        },
+        {
+         "lvl": 0,
+         "text": "Viewing the bytes of an object through `unsigned char`."
+        },
+        {
+         "lvl": 0,
+         "text": "Network byte order."
+        }
+       ],
+       "file": "06-Objects-Variables-and-Memory-03-Addresses-and-Byte-Order.docx"
+      },
+      {
+       "ref": "06.04",
+       "title": "Alignment",
+       "builds": "§06.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why hardware prefers aligned access."
+        },
+        {
+         "lvl": 0,
+         "text": "`alignof` and `alignas`."
+        },
+        {
+         "lvl": 0,
+         "text": "The cost of misaligned access on different CPUs; a preview of padding."
+        }
+       ],
+       "file": "06-Objects-Variables-and-Memory-04-Alignment.docx"
+      },
+      {
+       "ref": "06.05",
+       "title": "Initial and Indeterminate Values",
+       "builds": "§06.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What an uninitialized automatic variable contains."
+        },
+        {
+         "lvl": 0,
+         "text": "Why static objects start at zero (and how the `.bss` section achieves it)."
+        },
+        {
+         "lvl": 0,
+         "text": "The danger of reading indeterminate values."
+        },
+        {
+         "lvl": 0,
+         "text": "C23's empty initializer `{}`."
+        }
+       ],
+       "file": "06-Objects-Variables-and-Memory-05-Initial-and-Indeterminate-Values.docx"
+      },
+      {
+       "ref": "06.06",
+       "title": "Constants: const and constexpr",
+       "builds": "§06.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Read-only objects with `const`, and where they live (`.rodata`, and the AVR's surprise)."
+        },
+        {
+         "lvl": 0,
+         "text": "`constexpr` objects (C23)."
+        },
+        {
+         "lvl": 0,
+         "text": "Literals against named constants."
+        }
+       ],
+       "file": "06-Objects-Variables-and-Memory-06-Constants-const-and-constexpr.docx"
+      }
+     ]
+    },
+    {
+     "num": "07",
+     "title": "Floating-Point Numbers",
+     "short": "Floating-Point-Numbers",
+     "sections": [
+      {
+       "ref": "07.01",
+       "title": "Why Floating Point Exists",
+       "builds": "§04.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The range problem: integers cannot hold both 10⁻²⁰ and 10²⁰."
+        },
+        {
+         "lvl": 0,
+         "text": "Scientific notation as a model."
+        },
+        {
+         "lvl": 0,
+         "text": "Trading precision for range."
+        },
+        {
+         "lvl": 0,
+         "text": "History: from Zuse to Kahan and IEEE 754 (1985)."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-01-Why-Floating-Point-Exists.docx"
+      },
+      {
+       "ref": "07.02",
+       "title": "Binary Fractions",
+       "builds": "§07.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Place values ½, ¼, ⅛ and so on."
+        },
+        {
+         "lvl": 0,
+         "text": "Converting decimal fractions to binary by repeated doubling."
+        },
+        {
+         "lvl": 0,
+         "text": "Why 0.1 and 0.05 repeat forever in binary."
+        },
+        {
+         "lvl": 0,
+         "text": "Which values are exactly representable."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-02-Binary-Fractions.docx"
+      },
+      {
+       "ref": "07.03",
+       "title": "The Anatomy of IEEE 754",
+       "builds": "§07.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Sign, biased exponent, and a significand with a hidden bit."
+        },
+        {
+         "lvl": 0,
+         "text": "The binary32 and binary64 formats."
+        },
+        {
+         "lvl": 0,
+         "text": "Decoding a `float` by hand."
+        },
+        {
+         "lvl": 0,
+         "text": "Experiment: extracting the bits safely with `memcpy`."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-03-The-Anatomy-of-IEEE-754.docx"
+      },
+      {
+       "ref": "07.04",
+       "title": "Rounding, Precision and Epsilon",
+       "builds": "§07.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Round-to-nearest-even."
+        },
+        {
+         "lvl": 0,
+         "text": "The ULP (unit in the last place) and machine epsilon."
+        },
+        {
+         "lvl": 0,
+         "text": "What \"about 7 significant digits\" really means."
+        },
+        {
+         "lvl": 0,
+         "text": "`<float.h>`."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-04-Rounding-Precision-and-Epsilon.docx"
+      },
+      {
+       "ref": "07.05",
+       "title": "Zero, Infinity, NaN and Subnormals",
+       "builds": "§07.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Signed zero, and infinities."
+        },
+        {
+         "lvl": 0,
+         "text": "NaN, and why `NaN != NaN`."
+        },
+        {
+         "lvl": 0,
+         "text": "Gradual underflow (subnormal numbers)."
+        },
+        {
+         "lvl": 0,
+         "text": "Floating-point exceptions (`<fenv.h>`)."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-05-Zero-Infinity-NaN-and-Subnormals.docx"
+      },
+      {
+       "ref": "07.06",
+       "title": "When Arithmetic Betrays Mathematics",
+       "builds": "§07.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Floating-point addition is not associative."
+        },
+        {
+         "lvl": 0,
+         "text": "Catastrophic cancellation, and the accumulation of error."
+        },
+        {
+         "lvl": 0,
+         "text": "Comparing floating-point numbers: absolute and relative tolerances."
+        },
+        {
+         "lvl": 0,
+         "text": "Kahan summation."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-06-When-Arithmetic-Betrays-Mathematics.docx"
+      },
+      {
+       "ref": "07.07",
+       "title": "float, double and long double in C",
+       "builds": "§07.06, §05.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The type of a literal: `0.05` is a `double`, `0.05f` is a `float`."
+        },
+        {
+         "lvl": 0,
+         "text": "`FLT_EVAL_METHOD`."
+        },
+        {
+         "lvl": 0,
+         "text": "The x86 80-bit extended format behind `long double`."
+        },
+        {
+         "lvl": 0,
+         "text": "`double` on avr-gcc (32-bit by default, with an option for 64-bit — to be verified)."
+        },
+        {
+         "lvl": 0,
+         "text": "The ESP32's single-precision FPU, and the cost of software floating point."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-07-float-double-and-long-double-in-C.docx"
+      },
+      {
+       "ref": "07.08",
+       "title": "Fixed-Point Arithmetic",
+       "builds": "§07.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Computing with fractions on CPUs that have no FPU."
+        },
+        {
+         "lvl": 0,
+         "text": "Q formats, and scaled integers."
+        },
+        {
+         "lvl": 0,
+         "text": "Money kept in cents."
+        },
+        {
+         "lvl": 0,
+         "text": "Fixed point in embedded and flight systems."
+        }
+       ],
+       "file": "07-Floating-Point-Numbers-08-Fixed-Point-Arithmetic.docx"
+      }
+     ]
+    },
+    {
+     "num": "08",
+     "title": "Characters and Text Encoding",
+     "short": "Characters-and-Text-Encoding",
+     "sections": [
+      {
+       "ref": "08.01",
+       "title": "Characters Are Numbers",
+       "builds": "§05.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Character sets, and the history of ASCII (1963)."
+        },
+        {
+         "lvl": 0,
+         "text": "Control characters."
+        },
+        {
+         "lvl": 0,
+         "text": "Character arithmetic (`'A' + 1`, `'7' - '0'`)."
+        }
+       ],
+       "file": "08-Characters-and-Text-Encoding-01-Characters-Are-Numbers.docx"
+      },
+      {
+       "ref": "08.02",
+       "title": "Escape Sequences and the Meaning of a Newline",
+       "builds": "§08.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`\\n`, `\\t`, `\\0`, `\\\\`, and hexadecimal and octal escapes."
+        },
+        {
+         "lvl": 0,
+         "text": "LF against CR LF."
+        },
+        {
+         "lvl": 0,
+         "text": "What the terminal actually does with these characters."
+        }
+       ],
+       "file": "08-Characters-and-Text-Encoding-02-Escape-Sequences-and-Newlines.docx"
+      },
+      {
+       "ref": "08.03",
+       "title": "Beyond ASCII: Unicode and UTF-8",
+       "builds": "§08.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Code pages, and the Unicode idea."
+        },
+        {
+         "lvl": 0,
+         "text": "The design of UTF-8 (Thompson and Pike, 1992)."
+        },
+        {
+         "lvl": 0,
+         "text": "Multibyte characters; `u8\"\"` literals and `char8_t` (C23)."
+        },
+        {
+         "lvl": 0,
+         "text": "Why `strlen` counts bytes rather than letters."
+        }
+       ],
+       "file": "08-Characters-and-Text-Encoding-03-Beyond-ASCII-Unicode-and-UTF-8.docx"
+      },
+      {
+       "ref": "08.04",
+       "title": "Reading and Writing Characters",
+       "builds": "§08.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`getchar` and `putchar`."
+        },
+        {
+         "lvl": 0,
+         "text": "`EOF`, and why `getchar` returns `int`."
+        },
+        {
+         "lvl": 0,
+         "text": "Reading until EOF (Ctrl+D), and line-buffered terminals."
+        }
+       ],
+       "file": "08-Characters-and-Text-Encoding-04-Reading-and-Writing-Characters.docx"
+      },
+      {
+       "ref": "08.05",
+       "title": "Classifying Characters",
+       "builds": "§08.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`<ctype.h>`."
+        },
+        {
+         "lvl": 0,
+         "text": "Why the argument must be an `unsigned char` value or `EOF`."
+        },
+        {
+         "lvl": 0,
+         "text": "Converting digit characters to their values."
+        }
+       ],
+       "file": "08-Characters-and-Text-Encoding-05-Classifying-Characters.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART III",
+   "title": "EXPRESSIONS: HOW C COMPUTES",
+   "chapters": [
+    {
+     "num": "09",
+     "title": "Expressions and Their Evaluation",
+     "short": "Expressions-and-Evaluation",
+     "sections": [
+      {
+       "ref": "09.01",
+       "title": "What an Expression Is",
+       "builds": "§06.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Value, type and side effect."
+        },
+        {
+         "lvl": 0,
+         "text": "Expression statements, and full expressions."
+        }
+       ],
+       "file": "09-Expressions-and-Evaluation-01-What-an-Expression-Is.docx"
+      },
+      {
+       "ref": "09.02",
+       "title": "Precedence and Associativity Are Grammar",
+       "builds": "§09.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Parse trees: how the compiler groups `a + b * c`."
+        },
+        {
+         "lvl": 0,
+         "text": "The precedence table derived from the grammar rather than memorized."
+        }
+       ],
+       "file": "09-Expressions-and-Evaluation-02-Precedence-and-Associativity-Are-Grammar.docx"
+      },
+      {
+       "ref": "09.03",
+       "title": "Order of Evaluation and Sequencing",
+       "builds": "§09.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Grouping is not order."
+        },
+        {
+         "lvl": 0,
+         "text": "Unspecified order of evaluation (`f() + g()`)."
+        },
+        {
+         "lvl": 0,
+         "text": "Sequence points (C99) and \"sequenced-before\" (C11)."
+        },
+        {
+         "lvl": 0,
+         "text": "Why `i = i++ + ++i` is undefined behaviour."
+        }
+       ],
+       "file": "09-Expressions-and-Evaluation-03-Order-of-Evaluation-and-Sequencing.docx"
+      },
+      {
+       "ref": "09.04",
+       "title": "lvalues and rvalues",
+       "builds": "§09.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What can stand on the left of `=`, and what cannot."
+        },
+        {
+         "lvl": 0,
+         "text": "Modifiable lvalues."
+        },
+        {
+         "lvl": 0,
+         "text": "Why `5 = x` is an error."
+        }
+       ],
+       "file": "09-Expressions-and-Evaluation-04-lvalues-and-rvalues.docx"
+      },
+      {
+       "ref": "09.05",
+       "title": "Constant Expressions and Compile-Time Evaluation",
+       "builds": "§09.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Integer constant expressions."
+        },
+        {
+         "lvl": 0,
+         "text": "Constant folding, seen in the `-S` output."
+        },
+        {
+         "lvl": 0,
+         "text": "The link with `constexpr` (§06.06)."
+        }
+       ],
+       "file": "09-Expressions-and-Evaluation-05-Constant-Expressions.docx"
+      }
+     ]
+    },
+    {
+     "num": "10",
+     "title": "Arithmetic and Conversions",
+     "short": "Arithmetic-and-Conversions",
+     "sections": [
+      {
+       "ref": "10.01",
+       "title": "The Arithmetic Operators",
+       "builds": "§09.05, §04.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`+`, `-`, `*`, `/` and `%`."
+        },
+        {
+         "lvl": 0,
+         "text": "Integer division truncates toward zero (fixed only in C99)."
+        },
+        {
+         "lvl": 0,
+         "text": "The sign of `%`, and the identity `a == (a/b)*b + a%b`."
+        },
+        {
+         "lvl": 0,
+         "text": "Division by zero, and `INT_MIN / -1`."
+        }
+       ],
+       "file": "10-Arithmetic-and-Conversions-01-The-Arithmetic-Operators.docx"
+      },
+      {
+       "ref": "10.02",
+       "title": "How Hardware Multiplies and Divides",
+       "builds": "§10.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The AVR has no divide instruction, so division calls a `libgcc` routine; what it costs."
+        },
+        {
+         "lvl": 0,
+         "text": "Shifts in place of powers of two, and the trap with signed values."
+        }
+       ],
+       "file": "10-Arithmetic-and-Conversions-02-How-Hardware-Multiplies-and-Divides.docx"
+      },
+      {
+       "ref": "10.03",
+       "title": "Integer Promotions",
+       "builds": "§10.02, §05.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why `char + char` becomes `int`, and the reasoning behind it."
+        },
+        {
+         "lvl": 0,
+         "text": "The effect on AVR code size."
+        },
+        {
+         "lvl": 0,
+         "text": "`uint8_t` surprises (for example, `~` applied to a `uint8_t`)."
+        }
+       ],
+       "file": "10-Arithmetic-and-Conversions-03-Integer-Promotions.docx"
+      },
+      {
+       "ref": "10.04",
+       "title": "The Usual Arithmetic Conversions",
+       "builds": "§10.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Conversion rank."
+        },
+        {
+         "lvl": 0,
+         "text": "The signed/unsigned trap: why `-1 < 0u` is false."
+        },
+        {
+         "lvl": 0,
+         "text": "Mixing integers and floating-point values."
+        }
+       ],
+       "file": "10-Arithmetic-and-Conversions-04-The-Usual-Arithmetic-Conversions.docx"
+      },
+      {
+       "ref": "10.05",
+       "title": "Casts: Conversions on Purpose",
+       "builds": "§10.04, §07.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What a cast does to values and to bits."
+        },
+        {
+         "lvl": 0,
+         "text": "Float-to-int truncation, and undefined behaviour when the value is out of range."
+        },
+        {
+         "lvl": 0,
+         "text": "Int-to-float rounding (2²⁴ + 1)."
+        },
+        {
+         "lvl": 0,
+         "text": "When a cast hides a bug."
+        }
+       ],
+       "file": "10-Arithmetic-and-Conversions-05-Casts-Conversions-on-Purpose.docx"
+      },
+      {
+       "ref": "10.06",
+       "title": "The Math Library",
+       "builds": "§10.05, §03.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`<math.h>` and `-lm`."
+        },
+        {
+         "lvl": 0,
+         "text": "`pow`, `sqrt`, and `floor`/`ceil`/`round`/`trunc`."
+        },
+        {
+         "lvl": 0,
+         "text": "Error reporting; `<tgmath.h>`."
+        },
+        {
+         "lvl": 0,
+         "text": "Case study: compound interest computed in `double` and in integer cents."
+        }
+       ],
+       "file": "10-Arithmetic-and-Conversions-06-The-Math-Library.docx"
+      }
+     ]
+    },
+    {
+     "num": "11",
+     "title": "Assignment, Increment and Compound Operators",
+     "short": "Assignment-and-Increment",
+     "sections": [
+      {
+       "ref": "11.01",
+       "title": "Assignment Is an Expression",
+       "builds": "§10.04, §09.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The value of an assignment, and chained assignment."
+        },
+        {
+         "lvl": 0,
+         "text": "Conversion on assignment."
+        },
+        {
+         "lvl": 0,
+         "text": "The `=` / `==` trap, and how compilers warn about it."
+        }
+       ],
+       "file": "11-Assignment-and-Increment-01-Assignment-Is-an-Expression.docx"
+      },
+      {
+       "ref": "11.02",
+       "title": "Compound Assignment",
+       "builds": "§11.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`+=` and its relatives."
+        },
+        {
+         "lvl": 0,
+         "text": "The left-hand operand is evaluated only once."
+        },
+        {
+         "lvl": 0,
+         "text": "How these operators map to machine instructions."
+        }
+       ],
+       "file": "11-Assignment-and-Increment-02-Compound-Assignment.docx"
+      },
+      {
+       "ref": "11.03",
+       "title": "Increment and Decrement",
+       "builds": "§11.02, §09.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Prefix against postfix semantics."
+        },
+        {
+         "lvl": 0,
+         "text": "The machine view."
+        },
+        {
+         "lvl": 0,
+         "text": "The `++i` against `i++` performance myth."
+        },
+        {
+         "lvl": 0,
+         "text": "Undefined combinations."
+        }
+       ],
+       "file": "11-Assignment-and-Increment-03-Increment-and-Decrement.docx"
+      }
+     ]
+    },
+    {
+     "num": "12",
+     "title": "Truth and Logic in Expressions",
+     "short": "Truth-and-Logic",
+     "sections": [
+      {
+       "ref": "12.01",
+       "title": "Truth in C",
+       "builds": "§05.05, §10.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Zero and non-zero."
+        },
+        {
+         "lvl": 0,
+         "text": "Relational and equality operators yield `int` 0 or 1."
+        },
+        {
+         "lvl": 0,
+         "text": "Comparing floating-point values and pointers."
+        }
+       ],
+       "file": "12-Truth-and-Logic-01-Truth-in-C.docx"
+      },
+      {
+       "ref": "12.02",
+       "title": "Logical Operators and Short-Circuit Evaluation",
+       "builds": "§12.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`&&`, `||` and `!`."
+        },
+        {
+         "lvl": 0,
+         "text": "Short-circuit evaluation as hidden control flow, seen as branches in assembly."
+        },
+        {
+         "lvl": 0,
+         "text": "Guard expressions."
+        },
+        {
+         "lvl": 0,
+         "text": "De Morgan's laws."
+        }
+       ],
+       "file": "12-Truth-and-Logic-02-Logical-Operators-and-Short-Circuit.docx"
+      },
+      {
+       "ref": "12.03",
+       "title": "The Conditional Operator",
+       "builds": "§12.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`?:` as an expression, and the type of its result."
+        },
+        {
+         "lvl": 0,
+         "text": "Branchless machine code."
+        }
+       ],
+       "file": "12-Truth-and-Logic-03-The-Conditional-Operator.docx"
+      },
+      {
+       "ref": "12.04",
+       "title": "The Comma Operator",
+       "builds": "§12.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Sequencing within an expression."
+        },
+        {
+         "lvl": 0,
+         "text": "Where the comma is an operator, and where it is only punctuation."
+        }
+       ],
+       "file": "12-Truth-and-Logic-04-The-Comma-Operator.docx"
+      }
+     ]
+    },
+    {
+     "num": "13",
+     "title": "Bits as a Tool: Bitwise Operators",
+     "short": "Bitwise-Operators",
+     "sections": [
+      {
+       "ref": "13.01",
+       "title": "AND, OR, XOR and NOT on Bits",
+       "builds": "§12.02, §04.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Truth tables applied bit by bit."
+        },
+        {
+         "lvl": 0,
+         "text": "The contrast with the logical operators."
+        },
+        {
+         "lvl": 0,
+         "text": "The properties of XOR."
+        }
+       ],
+       "file": "13-Bitwise-Operators-01-AND-OR-XOR-and-NOT-on-Bits.docx"
+      },
+      {
+       "ref": "13.02",
+       "title": "Shifts",
+       "builds": "§13.01, §10.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Shifts as multiplication and division by powers of two."
+        },
+        {
+         "lvl": 0,
+         "text": "Shifting by the type's width or more."
+        },
+        {
+         "lvl": 0,
+         "text": "Right shift of a signed value (implementation-defined); left shift of a negative value."
+        }
+       ],
+       "file": "13-Bitwise-Operators-02-Shifts.docx"
+      },
+      {
+       "ref": "13.03",
+       "title": "Masks: Set, Clear, Toggle, Test",
+       "builds": "§13.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Building masks with `(1u << n)`."
+        },
+        {
+         "lvl": 0,
+         "text": "Extracting and inserting multi-bit fields."
+        }
+       ],
+       "file": "13-Bitwise-Operators-03-Masks-Set-Clear-Toggle-Test.docx"
+      },
+      {
+       "ref": "13.04",
+       "title": "Bit Manipulation in Practice",
+       "builds": "§13.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Flag bytes."
+        },
+        {
+         "lvl": 0,
+         "text": "`<stdbit.h>` (C23): counting bits, and leading or trailing zeros."
+        },
+        {
+         "lvl": 0,
+         "text": "Byte swapping."
+        },
+        {
+         "lvl": 0,
+         "text": "A preview of hardware registers."
+        }
+       ],
+       "file": "13-Bitwise-Operators-04-Bit-Manipulation-in-Practice.docx"
+      },
+      {
+       "ref": "13.05",
+       "title": "Detecting Errors with Bits",
+       "builds": "§13.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Parity, checksums, and the intuition behind CRCs."
+        },
+        {
+         "lvl": 0,
+         "text": "In orbit: why satellite links and stored memory are protected by error-detecting codes."
+        }
+       ],
+       "file": "13-Bitwise-Operators-05-Detecting-Errors-with-Bits.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART IV",
+   "title": "CONTROL: SHAPING THE FLOW",
+   "chapters": [
+    {
+     "num": "14",
+     "title": "The Flow of Control",
+     "short": "Flow-of-Control",
+     "sections": [
+      {
+       "ref": "14.01",
+       "title": "Statements and Blocks",
+       "builds": "§09.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The kinds of statement."
+        },
+        {
+         "lvl": 0,
+         "text": "Compound statements."
+        },
+        {
+         "lvl": 0,
+         "text": "The empty statement, and the stray-semicolon bug."
+        }
+       ],
+       "file": "14-Flow-of-Control-01-Statements-and-Blocks.docx"
+      },
+      {
+       "ref": "14.02",
+       "title": "Control at the Machine Level",
+       "builds": "§14.01, §01.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The program counter, and sequential execution."
+        },
+        {
+         "lvl": 0,
+         "text": "Conditional and unconditional branches."
+        },
+        {
+         "lvl": 0,
+         "text": "Compare-and-branch on the AVR and on x86-64."
+        }
+       ],
+       "file": "14-Flow-of-Control-02-Control-at-the-Machine-Level.docx"
+      },
+      {
+       "ref": "14.03",
+       "title": "From goto to Structured Programming",
+       "builds": "§14.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Spaghetti code."
+        },
+        {
+         "lvl": 0,
+         "text": "Böhm–Jacopini (1966) and Dijkstra (1968)."
+        },
+        {
+         "lvl": 0,
+         "text": "Sequence, selection and iteration; single entry and single exit."
+        }
+       ],
+       "file": "14-Flow-of-Control-03-From-goto-to-Structured-Programming.docx"
+      },
+      {
+       "ref": "14.04",
+       "title": "Designing Algorithms",
+       "builds": "§14.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Pseudocode, and flowcharts (with their limits)."
+        },
+        {
+         "lvl": 0,
+         "text": "Top-down stepwise refinement."
+        },
+        {
+         "lvl": 0,
+         "text": "A worked design from problem statement to code."
+        }
+       ],
+       "file": "14-Flow-of-Control-04-Designing-Algorithms.docx"
+      }
+     ]
+    },
+    {
+     "num": "15",
+     "title": "Selection",
+     "short": "Selection",
+     "sections": [
+      {
+       "ref": "15.01",
+       "title": "if and if…else",
+       "builds": "§14.04, §12.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Nested `if` and `else if` chains."
+        },
+        {
+         "lvl": 0,
+         "text": "The dangling `else`, and how the grammar resolves it."
+        },
+        {
+         "lvl": 0,
+         "text": "Why to always use braces."
+        }
+       ],
+       "file": "15-Selection-01-if-and-if-else.docx"
+      },
+      {
+       "ref": "15.02",
+       "title": "How Selection Compiles",
+       "builds": "§15.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Branches in the generated code."
+        },
+        {
+         "lvl": 0,
+         "text": "Pipelines and branch prediction, explained intuitively."
+        },
+        {
+         "lvl": 0,
+         "text": "Branchless alternatives."
+        }
+       ],
+       "file": "15-Selection-02-How-Selection-Compiles.docx"
+      },
+      {
+       "ref": "15.03",
+       "title": "The switch Statement",
+       "builds": "§15.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why multi-way dispatch exists."
+        },
+        {
+         "lvl": 0,
+         "text": "`case` labels are labels within a statement."
+        },
+        {
+         "lvl": 0,
+         "text": "Constant case expressions; `default`."
+        },
+        {
+         "lvl": 0,
+         "text": "Fall-through, and C23's `[[fallthrough]]`."
+        },
+        {
+         "lvl": 0,
+         "text": "Duff's device, as proof that labels are only labels."
+        }
+       ],
+       "file": "15-Selection-03-The-switch-Statement.docx"
+      },
+      {
+       "ref": "15.04",
+       "title": "How switch Compiles",
+       "builds": "§15.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Jump tables against chains of comparisons."
+        },
+        {
+         "lvl": 0,
+         "text": "Why case values must be constants."
+        }
+       ],
+       "file": "15-Selection-04-How-switch-Compiles.docx"
+      },
+      {
+       "ref": "15.05",
+       "title": "State Machines",
+       "builds": "§15.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "States, events and transitions."
+        },
+        {
+         "lvl": 0,
+         "text": "Button debouncing on the AVR."
+        },
+        {
+         "lvl": 0,
+         "text": "A small protocol parser."
+        },
+        {
+         "lvl": 0,
+         "text": "In orbit: a satellite mode manager, including safe mode."
+        }
+       ],
+       "file": "15-Selection-05-State-Machines.docx"
+      }
+     ]
+    },
+    {
+     "num": "16",
+     "title": "Iteration",
+     "short": "Iteration",
+     "sections": [
+      {
+       "ref": "16.01",
+       "title": "The Anatomy of a Loop: while",
+       "builds": "§15.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why repetition is needed."
+        },
+        {
+         "lvl": 0,
+         "text": "The condition, the body, and making progress."
+        },
+        {
+         "lvl": 0,
+         "text": "How `while` compiles to a backward branch."
+        }
+       ],
+       "file": "16-Iteration-01-The-Anatomy-of-a-Loop-while.docx"
+      },
+      {
+       "ref": "16.02",
+       "title": "Counter-Controlled Iteration",
+       "builds": "§16.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The four parts of a control variable."
+        },
+        {
+         "lvl": 0,
+         "text": "Off-by-one errors."
+        },
+        {
+         "lvl": 0,
+         "text": "Half-open ranges `[0, n)`, and why C counts from zero (Dijkstra, 1982)."
+        }
+       ],
+       "file": "16-Iteration-02-Counter-Controlled-Iteration.docx"
+      },
+      {
+       "ref": "16.03",
+       "title": "Floating-Point Control Variables",
+       "builds": "§16.02, §07.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Your 0.05 experiment, reconstructed with the exact stored values."
+        },
+        {
+         "lvl": 0,
+         "text": "Why `<= 1.01` only seemed to work."
+        },
+        {
+         "lvl": 0,
+         "text": "Counting with an integer and deriving the fractional value from it."
+        },
+        {
+         "lvl": 0,
+         "text": "The general rule."
+        }
+       ],
+       "file": "16-Iteration-03-Floating-Point-Control-Variables.docx"
+      },
+      {
+       "ref": "16.04",
+       "title": "Sentinel-Controlled Iteration and Input Loops",
+       "builds": "§16.03, §08.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Choosing a sentinel, and the priming read."
+        },
+        {
+         "lvl": 0,
+         "text": "EOF as a sentinel."
+        },
+        {
+         "lvl": 0,
+         "text": "Checking `scanf`'s return value."
+        }
+       ],
+       "file": "16-Iteration-04-Sentinel-Controlled-Iteration.docx"
+      },
+      {
+       "ref": "16.05",
+       "title": "The for Statement",
+       "builds": "§16.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The grammar of the header: three optional expressions and two required semicolons, and why `for()` is an error."
+        },
+        {
+         "lvl": 0,
+         "text": "Equivalence with `while`, and the one difference involving `continue`."
+        },
+        {
+         "lvl": 0,
+         "text": "Declaring the control variable in the header, and its scope."
+        },
+        {
+         "lvl": 0,
+         "text": "The comma in a `for` header."
+        }
+       ],
+       "file": "16-Iteration-05-The-for-Statement.docx"
+      },
+      {
+       "ref": "16.06",
+       "title": "Infinite Loops and the Super Loop",
+       "builds": "§16.05, §03.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`for(;;)` against `while(1)`."
+        },
+        {
+         "lvl": 0,
+         "text": "An infinite loop as a bug, and as a deliberate design."
+        },
+        {
+         "lvl": 0,
+         "text": "The embedded super loop; Arduino's `main()` reconstructed."
+        },
+        {
+         "lvl": 0,
+         "text": "What happens if `main` returns on the AVR."
+        },
+        {
+         "lvl": 0,
+         "text": "When a compiler may assume that a loop terminates (C11 onward)."
+        }
+       ],
+       "file": "16-Iteration-06-Infinite-Loops-and-the-Super-Loop.docx"
+      },
+      {
+       "ref": "16.07",
+       "title": "The do…while Statement",
+       "builds": "§16.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Executing the body first."
+        },
+        {
+         "lvl": 0,
+         "text": "Input validation."
+        },
+        {
+         "lvl": 0,
+         "text": "Compiled form, and a preview of the `do { } while (0)` macro idiom."
+        }
+       ],
+       "file": "16-Iteration-07-The-do-while-Statement.docx"
+      },
+      {
+       "ref": "16.08",
+       "title": "Nested Loops and Reasoning About Loops",
+       "builds": "§16.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Common patterns."
+        },
+        {
+         "lvl": 0,
+         "text": "Growth of work (n²)."
+        },
+        {
+         "lvl": 0,
+         "text": "Loop invariants, and arguments that a loop terminates."
+        }
+       ],
+       "file": "16-Iteration-08-Nested-Loops-and-Loop-Reasoning.docx"
+      },
+      {
+       "ref": "16.09",
+       "title": "Loops at the Machine Level",
+       "builds": "§16.08",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What `-O2` does: strength reduction, unrolling and vectorization."
+        },
+        {
+         "lvl": 0,
+         "text": "Counting down to zero on the AVR."
+        },
+        {
+         "lvl": 0,
+         "text": "Reading the assembly."
+        }
+       ],
+       "file": "16-Iteration-09-Loops-at-the-Machine-Level.docx"
+      }
+     ]
+    },
+    {
+     "num": "17",
+     "title": "Altering the Flow: break, continue and goto",
+     "short": "break-continue-and-goto",
+     "sections": [
+      {
+       "ref": "17.01",
+       "title": "break and continue",
+       "builds": "§16.09, §15.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Their meaning in loops and in `switch`."
+        },
+        {
+         "lvl": 0,
+         "text": "Behaviour in nested loops."
+        },
+        {
+         "lvl": 0,
+         "text": "Structured alternatives."
+        }
+       ],
+       "file": "17-break-continue-and-goto-01-break-and-continue.docx"
+      },
+      {
+       "ref": "17.02",
+       "title": "goto and Labels, Used Rightly",
+       "builds": "§17.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The cleanup pattern (as used in the Linux kernel)."
+        },
+        {
+         "lvl": 0,
+         "text": "Escaping from nested loops."
+        },
+        {
+         "lvl": 0,
+         "text": "The rules on jumps."
+        },
+        {
+         "lvl": 0,
+         "text": "The positions taken by MISRA and by the NASA coding rules."
+        }
+       ],
+       "file": "17-break-continue-and-goto-02-goto-and-Labels-Used-Rightly.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART V",
+   "title": "FUNCTIONS AND PROGRAM STRUCTURE",
+   "chapters": [
+    {
+     "num": "18",
+     "title": "Functions",
+     "short": "Functions",
+     "sections": [
+      {
+       "ref": "18.01",
+       "title": "Why Functions Exist",
+       "builds": "§17.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Abstraction and decomposition."
+        },
+        {
+         "lvl": 0,
+         "text": "The subroutine's history (EDSAC)."
+        },
+        {
+         "lvl": 0,
+         "text": "A function as a contract, and why the inside of a contract is still examined in this book."
+        }
+       ],
+       "file": "18-Functions-01-Why-Functions-Exist.docx"
+      },
+      {
+       "ref": "18.02",
+       "title": "Defining and Calling Functions",
+       "builds": "§18.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Parameters against arguments."
+        },
+        {
+         "lvl": 0,
+         "text": "`return`, and `void` functions."
+        },
+        {
+         "lvl": 0,
+         "text": "The flow of call and return."
+        }
+       ],
+       "file": "18-Functions-02-Defining-and-Calling-Functions.docx"
+      },
+      {
+       "ref": "18.03",
+       "title": "Pass by Value",
+       "builds": "§18.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Arguments are copied."
+        },
+        {
+         "lvl": 0,
+         "text": "Conversions applied to arguments."
+        },
+        {
+         "lvl": 0,
+         "text": "Why a function cannot change its caller's variable (which motivates pointers)."
+        }
+       ],
+       "file": "18-Functions-03-Pass-by-Value.docx"
+      },
+      {
+       "ref": "18.04",
+       "title": "Declarations and Prototypes",
+       "builds": "§18.03, §02.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why declarations exist."
+        },
+        {
+         "lvl": 0,
+         "text": "Old-style (K&R) declarations."
+        },
+        {
+         "lvl": 0,
+         "text": "Implicit `int` and implicit declaration: history, and why GCC now rejects them."
+        },
+        {
+         "lvl": 0,
+         "text": "`()` against `(void)` through C17, and in C23."
+        }
+       ],
+       "file": "18-Functions-04-Declarations-and-Prototypes.docx"
+      },
+      {
+       "ref": "18.05",
+       "title": "The Standard Library as Functions",
+       "builds": "§18.04, §03.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Headers declare; libraries define."
+        },
+        {
+         "lvl": 0,
+         "text": "Reading the manual pages (`man 3`)."
+        },
+        {
+         "lvl": 0,
+         "text": "A survey of the standard headers."
+        }
+       ],
+       "file": "18-Functions-05-The-Standard-Library-as-Functions.docx"
+      },
+      {
+       "ref": "18.06",
+       "title": "Pseudo-Random Numbers",
+       "builds": "§18.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`rand` and `srand`."
+        },
+        {
+         "lvl": 0,
+         "text": "The mechanics of a linear congruential generator."
+        },
+        {
+         "lvl": 0,
+         "text": "Seeding, and modulo bias."
+        },
+        {
+         "lvl": 0,
+         "text": "A simulation case study."
+        },
+        {
+         "lvl": 0,
+         "text": "Hardware entropy on the ESP32."
+        }
+       ],
+       "file": "18-Functions-06-Pseudo-Random-Numbers.docx"
+      },
+      {
+       "ref": "18.07",
+       "title": "Designing Good Functions",
+       "builds": "§18.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Cohesion."
+        },
+        {
+         "lvl": 0,
+         "text": "Parameter design."
+        },
+        {
+         "lvl": 0,
+         "text": "Returning a status against returning a value."
+        },
+        {
+         "lvl": 0,
+         "text": "`inline` and `static inline`."
+        }
+       ],
+       "file": "18-Functions-07-Designing-Good-Functions.docx"
+      }
+     ]
+    },
+    {
+     "num": "19",
+     "title": "The Call Stack",
+     "short": "The-Call-Stack",
+     "sections": [
+      {
+       "ref": "19.01",
+       "title": "What the Stack Is",
+       "builds": "§18.07, §01.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Last in, first out."
+        },
+        {
+         "lvl": 0,
+         "text": "The stack-pointer register, and push and pop."
+        },
+        {
+         "lvl": 0,
+         "text": "The direction of growth."
+        }
+       ],
+       "file": "19-The-Call-Stack-01-What-the-Stack-Is.docx"
+      },
+      {
+       "ref": "19.02",
+       "title": "A Function Call on x86-64",
+       "builds": "§19.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The System V ABI: argument registers, `call`/`ret`, frames."
+        },
+        {
+         "lvl": 0,
+         "text": "A walk-through in `gdb`."
+        }
+       ],
+       "file": "19-The-Call-Stack-02-A-Function-Call-on-x86-64.docx"
+      },
+      {
+       "ref": "19.03",
+       "title": "A Function Call on the AVR",
+       "builds": "§19.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "avr-gcc's calling convention."
+        },
+        {
+         "lvl": 0,
+         "text": "`CALL` and `RET`."
+        },
+        {
+         "lvl": 0,
+         "text": "The 2 KB RAM budget."
+        }
+       ],
+       "file": "19-The-Call-Stack-03-A-Function-Call-on-the-AVR.docx"
+      },
+      {
+       "ref": "19.04",
+       "title": "Local Variables and Lifetime",
+       "builds": "§19.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Automatic storage."
+        },
+        {
+         "lvl": 0,
+         "text": "Why returning the address of a local variable is wrong."
+        },
+        {
+         "lvl": 0,
+         "text": "Drawing stack frames."
+        }
+       ],
+       "file": "19-The-Call-Stack-04-Local-Variables-and-Lifetime.docx"
+      },
+      {
+       "ref": "19.05",
+       "title": "Recursion",
+       "builds": "§19.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Base case and recursive case."
+        },
+        {
+         "lvl": 0,
+         "text": "Factorial; Fibonacci's explosion of calls."
+        },
+        {
+         "lvl": 0,
+         "text": "The Towers of Hanoi."
+        },
+        {
+         "lvl": 0,
+         "text": "Recursion against iteration; tail calls."
+        }
+       ],
+       "file": "19-The-Call-Stack-05-Recursion.docx"
+      },
+      {
+       "ref": "19.06",
+       "title": "Stack Overflow and Stack Budgets",
+       "builds": "§19.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Linux: guard pages and `SIGSEGV`."
+        },
+        {
+         "lvl": 0,
+         "text": "The AVR: silent corruption."
+        },
+        {
+         "lvl": 0,
+         "text": "Measuring stack use with `-fstack-usage`."
+        },
+        {
+         "lvl": 0,
+         "text": "Why flight-software rules forbid recursion."
+        }
+       ],
+       "file": "19-The-Call-Stack-06-Stack-Overflow-and-Stack-Budgets.docx"
+      }
+     ]
+    },
+    {
+     "num": "20",
+     "title": "Scope, Lifetime and Linkage",
+     "short": "Scope-Lifetime-and-Linkage",
+     "sections": [
+      {
+       "ref": "20.01",
+       "title": "Scope",
+       "builds": "§19.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Block, file, function and prototype scope."
+        },
+        {
+         "lvl": 0,
+         "text": "Shadowing."
+        }
+       ],
+       "file": "20-Scope-Lifetime-and-Linkage-01-Scope.docx"
+      },
+      {
+       "ref": "20.02",
+       "title": "Storage Duration",
+       "builds": "§20.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Automatic, static, allocated and thread storage."
+        },
+        {
+         "lvl": 0,
+         "text": "Static local variables."
+        },
+        {
+         "lvl": 0,
+         "text": "Where each kind lives in memory."
+        }
+       ],
+       "file": "20-Scope-Lifetime-and-Linkage-02-Storage-Duration.docx"
+      },
+      {
+       "ref": "20.03",
+       "title": "Linkage",
+       "builds": "§20.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "External, internal and no linkage."
+        },
+        {
+         "lvl": 0,
+         "text": "`extern`, and `static` at file scope."
+        },
+        {
+         "lvl": 0,
+         "text": "Tentative definitions (and GCC 10's `-fno-common` default)."
+        },
+        {
+         "lvl": 0,
+         "text": "One definition per program."
+        }
+       ],
+       "file": "20-Scope-Lifetime-and-Linkage-03-Linkage.docx"
+      },
+      {
+       "ref": "20.04",
+       "title": "Designing Module Interfaces",
+       "builds": "§20.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Information hiding with `static`."
+        },
+        {
+         "lvl": 0,
+         "text": "The public header."
+        },
+        {
+         "lvl": 0,
+         "text": "A preview of opaque types."
+        }
+       ],
+       "file": "20-Scope-Lifetime-and-Linkage-04-Designing-Module-Interfaces.docx"
+      }
+     ]
+    },
+    {
+     "num": "21",
+     "title": "Multi-File Programs and the Linker",
+     "short": "Multi-File-Programs-and-Linker",
+     "sections": [
+      {
+       "ref": "21.01",
+       "title": "Translation Units and Separate Compilation",
+       "builds": "§20.04, §03.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why programs are split into files."
+        },
+        {
+         "lvl": 0,
+         "text": "The cost of rebuilding, and what separate compilation saves."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-01-Translation-Units.docx"
+      },
+      {
+       "ref": "21.02",
+       "title": "Header Files Done Properly",
+       "builds": "§21.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Declarations belong in headers; definitions do not."
+        },
+        {
+         "lvl": 0,
+         "text": "Include guards."
+        },
+        {
+         "lvl": 0,
+         "text": "Self-contained headers."
+        },
+        {
+         "lvl": 0,
+         "text": "Why each implementation file includes its own header."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-02-Header-Files-Done-Properly.docx"
+      },
+      {
+       "ref": "21.03",
+       "title": "Object Files and Symbols in Depth",
+       "builds": "§21.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`nm` symbol types: `T`, `U`, `D`, `B`."
+        },
+        {
+         "lvl": 0,
+         "text": "Relocations."
+        },
+        {
+         "lvl": 0,
+         "text": "Experiments."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-03-Object-Files-and-Symbols-in-Depth.docx"
+      },
+      {
+       "ref": "21.04",
+       "title": "How the Linker Resolves Symbols",
+       "builds": "§21.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The resolution algorithm."
+        },
+        {
+         "lvl": 0,
+         "text": "Duplicate and undefined symbols."
+        },
+        {
+         "lvl": 0,
+         "text": "Weak symbols."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-04-How-the-Linker-Resolves-Symbols.docx"
+      },
+      {
+       "ref": "21.05",
+       "title": "Static Libraries",
+       "builds": "§21.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`ar` archives, and the extraction rule."
+        },
+        {
+         "lvl": 0,
+         "text": "Link order, as in your experiment."
+        },
+        {
+         "lvl": 0,
+         "text": "Circular dependencies, and `--start-group`."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-05-Static-Libraries.docx"
+      },
+      {
+       "ref": "21.06",
+       "title": "Shared Libraries",
+       "builds": "§21.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`.so` files and position-independent code."
+        },
+        {
+         "lvl": 0,
+         "text": "The dynamic linker; `ldd`."
+        },
+        {
+         "lvl": 0,
+         "text": "`--as-needed`, and how it interacts with order."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-06-Shared-Libraries.docx"
+      },
+      {
+       "ref": "21.07",
+       "title": "The Framework Pattern: Who Owns main?",
+       "builds": "§21.06, §16.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Arduino reconstructed on Fedora."
+        },
+        {
+         "lvl": 0,
+         "text": "Weak default hooks."
+        },
+        {
+         "lvl": 0,
+         "text": "A preview of callbacks."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-07-The-Framework-Pattern-Who-Owns-main.docx"
+      },
+      {
+       "ref": "21.08",
+       "title": "Build Automation with make",
+       "builds": "§21.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The dependency graph, and rules."
+        },
+        {
+         "lvl": 0,
+         "text": "Why build systems exist."
+        },
+        {
+         "lvl": 0,
+         "text": "The Arduino build process: sketch → `.cpp` → prototypes generated."
+        }
+       ],
+       "file": "21-Multi-File-Programs-and-Linker-08-Build-Automation-with-make.docx"
+      }
+     ]
+    },
+    {
+     "num": "22",
+     "title": "The Preprocessor",
+     "short": "The-Preprocessor",
+     "sections": [
+      {
+       "ref": "22.01",
+       "title": "What the Preprocessor Is and Why C Has One",
+       "builds": "§21.08, §03.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Text processing before compilation."
+        },
+        {
+         "lvl": 0,
+         "text": "History."
+        },
+        {
+         "lvl": 0,
+         "text": "Its place among the phases of translation."
+        }
+       ],
+       "file": "22-The-Preprocessor-01-What-the-Preprocessor-Is.docx"
+      },
+      {
+       "ref": "22.02",
+       "title": "#include in Depth",
+       "builds": "§22.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Search paths: `-I`, and `<>` against `\"\"`."
+        },
+        {
+         "lvl": 0,
+         "text": "Seeing what is included with `-H`."
+        }
+       ],
+       "file": "22-The-Preprocessor-02-include-in-Depth.docx"
+      },
+      {
+       "ref": "22.03",
+       "title": "Object-Like Macros",
+       "builds": "§22.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Named constants."
+        },
+        {
+         "lvl": 0,
+         "text": "Why `const`, `enum` and `constexpr` are often better."
+        },
+        {
+         "lvl": 0,
+         "text": "Macros have no scope."
+        }
+       ],
+       "file": "22-The-Preprocessor-03-Object-Like-Macros.docx"
+      },
+      {
+       "ref": "22.04",
+       "title": "Function-Like Macros",
+       "builds": "§22.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Parenthesization."
+        },
+        {
+         "lvl": 0,
+         "text": "Double evaluation."
+        },
+        {
+         "lvl": 0,
+         "text": "`do { } while (0)`."
+        },
+        {
+         "lvl": 0,
+         "text": "`#` and `##`."
+        },
+        {
+         "lvl": 0,
+         "text": "`__VA_ARGS__` and `__VA_OPT__`."
+        }
+       ],
+       "file": "22-The-Preprocessor-04-Function-Like-Macros.docx"
+      },
+      {
+       "ref": "22.05",
+       "title": "Conditional Compilation",
+       "builds": "§22.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`#if`, `#ifdef` and `#elifdef`."
+        },
+        {
+         "lvl": 0,
+         "text": "Detecting the platform (`__AVR__`)."
+        },
+        {
+         "lvl": 0,
+         "text": "`__has_include`."
+        },
+        {
+         "lvl": 0,
+         "text": "`NDEBUG`."
+        }
+       ],
+       "file": "22-The-Preprocessor-05-Conditional-Compilation.docx"
+      },
+      {
+       "ref": "22.06",
+       "title": "Predefined Macros and Diagnostics",
+       "builds": "§22.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`__FILE__`, `__LINE__` and `__func__`."
+        },
+        {
+         "lvl": 0,
+         "text": "`#error`, `#warning` and `#pragma`."
+        }
+       ],
+       "file": "22-The-Preprocessor-06-Predefined-Macros-and-Diagnostics.docx"
+      },
+      {
+       "ref": "22.07",
+       "title": "Advanced Preprocessor Techniques",
+       "builds": "§22.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "X-macros."
+        },
+        {
+         "lvl": 0,
+         "text": "How `<avr/io.h>` defines `PORTB`."
+        },
+        {
+         "lvl": 0,
+         "text": "`#embed` (C23)."
+        },
+        {
+         "lvl": 0,
+         "text": "`typeof` and `_Generic` for type-generic code."
+        }
+       ],
+       "file": "22-The-Preprocessor-07-Advanced-Preprocessor-Techniques.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART VI",
+   "title": "MEMORY IN DEPTH: ARRAYS, POINTERS, STRINGS",
+   "chapters": [
+    {
+     "num": "23",
+     "title": "Arrays",
+     "short": "Arrays",
+     "sections": [
+      {
+       "ref": "23.01",
+       "title": "Why Arrays Exist",
+       "builds": "§22.07, §06.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Contiguous storage."
+        },
+        {
+         "lvl": 0,
+         "text": "Index → address: base + i × size."
+        }
+       ],
+       "file": "23-Arrays-01-Why-Arrays-Exist.docx"
+      },
+      {
+       "ref": "23.02",
+       "title": "Defining and Initializing Arrays",
+       "builds": "§23.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Initializer lists and designated initializers."
+        },
+        {
+         "lvl": 0,
+         "text": "Zero fill."
+        },
+        {
+         "lvl": 0,
+         "text": "`sizeof a / sizeof a[0]`."
+        }
+       ],
+       "file": "23-Arrays-02-Defining-and-Initializing-Arrays.docx"
+      },
+      {
+       "ref": "23.03",
+       "title": "Bounds and Buffer Overflows",
+       "builds": "§23.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "No bounds checking, and why."
+        },
+        {
+         "lvl": 0,
+         "text": "Out-of-bounds access is undefined behaviour."
+        },
+        {
+         "lvl": 0,
+         "text": "The Morris worm (1988)."
+        },
+        {
+         "lvl": 0,
+         "text": "Detection with the address sanitizer."
+        }
+       ],
+       "file": "23-Arrays-03-Bounds-and-Buffer-Overflows.docx"
+      },
+      {
+       "ref": "23.04",
+       "title": "Arrays and Functions",
+       "builds": "§23.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "An array decays to a pointer when passed."
+        },
+        {
+         "lvl": 0,
+         "text": "Passing the length."
+        },
+        {
+         "lvl": 0,
+         "text": "`const` array parameters, and `[static n]`."
+        }
+       ],
+       "file": "23-Arrays-04-Arrays-and-Functions.docx"
+      },
+      {
+       "ref": "23.05",
+       "title": "Array Case Studies",
+       "builds": "§23.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Histograms."
+        },
+        {
+         "lvl": 0,
+         "text": "Frequency counting."
+        },
+        {
+         "lvl": 0,
+         "text": "Lookup tables (a sine table in AVR flash)."
+        }
+       ],
+       "file": "23-Arrays-05-Array-Case-Studies.docx"
+      },
+      {
+       "ref": "23.06",
+       "title": "Sorting",
+       "builds": "§23.05, §19.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Bubble, selection and insertion sort, traced by hand."
+        },
+        {
+         "lvl": 0,
+         "text": "Stability."
+        },
+        {
+         "lvl": 0,
+         "text": "Merge sort."
+        },
+        {
+         "lvl": 0,
+         "text": "`qsort`."
+        }
+       ],
+       "file": "23-Arrays-06-Sorting.docx"
+      },
+      {
+       "ref": "23.07",
+       "title": "Searching and the Growth of Work",
+       "builds": "§23.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Linear against binary search."
+        },
+        {
+         "lvl": 0,
+         "text": "The intuition behind big-O notation."
+        },
+        {
+         "lvl": 0,
+         "text": "Measuring with `clock()`."
+        }
+       ],
+       "file": "23-Arrays-07-Searching-and-the-Growth-of-Work.docx"
+      },
+      {
+       "ref": "23.08",
+       "title": "Multidimensional Arrays",
+       "builds": "§23.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Row-major layout."
+        },
+        {
+         "lvl": 0,
+         "text": "The address formula."
+        },
+        {
+         "lvl": 0,
+         "text": "Matrices (linking to linear algebra)."
+        },
+        {
+         "lvl": 0,
+         "text": "Image and frame buffers."
+        }
+       ],
+       "file": "23-Arrays-08-Multidimensional-Arrays.docx"
+      },
+      {
+       "ref": "23.09",
+       "title": "Variable-Length Arrays",
+       "builds": "§23.08",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Their status in C99, C11 and C23."
+        },
+        {
+         "lvl": 0,
+         "text": "Stack danger."
+        },
+        {
+         "lvl": 0,
+         "text": "Why embedded code avoids them."
+        }
+       ],
+       "file": "23-Arrays-09-Variable-Length-Arrays.docx"
+      }
+     ]
+    },
+    {
+     "num": "24",
+     "title": "Pointers",
+     "short": "Pointers",
+     "sections": [
+      {
+       "ref": "24.01",
+       "title": "Why Pointers Exist",
+       "builds": "§23.09, §18.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Indirection."
+        },
+        {
+         "lvl": 0,
+         "text": "Sharing data without copying it."
+        },
+        {
+         "lvl": 0,
+         "text": "Hardware addresses."
+        },
+        {
+         "lvl": 0,
+         "text": "History."
+        }
+       ],
+       "file": "24-Pointers-01-Why-Pointers-Exist.docx"
+      },
+      {
+       "ref": "24.02",
+       "title": "Pointer Basics",
+       "builds": "§24.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Reading declarations."
+        },
+        {
+         "lvl": 0,
+         "text": "`&` and `*`."
+        },
+        {
+         "lvl": 0,
+         "text": "The null pointer: `NULL`, `0` and `nullptr` (C23)."
+        }
+       ],
+       "file": "24-Pointers-02-Pointer-Basics.docx"
+      },
+      {
+       "ref": "24.03",
+       "title": "Simulating Pass by Reference",
+       "builds": "§24.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`swap`."
+        },
+        {
+         "lvl": 0,
+         "text": "`scanf`'s `&`, finally explained."
+        },
+        {
+         "lvl": 0,
+         "text": "Returning several results."
+        }
+       ],
+       "file": "24-Pointers-03-Simulating-Pass-by-Reference.docx"
+      },
+      {
+       "ref": "24.04",
+       "title": "const and Pointers",
+       "builds": "§24.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Pointer to `const` against a `const` pointer."
+        },
+        {
+         "lvl": 0,
+         "text": "The right-left rule for reading declarations."
+        },
+        {
+         "lvl": 0,
+         "text": "`const` as part of an API contract."
+        }
+       ],
+       "file": "24-Pointers-04-const-and-Pointers.docx"
+      },
+      {
+       "ref": "24.05",
+       "title": "Pointer Arithmetic",
+       "builds": "§24.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Scaling by the size of the type."
+        },
+        {
+         "lvl": 0,
+         "text": "One past the end."
+        },
+        {
+         "lvl": 0,
+         "text": "Subtraction, and `ptrdiff_t`."
+        }
+       ],
+       "file": "24-Pointers-05-Pointer-Arithmetic.docx"
+      },
+      {
+       "ref": "24.06",
+       "title": "Pointers and Arrays",
+       "builds": "§24.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`a[i]` is `*(a+i)`."
+        },
+        {
+         "lvl": 0,
+         "text": "Why arrays are still not pointers (`sizeof`, `&a`)."
+        }
+       ],
+       "file": "24-Pointers-06-Pointers-and-Arrays.docx"
+      },
+      {
+       "ref": "24.07",
+       "title": "Pointers to Pointers and Arrays of Pointers",
+       "builds": "§24.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Ragged arrays."
+        },
+        {
+         "lvl": 0,
+         "text": "A preview of `argv`."
+        }
+       ],
+       "file": "24-Pointers-07-Pointers-to-Pointers.docx"
+      },
+      {
+       "ref": "24.08",
+       "title": "void Pointers and Generic Code",
+       "builds": "§24.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`void *`."
+        },
+        {
+         "lvl": 0,
+         "text": "`memcpy`."
+        },
+        {
+         "lvl": 0,
+         "text": "`qsort` comparators."
+        }
+       ],
+       "file": "24-Pointers-08-void-Pointers-and-Generic-Code.docx"
+      },
+      {
+       "ref": "24.09",
+       "title": "Function Pointers",
+       "builds": "§24.08",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Functions have addresses."
+        },
+        {
+         "lvl": 0,
+         "text": "Callbacks and dispatch tables."
+        },
+        {
+         "lvl": 0,
+         "text": "Interrupt vector tables; `attachInterrupt`."
+        }
+       ],
+       "file": "24-Pointers-09-Function-Pointers.docx"
+      },
+      {
+       "ref": "24.10",
+       "title": "When Pointers Go Wrong",
+       "builds": "§24.09",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Dangling and wild pointers."
+        },
+        {
+         "lvl": 0,
+         "text": "Strict aliasing."
+        },
+        {
+         "lvl": 0,
+         "text": "`restrict`."
+        }
+       ],
+       "file": "24-Pointers-10-When-Pointers-Go-Wrong.docx"
+      }
+     ]
+    },
+    {
+     "num": "25",
+     "title": "Strings",
+     "short": "Strings",
+     "sections": [
+      {
+       "ref": "25.01",
+       "title": "What a C String Is",
+       "builds": "§24.06, §08.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "A null-terminated array of characters."
+        },
+        {
+         "lvl": 0,
+         "text": "Why C chose a terminator rather than a stored length (Pascal-style strings)."
+        },
+        {
+         "lvl": 0,
+         "text": "The cost: `strlen` takes time proportional to the length."
+        }
+       ],
+       "file": "25-Strings-01-What-a-C-String-Is.docx"
+      },
+      {
+       "ref": "25.02",
+       "title": "String Literals",
+       "builds": "§25.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Where they are stored, and why they are immutable."
+        },
+        {
+         "lvl": 0,
+         "text": "`char *s` against `char s[]`."
+        },
+        {
+         "lvl": 0,
+         "text": "On the AVR: string literals in RAM, against `PROGMEM`."
+        }
+       ],
+       "file": "25-Strings-02-String-Literals.docx"
+      },
+      {
+       "ref": "25.03",
+       "title": "The String Library, Rebuilt by Hand",
+       "builds": "§25.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Writing `strlen`, `strcpy`, `strcmp`, `strchr` and `strstr` ourselves."
+        },
+        {
+         "lvl": 0,
+         "text": "Comparing our versions with libc."
+        }
+       ],
+       "file": "25-Strings-03-The-String-Library-Rebuilt-by-Hand.docx"
+      },
+      {
+       "ref": "25.04",
+       "title": "Handling Strings Safely",
+       "builds": "§25.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Why `gets` was removed (C11)."
+        },
+        {
+         "lvl": 0,
+         "text": "`strncpy`'s surprising behaviour."
+        },
+        {
+         "lvl": 0,
+         "text": "`snprintf`, and `strlcpy`."
+        },
+        {
+         "lvl": 0,
+         "text": "Why Annex K failed."
+        }
+       ],
+       "file": "25-Strings-04-Handling-Strings-Safely.docx"
+      },
+      {
+       "ref": "25.05",
+       "title": "Converting Between Text and Numbers",
+       "builds": "§25.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`strtol` and `strtod` with error checking."
+        },
+        {
+         "lvl": 0,
+         "text": "Writing `itoa`: how `printf` produces `%d`."
+        }
+       ],
+       "file": "25-Strings-05-Converting-Between-Text-and-Numbers.docx"
+      },
+      {
+       "ref": "25.06",
+       "title": "Tokenizing and Parsing",
+       "builds": "§25.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "How `strtok` works, and its hidden state."
+        },
+        {
+         "lvl": 0,
+         "text": "A serial-command parser."
+        }
+       ],
+       "file": "25-Strings-06-Tokenizing-and-Parsing.docx"
+      },
+      {
+       "ref": "25.07",
+       "title": "Command-Line Arguments",
+       "builds": "§25.06, §24.07",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`argc` and `argv`, and their layout in memory."
+        },
+        {
+         "lvl": 0,
+         "text": "The environment."
+        }
+       ],
+       "file": "25-Strings-07-Command-Line-Arguments.docx"
+      }
+     ]
+    },
+    {
+     "num": "26",
+     "title": "Dynamic Memory",
+     "short": "Dynamic-Memory",
+     "sections": [
+      {
+       "ref": "26.01",
+       "title": "Why the Heap Exists",
+       "builds": "§25.07, §20.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Lifetimes that are not known when the program is compiled."
+        }
+       ],
+       "file": "26-Dynamic-Memory-01-Why-the-Heap-Exists.docx"
+      },
+      {
+       "ref": "26.02",
+       "title": "malloc, calloc, realloc and free",
+       "builds": "§26.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What each function does."
+        },
+        {
+         "lvl": 0,
+         "text": "Checking for failure."
+        },
+        {
+         "lvl": 0,
+         "text": "The pitfalls of `realloc`."
+        }
+       ],
+       "file": "26-Dynamic-Memory-02-malloc-calloc-realloc-and-free.docx"
+      },
+      {
+       "ref": "26.03",
+       "title": "How an Allocator Works",
+       "builds": "§26.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Free lists."
+        },
+        {
+         "lvl": 0,
+         "text": "Splitting and coalescing blocks."
+        },
+        {
+         "lvl": 0,
+         "text": "Writing a tiny allocator."
+        }
+       ],
+       "file": "26-Dynamic-Memory-03-How-an-Allocator-Works.docx"
+      },
+      {
+       "ref": "26.04",
+       "title": "Memory Errors and the Tools That Find Them",
+       "builds": "§26.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Leaks, use-after-free and double free."
+        },
+        {
+         "lvl": 0,
+         "text": "Valgrind and the address sanitizer."
+        }
+       ],
+       "file": "26-Dynamic-Memory-04-Memory-Errors-and-Tools.docx"
+      },
+      {
+       "ref": "26.05",
+       "title": "Dynamic Memory in Microcontrollers and Spacecraft",
+       "builds": "§26.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Fragmentation over long running times."
+        },
+        {
+         "lvl": 0,
+         "text": "Heap and stack colliding on the AVR."
+        },
+        {
+         "lvl": 0,
+         "text": "Memory pools."
+        },
+        {
+         "lvl": 0,
+         "text": "The NASA and MISRA rules on dynamic memory."
+        }
+       ],
+       "file": "26-Dynamic-Memory-05-Dynamic-Memory-in-Embedded-and-Space.docx"
+      }
+     ]
+    },
+    {
+     "num": "27",
+     "title": "The Memory Map of a Program",
+     "short": "Memory-Map-of-a-Program",
+     "sections": [
+      {
+       "ref": "27.01",
+       "title": "Sections and Segments",
+       "builds": "§26.05, §03.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`.text`, `.data`, `.bss`, the heap and the stack."
+        },
+        {
+         "lvl": 0,
+         "text": "The `size` command."
+        },
+        {
+         "lvl": 0,
+         "text": "Where each kind of variable lands."
+        }
+       ],
+       "file": "27-Memory-Map-of-a-Program-01-Sections-and-Segments.docx"
+      },
+      {
+       "ref": "27.02",
+       "title": "Virtual Memory on Linux",
+       "builds": "§27.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Private address spaces, and pages."
+        },
+        {
+         "lvl": 0,
+         "text": "`/proc/self/maps`."
+        },
+        {
+         "lvl": 0,
+         "text": "What a segmentation fault really is."
+        }
+       ],
+       "file": "27-Memory-Map-of-a-Program-02-Virtual-Memory-on-Linux.docx"
+      },
+      {
+       "ref": "27.03",
+       "title": "The ATmega328P Memory Map",
+       "builds": "§27.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Flash, SRAM and EEPROM."
+        },
+        {
+         "lvl": 0,
+         "text": "`PROGMEM` and `pgm_read_byte`."
+        }
+       ],
+       "file": "27-Memory-Map-of-a-Program-03-The-ATmega328P-Memory-Map.docx"
+      },
+      {
+       "ref": "27.04",
+       "title": "Linker Scripts and Map Files",
+       "builds": "§27.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "How the linker places sections in memory."
+        },
+        {
+         "lvl": 0,
+         "text": "Reading a `.map` file."
+        }
+       ],
+       "file": "27-Memory-Map-of-a-Program-04-Linker-Scripts-and-Map-Files.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART VII",
+   "title": "STRUCTURED DATA",
+   "chapters": [
+    {
+     "num": "28",
+     "title": "Structures",
+     "short": "Structures",
+     "sections": [
+      {
+       "ref": "28.01",
+       "title": "Why Structures Exist",
+       "builds": "§27.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Records: grouping different kinds of data under one name."
+        }
+       ],
+       "file": "28-Structures-01-Why-Structures-Exist.docx"
+      },
+      {
+       "ref": "28.02",
+       "title": "Defining and Using Structures",
+       "builds": "§28.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Designated initializers."
+        },
+        {
+         "lvl": 0,
+         "text": "Assignment copies the whole structure."
+        },
+        {
+         "lvl": 0,
+         "text": "Passing and returning structures, and what it costs."
+        }
+       ],
+       "file": "28-Structures-02-Defining-and-Using-Structures.docx"
+      },
+      {
+       "ref": "28.03",
+       "title": "Layout: Padding and Alignment",
+       "builds": "§28.02, §06.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`offsetof`."
+        },
+        {
+         "lvl": 0,
+         "text": "Ordering members to save space."
+        },
+        {
+         "lvl": 0,
+         "text": "Packed structures, and their cost."
+        }
+       ],
+       "file": "28-Structures-03-Layout-Padding-and-Alignment.docx"
+      },
+      {
+       "ref": "28.04",
+       "title": "Pointers to Structures",
+       "builds": "§28.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The `->` operator."
+        },
+        {
+         "lvl": 0,
+         "text": "Self-referential structures."
+        },
+        {
+         "lvl": 0,
+         "text": "Opaque handles (`FILE`)."
+        }
+       ],
+       "file": "28-Structures-04-Pointers-to-Structures.docx"
+      },
+      {
+       "ref": "28.05",
+       "title": "typedef",
+       "builds": "§28.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What `typedef` really creates."
+        },
+        {
+         "lvl": 0,
+         "text": "Naming conventions."
+        }
+       ],
+       "file": "28-Structures-05-typedef.docx"
+      },
+      {
+       "ref": "28.06",
+       "title": "Structures for Protocols and Telemetry",
+       "builds": "§28.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Telemetry packet layout."
+        },
+        {
+         "lvl": 0,
+         "text": "Serializing data properly rather than copying it with `memcpy`."
+        },
+        {
+         "lvl": 0,
+         "text": "In orbit: an example modelled on CCSDS (space data) packets."
+        }
+       ],
+       "file": "28-Structures-06-Structures-for-Protocols-and-Telemetry.docx"
+      }
+     ]
+    },
+    {
+     "num": "29",
+     "title": "Unions, Bit-Fields and Enumerations",
+     "short": "Unions-Bit-Fields-and-Enums",
+     "sections": [
+      {
+       "ref": "29.01",
+       "title": "Unions",
+       "builds": "§28.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Shared storage."
+        },
+        {
+         "lvl": 0,
+         "text": "Tagged unions."
+        },
+        {
+         "lvl": 0,
+         "text": "Type punning."
+        }
+       ],
+       "file": "29-Unions-Bit-Fields-and-Enums-01-Unions.docx"
+      },
+      {
+       "ref": "29.02",
+       "title": "Bit-Fields",
+       "builds": "§29.01, §13.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Implementation-defined layout."
+        },
+        {
+         "lvl": 0,
+         "text": "Why bit-fields are a poor portable map of hardware registers."
+        }
+       ],
+       "file": "29-Unions-Bit-Fields-and-Enums-02-Bit-Fields.docx"
+      },
+      {
+       "ref": "29.03",
+       "title": "Enumerations",
+       "builds": "§29.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The underlying type, and C23's fixed underlying types."
+        },
+        {
+         "lvl": 0,
+         "text": "`-Wswitch`."
+        }
+       ],
+       "file": "29-Unions-Bit-Fields-and-Enums-03-Enumerations.docx"
+      }
+     ]
+    },
+    {
+     "num": "30",
+     "title": "Building Data Structures",
+     "short": "Data-Structures",
+     "sections": [
+      {
+       "ref": "30.01",
+       "title": "Linked Lists",
+       "builds": "§29.03, §26.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Insertion and deletion."
+        },
+        {
+         "lvl": 0,
+         "text": "The pointer-to-pointer technique."
+        }
+       ],
+       "file": "30-Data-Structures-01-Linked-Lists.docx"
+      },
+      {
+       "ref": "30.02",
+       "title": "Stacks and Queues",
+       "builds": "§30.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Implementations with arrays and with lists."
+        }
+       ],
+       "file": "30-Data-Structures-02-Stacks-and-Queues.docx"
+      },
+      {
+       "ref": "30.03",
+       "title": "Ring Buffers",
+       "builds": "§30.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Masking with a power-of-two size."
+        },
+        {
+         "lvl": 0,
+         "text": "A single producer and a single consumer."
+        },
+        {
+         "lvl": 0,
+         "text": "A UART receive buffer."
+        }
+       ],
+       "file": "30-Data-Structures-03-Ring-Buffers.docx"
+      },
+      {
+       "ref": "30.04",
+       "title": "Binary Trees",
+       "builds": "§30.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Binary search trees."
+        },
+        {
+         "lvl": 0,
+         "text": "Traversals."
+        },
+        {
+         "lvl": 0,
+         "text": "Recursion, again."
+        }
+       ],
+       "file": "30-Data-Structures-04-Binary-Trees.docx"
+      },
+      {
+       "ref": "30.05",
+       "title": "Hash Tables",
+       "builds": "§30.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Hash functions."
+        },
+        {
+         "lvl": 0,
+         "text": "Collisions, and chaining."
+        }
+       ],
+       "file": "30-Data-Structures-05-Hash-Tables.docx"
+      },
+      {
+       "ref": "30.06",
+       "title": "Choosing a Data Structure",
+       "builds": "§30.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Time against memory."
+        },
+        {
+         "lvl": 0,
+         "text": "Static pools for embedded systems."
+        }
+       ],
+       "file": "30-Data-Structures-06-Choosing-a-Data-Structure.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART VIII",
+   "title": "C AND THE OUTSIDE WORLD",
+   "chapters": [
+    {
+     "num": "31",
+     "title": "Streams and Formatted I/O",
+     "short": "Streams-and-Formatted-IO",
+     "sections": [
+      {
+       "ref": "31.01",
+       "title": "The Stream Abstraction",
+       "builds": "§30.06, §08.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`FILE`, and file descriptors beneath it."
+        },
+        {
+         "lvl": 0,
+         "text": "Buffering modes, and `fflush`."
+        }
+       ],
+       "file": "31-Streams-and-Formatted-IO-01-The-Stream-Abstraction.docx"
+      },
+      {
+       "ref": "31.02",
+       "title": "printf in Depth",
+       "builds": "§31.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The grammar of a conversion specification."
+        },
+        {
+         "lvl": 0,
+         "text": "Rounding in the displayed value (your 0.95)."
+        },
+        {
+         "lvl": 0,
+         "text": "Format-string vulnerabilities."
+        }
+       ],
+       "file": "31-Streams-and-Formatted-IO-02-printf-in-Depth.docx"
+      },
+      {
+       "ref": "31.03",
+       "title": "How Variadic Functions Work",
+       "builds": "§31.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`<stdarg.h>`."
+        },
+        {
+         "lvl": 0,
+         "text": "Default argument promotions."
+        },
+        {
+         "lvl": 0,
+         "text": "Why a mismatched format is undefined behaviour."
+        }
+       ],
+       "file": "31-Streams-and-Formatted-IO-03-How-Variadic-Functions-Work.docx"
+      },
+      {
+       "ref": "31.04",
+       "title": "scanf in Depth",
+       "builds": "§31.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The matching rules."
+        },
+        {
+         "lvl": 0,
+         "text": "Return values."
+        },
+        {
+         "lvl": 0,
+         "text": "`fgets` + `strtol` as the safer path."
+        }
+       ],
+       "file": "31-Streams-and-Formatted-IO-04-scanf-in-Depth.docx"
+      },
+      {
+       "ref": "31.05",
+       "title": "Redirection and Pipes",
+       "builds": "§31.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`<`, `>`, `|` and `2>`."
+        },
+        {
+         "lvl": 0,
+         "text": "Exit statuses in shell scripts."
+        }
+       ],
+       "file": "31-Streams-and-Formatted-IO-05-Redirection-and-Pipes.docx"
+      },
+      {
+       "ref": "31.06",
+       "title": "printf on a Microcontroller",
+       "builds": "§31.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Output through the UART."
+        },
+        {
+         "lvl": 0,
+         "text": "avr-libc stdio, and retargeting."
+        },
+        {
+         "lvl": 0,
+         "text": "The cost in flash."
+        }
+       ],
+       "file": "31-Streams-and-Formatted-IO-06-printf-on-a-Microcontroller.docx"
+      }
+     ]
+    },
+    {
+     "num": "32",
+     "title": "Files",
+     "short": "Files",
+     "sections": [
+      {
+       "ref": "32.01",
+       "title": "Files and the Operating System",
+       "builds": "§31.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Paths."
+        },
+        {
+         "lvl": 0,
+         "text": "Permissions on Linux."
+        }
+       ],
+       "file": "32-Files-01-Files-and-the-Operating-System.docx"
+      },
+      {
+       "ref": "32.02",
+       "title": "Opening, Reading, Writing and Closing",
+       "builds": "§32.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The modes of `fopen`."
+        },
+        {
+         "lvl": 0,
+         "text": "Text against binary."
+        },
+        {
+         "lvl": 0,
+         "text": "Character, line and formatted I/O."
+        }
+       ],
+       "file": "32-Files-02-Opening-Reading-Writing-and-Closing.docx"
+      },
+      {
+       "ref": "32.03",
+       "title": "Binary Files and Random Access",
+       "builds": "§32.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`fread` and `fwrite`; `fseek` and `ftell`."
+        },
+        {
+         "lvl": 0,
+         "text": "Record files."
+        }
+       ],
+       "file": "32-Files-03-Binary-Files-and-Random-Access.docx"
+      },
+      {
+       "ref": "32.04",
+       "title": "Handling File Errors",
+       "builds": "§32.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`errno`, `perror` and `strerror`."
+        },
+        {
+         "lvl": 0,
+         "text": "The `while (!feof(f))` bug."
+        }
+       ],
+       "file": "32-Files-04-Handling-File-Errors.docx"
+      },
+      {
+       "ref": "32.05",
+       "title": "Beneath stdio: System Calls",
+       "builds": "§32.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`open`, `read` and `write`."
+        },
+        {
+         "lvl": 0,
+         "text": "Watching a program's system calls with `strace`."
+        }
+       ],
+       "file": "32-Files-05-Beneath-stdio-System-Calls.docx"
+      }
+     ]
+    },
+    {
+     "num": "33",
+     "title": "Termination, Signals and Time",
+     "short": "Termination-Signals-and-Time",
+     "sections": [
+      {
+       "ref": "33.01",
+       "title": "Ending a Program",
+       "builds": "§32.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`return` from `main`, `exit`, `_Exit` and `abort`."
+        },
+        {
+         "lvl": 0,
+         "text": "`atexit`."
+        }
+       ],
+       "file": "33-Termination-Signals-and-Time-01-Ending-a-Program.docx"
+      },
+      {
+       "ref": "33.02",
+       "title": "Signals",
+       "builds": "§33.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What Ctrl+C really does."
+        },
+        {
+         "lvl": 0,
+         "text": "`SIGSEGV`."
+        },
+        {
+         "lvl": 0,
+         "text": "What is safe inside a signal handler: `volatile sig_atomic_t`."
+        }
+       ],
+       "file": "33-Termination-Signals-and-Time-02-Signals.docx"
+      },
+      {
+       "ref": "33.03",
+       "title": "Time and Measurement",
+       "builds": "§33.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`time`, `clock` and `timespec`."
+        },
+        {
+         "lvl": 0,
+         "text": "Benchmarking honestly."
+        }
+       ],
+       "file": "33-Termination-Signals-and-Time-03-Time-and-Measurement.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART IX",
+   "title": "CORRECTNESS, SAFETY AND RELIABILITY",
+   "chapters": [
+    {
+     "num": "34",
+     "title": "Writing Correct C",
+     "short": "Writing-Correct-C",
+     "sections": [
+      {
+       "ref": "34.01",
+       "title": "A Catalogue of Undefined Behaviour",
+       "builds": "§33.03, §02.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Code that works at `-O0` and fails at `-O2`."
+        }
+       ],
+       "file": "34-Writing-Correct-C-01-A-Catalogue-of-Undefined-Behaviour.docx"
+      },
+      {
+       "ref": "34.02",
+       "title": "Assertions and Contracts",
+       "builds": "§34.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`assert` and `static_assert`."
+        },
+        {
+         "lvl": 0,
+         "text": "Preconditions and postconditions."
+        }
+       ],
+       "file": "34-Writing-Correct-C-02-Assertions-and-Contracts.docx"
+      },
+      {
+       "ref": "34.03",
+       "title": "Error-Handling Strategies",
+       "builds": "§34.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Status codes, out-parameters and cleanup paths."
+        }
+       ],
+       "file": "34-Writing-Correct-C-03-Error-Handling-Strategies.docx"
+      },
+      {
+       "ref": "34.04",
+       "title": "Tools That Find Bugs",
+       "builds": "§34.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Sanitizers, Valgrind, `-fanalyzer` and `cppcheck`."
+        },
+        {
+         "lvl": 0,
+         "text": "A method for debugging with `gdb`."
+        }
+       ],
+       "file": "34-Writing-Correct-C-04-Tools-That-Find-Bugs.docx"
+      },
+      {
+       "ref": "34.05",
+       "title": "Testing C Code",
+       "builds": "§34.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Writing a test harness."
+        },
+        {
+         "lvl": 0,
+         "text": "Testing embedded code on the host."
+        }
+       ],
+       "file": "34-Writing-Correct-C-05-Testing-C-Code.docx"
+      },
+      {
+       "ref": "34.06",
+       "title": "Secure C",
+       "builds": "§34.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The CERT C rules."
+        },
+        {
+         "lvl": 0,
+         "text": "Validating input."
+        },
+        {
+         "lvl": 0,
+         "text": "Overflow in size calculations."
+        }
+       ],
+       "file": "34-Writing-Correct-C-06-Secure-C.docx"
+      }
+     ]
+    },
+    {
+     "num": "35",
+     "title": "C for Systems That Must Not Fail",
+     "short": "C-for-Critical-Systems",
+     "sections": [
+      {
+       "ref": "35.01",
+       "title": "What Goes Wrong in Space",
+       "builds": "§34.06, §01.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Radiation and single-event upsets; latch-up."
+        },
+        {
+         "lvl": 0,
+         "text": "Lessons from real mission failures (verified case studies)."
+        }
+       ],
+       "file": "35-C-for-Critical-Systems-01-What-Goes-Wrong-in-Space.docx"
+      },
+      {
+       "ref": "35.02",
+       "title": "Coding Standards for Critical Software",
+       "builds": "§35.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "NASA/JPL's \"Power of Ten\" rules and MISRA C, with the reason behind each rule."
+        }
+       ],
+       "file": "35-C-for-Critical-Systems-02-Coding-Standards-for-Critical-Software.docx"
+      },
+      {
+       "ref": "35.03",
+       "title": "Defensive Techniques in Software",
+       "builds": "§35.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Watchdogs."
+        },
+        {
+         "lvl": 0,
+         "text": "Memory scrubbing and EDAC (error detection and correction)."
+        },
+        {
+         "lvl": 0,
+         "text": "Triple modular redundancy in software."
+        },
+        {
+         "lvl": 0,
+         "text": "Safe modes."
+        }
+       ],
+       "file": "35-C-for-Critical-Systems-03-Defensive-Techniques-in-Software.docx"
+      },
+      {
+       "ref": "35.04",
+       "title": "Determinism and Resource Bounds",
+       "builds": "§35.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Bounded loops."
+        },
+        {
+         "lvl": 0,
+         "text": "Worst-case execution time."
+        },
+        {
+         "lvl": 0,
+         "text": "Static stack analysis."
+        }
+       ],
+       "file": "35-C-for-Critical-Systems-04-Determinism-and-Resource-Bounds.docx"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "PART X",
+   "title": "C ON THE METAL, AND BEYOND",
+   "chapters": [
+    {
+     "num": "36",
+     "title": "Bare-Metal C on the ATmega328P",
+     "short": "Bare-Metal-ATmega328P",
+     "sections": [
+      {
+       "ref": "36.01",
+       "title": "Leaving Arduino Behind",
+       "builds": "§35.04, §21.08",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`avr-gcc`, `-mmcu`, and `avrdude`."
+        },
+        {
+         "lvl": 0,
+         "text": "Blinking an LED with no framework."
+        }
+       ],
+       "file": "36-Bare-Metal-ATmega328P-01-Leaving-Arduino-Behind.docx"
+      },
+      {
+       "ref": "36.02",
+       "title": "Reading a Datasheet",
+       "builds": "§36.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Navigating the ATmega328P datasheet."
+        },
+        {
+         "lvl": 0,
+         "text": "The register summary."
+        }
+       ],
+       "file": "36-Bare-Metal-ATmega328P-02-Reading-a-Datasheet.docx"
+      },
+      {
+       "ref": "36.03",
+       "title": "Memory-Mapped I/O",
+       "builds": "§36.02, §24.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`DDRB`, `PORTB` and `PINB`."
+        },
+        {
+         "lvl": 0,
+         "text": "Pull-up resistors."
+        },
+        {
+         "lvl": 0,
+         "text": "What happens electrically at the pin."
+        }
+       ],
+       "file": "36-Bare-Metal-ATmega328P-03-Memory-Mapped-IO.docx"
+      },
+      {
+       "ref": "36.04",
+       "title": "volatile",
+       "builds": "§36.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What the optimizer does to a register access without `volatile`, proven in the assembly."
+        },
+        {
+         "lvl": 0,
+         "text": "What `volatile` does not promise."
+        }
+       ],
+       "file": "36-Bare-Metal-ATmega328P-04-volatile.docx"
+      },
+      {
+       "ref": "36.05",
+       "title": "Startup Code and the Vector Table",
+       "builds": "§36.04, §27.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Writing a minimal startup."
+        },
+        {
+         "lvl": 0,
+         "text": "What Arduino's `init()` adds."
+        }
+       ],
+       "file": "36-Bare-Metal-ATmega328P-05-Startup-Code-and-the-Vector-Table.docx"
+      },
+      {
+       "ref": "36.06",
+       "title": "Arduino's Functions, Reconstructed",
+       "builds": "§36.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Inside `digitalWrite`."
+        },
+        {
+         "lvl": 0,
+         "text": "Why it is slow."
+        },
+        {
+         "lvl": 0,
+         "text": "Writing a fast equivalent."
+        }
+       ],
+       "file": "36-Bare-Metal-ATmega328P-06-Arduino-Functions-Reconstructed.docx"
+      }
+     ]
+    },
+    {
+     "num": "37",
+     "title": "Interrupts, Timers and Peripherals",
+     "short": "Interrupts-Timers-Peripherals",
+     "sections": [
+      {
+       "ref": "37.01",
+       "title": "Polling Against Interrupts",
+       "builds": "§36.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "The hardware interrupt sequence."
+        },
+        {
+         "lvl": 0,
+         "text": "`ISR()` and `reti`."
+        }
+       ],
+       "file": "37-Interrupts-Timers-Peripherals-01-Polling-Against-Interrupts.docx"
+      },
+      {
+       "ref": "37.02",
+       "title": "Timers",
+       "builds": "§37.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Prescalers, overflow and compare match."
+        },
+        {
+         "lvl": 0,
+         "text": "How `millis()` and `delay()` really work."
+        }
+       ],
+       "file": "37-Interrupts-Timers-Peripherals-02-Timers.docx"
+      },
+      {
+       "ref": "37.03",
+       "title": "Sharing Data with an Interrupt",
+       "builds": "§37.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Atomicity on an 8-bit CPU."
+        },
+        {
+         "lvl": 0,
+         "text": "`ATOMIC_BLOCK`."
+        }
+       ],
+       "file": "37-Interrupts-Timers-Peripherals-03-Sharing-Data-with-an-Interrupt.docx"
+      },
+      {
+       "ref": "37.04",
+       "title": "The UART at Register Level",
+       "builds": "§37.03, §30.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Baud-rate mathematics."
+        },
+        {
+         "lvl": 0,
+         "text": "An interrupt-driven receive buffer."
+        }
+       ],
+       "file": "37-Interrupts-Timers-Peripherals-04-The-UART-at-Register-Level.docx"
+      },
+      {
+       "ref": "37.05",
+       "title": "ADC and PWM",
+       "builds": "§37.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Sampling a voltage."
+        },
+        {
+         "lvl": 0,
+         "text": "Generating analog-like output."
+        }
+       ],
+       "file": "37-Interrupts-Timers-Peripherals-05-ADC-and-PWM.docx"
+      },
+      {
+       "ref": "37.06",
+       "title": "Sleep Modes and Power",
+       "builds": "§37.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Power budgets (on battery and on a satellite)."
+        },
+        {
+         "lvl": 0,
+         "text": "Waking up."
+        }
+       ],
+       "file": "37-Interrupts-Timers-Peripherals-06-Sleep-Modes-and-Power.docx"
+      }
+     ]
+    },
+    {
+     "num": "38",
+     "title": "Concurrency and the C Memory Model",
+     "short": "Concurrency-and-Memory-Model",
+     "sections": [
+      {
+       "ref": "38.01",
+       "title": "Threads and Data Races",
+       "builds": "§37.06",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Multiple cores."
+        },
+        {
+         "lvl": 0,
+         "text": "`<threads.h>` and pthreads."
+        }
+       ],
+       "file": "38-Concurrency-and-Memory-Model-01-Threads-and-Data-Races.docx"
+      },
+      {
+       "ref": "38.02",
+       "title": "Atomics and Memory Ordering",
+       "builds": "§38.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`_Atomic`."
+        },
+        {
+         "lvl": 0,
+         "text": "Reordering by compilers and CPUs."
+        },
+        {
+         "lvl": 0,
+         "text": "Happens-before."
+        }
+       ],
+       "file": "38-Concurrency-and-Memory-Model-02-Atomics-and-Memory-Ordering.docx"
+      },
+      {
+       "ref": "38.03",
+       "title": "Tasks on the ESP32 with FreeRTOS",
+       "builds": "§38.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Tasks, queues and mutexes."
+        },
+        {
+         "lvl": 0,
+         "text": "`app_main`: another framework that owns `main`."
+        }
+       ],
+       "file": "38-Concurrency-and-Memory-Model-03-Tasks-on-the-ESP32-with-FreeRTOS.docx"
+      }
+     ]
+    },
+    {
+     "num": "39",
+     "title": "Toward the Machine Designer",
+     "short": "Toward-the-Machine-Designer",
+     "sections": [
+      {
+       "ref": "39.01",
+       "title": "Reading Compiler Output Fluently",
+       "builds": "§38.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Mapping C constructs onto AVR, x86-64 and Xtensa code."
+        }
+       ],
+       "file": "39-Toward-the-Machine-Designer-01-Reading-Compiler-Output-Fluently.docx"
+      },
+      {
+       "ref": "39.02",
+       "title": "Optimization and the As-If Rule",
+       "builds": "§39.01",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Inlining and link-time optimization (LTO)."
+        },
+        {
+         "lvl": 0,
+         "text": "`-Os` for embedded targets."
+        },
+        {
+         "lvl": 0,
+         "text": "Measuring the results."
+        }
+       ],
+       "file": "39-Toward-the-Machine-Designer-02-Optimization-and-the-As-If-Rule.docx"
+      },
+      {
+       "ref": "39.03",
+       "title": "Inline Assembly",
+       "builds": "§39.02",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "`asm volatile`."
+        },
+        {
+         "lvl": 0,
+         "text": "When it is truly necessary."
+        }
+       ],
+       "file": "39-Toward-the-Machine-Designer-03-Inline-Assembly.docx"
+      },
+      {
+       "ref": "39.04",
+       "title": "C and C++ at the Boundary",
+       "builds": "§39.03",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Sketches are C++."
+        },
+        {
+         "lvl": 0,
+         "text": "Name mangling, and `extern \"C\"`."
+        }
+       ],
+       "file": "39-Toward-the-Machine-Designer-04-C-and-Cpp-at-the-Boundary.docx"
+      },
+      {
+       "ref": "39.05",
+       "title": "How a C Compiler Works",
+       "builds": "§39.04",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "Lexer, parser, AST, IR and code generation."
+        },
+        {
+         "lvl": 0,
+         "text": "Building a tiny expression compiler (a bridge to designing languages)."
+        }
+       ],
+       "file": "39-Toward-the-Machine-Designer-05-How-a-C-Compiler-Works.docx"
+      },
+      {
+       "ref": "39.06",
+       "title": "C on a Processor You Design",
+       "builds": "§39.05",
+       "bullets": [
+        {
+         "lvl": 0,
+         "text": "What an ISA must provide for C."
+        },
+        {
+         "lvl": 0,
+         "text": "Designing an ABI."
+        },
+        {
+         "lvl": 0,
+         "text": "Porting a compiler (a bridge to processor design)."
+        }
+       ],
+       "file": "39-Toward-the-Machine-Designer-06-C-on-a-Processor-You-Design.docx"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "back": [
+  {
+   "num": "40",
+   "title": "Reference Appendices",
+   "short": "Reference-Appendices",
+   "sections": [
+    {
+     "ref": "40.01",
+     "title": "Operator Precedence and Associativity Table",
+     "builds": "",
+     "bullets": [],
+     "file": "40-Reference-Appendices-01-Operator-Precedence-Table.docx"
+    },
+    {
+     "ref": "40.02",
+     "title": "ASCII Table and Escape Sequences",
+     "builds": "",
+     "bullets": [],
+     "file": "40-Reference-Appendices-02-ASCII-Table-and-Escape-Sequences.docx"
+    },
+    {
+     "ref": "40.03",
+     "title": "Number-System Conversion Tables",
+     "builds": "",
+     "bullets": [],
+     "file": "40-Reference-Appendices-03-Number-System-Conversion-Tables.docx"
+    },
+    {
+     "ref": "40.04",
+     "title": "C Standard Versions: Feature Map (C89 → C23)",
+     "builds": "",
+     "bullets": [],
+     "file": "40-Reference-Appendices-04-C-Standard-Versions-Feature-Map.docx"
+    },
+    {
+     "ref": "40.05",
+     "title": "ATmega328P Register Quick Reference",
+     "builds": "",
+     "bullets": [],
+     "file": "40-Reference-Appendices-05-ATmega328P-Register-Quick-Reference.docx"
+    },
+    {
+     "ref": "40.06",
+     "title": "Fedora Toolchain Command Reference",
+     "builds": "",
+     "bullets": [],
+     "file": "40-Reference-Appendices-06-Fedora-Toolchain-Command-Reference.docx"
+    }
+   ]
+  }
+ ]
+}

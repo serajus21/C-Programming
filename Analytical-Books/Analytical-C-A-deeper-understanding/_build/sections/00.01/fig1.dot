@@ -1,0 +1,12 @@
+digraph G {
+  graph [layout=circo, bgcolor="white", pad=0.25, dpi=200, mindist=1.15];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=13, penwidth=1.6, margin="0.2,0.12", width=2.4];
+  edge [color="#5A6270", penwidth=1.5, arrowsize=0.85];
+  Q [label="1  Question\n“Why does this happen?”", fillcolor="#EAF1FB", color="#1F5FAD"];
+  E [label="2  Experiment\npredict, run, observe", fillcolor="#EAF5EA", color="#2E7D32"];
+  M [label="3  Mechanism\nwhat the machine does", fillcolor="#F1ECF8", color="#5B3E96"];
+  R [label="4  Precise rule\nwhat C guarantees", fillcolor="#E7F4F4", color="#0F6E6E"];
+  C [label="5  Connection\nwhere else it appears", fillcolor="#FBF3E4", color="#8A5A00"];
+  Q -> E -> M -> R -> C;
+  C -> Q [style=dashed, xlabel="a new question", fontname="DejaVu Sans", fontsize=11, fontcolor="#5A6270"];
+}

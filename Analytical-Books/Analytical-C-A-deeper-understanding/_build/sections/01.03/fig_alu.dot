@@ -1,0 +1,18 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.5, ranksep=0.45, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=12, shape=box, style="rounded,filled", penwidth=1.4];
+  edge [color="#5A6270", penwidth=1.3, arrowsize=0.7, fontname="DejaVu Sans", fontsize=10.5, fontcolor="#5A6270"];
+  A [label="operand A (8 bits)", fillcolor="#E9ECF3", color="#1B2A4A"];
+  B [label="operand B (8 bits)", fillcolor="#E9ECF3", color="#1B2A4A"];
+  op [label="operation select\n(e.g. ADD, SUB, AND, OR, XOR)", fillcolor="#FBF3E4", color="#8A5A00"];
+  subgraph cluster_alu { label="ALU (combinational logic)"; fontname="DejaVu Sans"; fontsize=12; fontcolor="#1F5FAD"; color="#1F5FAD"; style="rounded,dashed"; labelloc="b";
+    add [label="adder /\nsubtractor", fillcolor="#EAF1FB", color="#1F5FAD"];
+    lg [label="AND, OR, XOR\n(bit by bit)", fillcolor="#EAF1FB", color="#1F5FAD"];
+    mux [label="multiplexer:\nchoose one result", fillcolor="#F1ECF8", color="#5B3E96"];
+    fl [label="flag logic", fillcolor="#F1ECF8", color="#5B3E96"]; }
+  R [label="result (8 bits)", fillcolor="#E9ECF3", color="#1B2A4A"];
+  F [label="flags: C  Z  N  V", fillcolor="#FDECEA", color="#B42318"];
+  A -> add; B -> add; A -> lg; B -> lg;
+  add -> mux; lg -> mux; op -> mux [label=" selects"]; op -> add [label=" add or\n subtract", style=dashed];
+  mux -> R; mux -> fl; add -> fl [label=" carries", style=dashed]; fl -> F;
+}

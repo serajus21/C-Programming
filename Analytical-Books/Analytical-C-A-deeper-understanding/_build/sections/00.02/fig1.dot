@@ -1,0 +1,19 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.45, ranksep=0.45, dpi=200, newrank=true];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=12, penwidth=1.4, margin="0.16,0.10"];
+  edge [color="#5A6270", penwidth=1.3, arrowsize=0.75, fontname="DejaVu Sans", fontsize=10, fontcolor="#5A6270"];
+  ed [label="VS Code\n(you write  .c  text)", fillcolor="#E9ECF3", color="#1B2A4A"];
+  subgraph cluster_n { label="Native: build for the laptop itself"; fontname="DejaVu Sans"; fontsize=11; fontcolor="#1F5FAD"; color="#1F5FAD"; style="rounded,dashed";
+    gcc [label="gcc\n(x86-64 code)", fillcolor="#EAF1FB", color="#1F5FAD"];
+    exe [label="executable\nfile", fillcolor="#EAF1FB", color="#1F5FAD"];
+    run [label="runs on the laptop\n(Fedora)", fillcolor="#EAF1FB", color="#1F5FAD"]; }
+  subgraph cluster_c { label="Cross: build on the laptop, run elsewhere"; fontname="DejaVu Sans"; fontsize=11; fontcolor="#2E7D32"; color="#2E7D32"; style="rounded,dashed";
+    avr [label="avr-gcc\n(AVR code)", fillcolor="#EAF5EA", color="#2E7D32"];
+    elf [label=".elf / .hex\nfile", fillcolor="#EAF5EA", color="#2E7D32"];
+    dude [label="avrdude\n(over USB)", fillcolor="#EAF5EA", color="#2E7D32"];
+    mcu [label="runs on the\nATmega328P", fillcolor="#EAF5EA", color="#2E7D32"]; }
+  ed -> gcc; gcc -> exe -> run;
+  ed -> avr; avr -> elf -> dude -> mcu;
+  tools [shape=note, label="gdb, nm, objdump, valgrind\ninspect what was built", fillcolor="#F1ECF8", color="#5B3E96", fontsize=11];
+  exe -> tools [style=dashed, arrowhead=none];
+}

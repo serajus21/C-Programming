@@ -1,0 +1,24 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.3, nodesep=0.3, ranksep=0.28, dpi=200];
+  node [shape=box, style="filled", fontname="DejaVu Sans", fontsize=12, penwidth=1.3, width=3.6, margin="0.18,0.10"];
+  edge [color="#5A6270", penwidth=1.3, arrowsize=0.7];
+  subgraph cluster0 { label=""; color=white;
+  a [label="Your idea, written as C source text", fillcolor="#E9ECF3", color="#1B2A4A"];
+  b [label="Preprocessor, compiler, assembler, linker", fillcolor="#F1ECF8", color="#5B3E96"];
+  c [label="Machine code: numbers in memory", fillcolor="#F1ECF8", color="#5B3E96"];
+  d [label="CPU: fetch, decode, execute", fillcolor="#EAF1FB", color="#1F5FAD"];
+  e [label="Registers, memory, peripherals", fillcolor="#EAF1FB", color="#1F5FAD"];
+  f [label="Transistors switching", fillcolor="#EAF5EA", color="#2E7D32"];
+  g [label="A voltage on a wire or a pin", fillcolor="#EAF5EA", color="#2E7D32"];
+  a -> b -> c -> d -> e -> f -> g; }
+  node [shape=plaintext, style="", fontsize=11, fontcolor="#5A6270", width=0];
+  pa [label="Parts II–IX: the language itself"];
+  pb [label="Ch. 03, 21, 22: translation and linking"];
+  pc [label="Ch. 01, 03, 39: machine code"];
+  pd [label="Ch. 01, 14, 19: the CPU at work"];
+  pe [label="Ch. 06, 27, 36: memory and I/O"];
+  pf [label="Ch. 01: logic from switches"];
+  pg [label="Ch. 36, 37: the metal"];
+  {rank=same; a; pa} {rank=same; b; pb} {rank=same; c; pc} {rank=same; d; pd} {rank=same; e; pe} {rank=same; f; pf} {rank=same; g; pg}
+  edge [style=invis]; a -> pa; b -> pb; c -> pc; d -> pd; e -> pe; f -> pf; g -> pg;
+}
