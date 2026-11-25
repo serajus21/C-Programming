@@ -1,23 +1,25 @@
-// chain.c  (Experiment 01.03-3)
+// chain.c
 // How many stages in a row does a carry travel through?
 #include <stdio.h>
 
 int longest_chain(int x, int y) {
-    int carry = 0;
-    int run = 0;
+    int carry = 0;                      // carry into the current column
+    int run = 0;                        // stages crossed by the current carry
     int longest = 0;
     for (int i = 0; i < 8; ++i) {
         int a = (x >> i) & 1;
         int b = (y >> i) & 1;
-        carry = (a & b) | (carry & (a ^ b));
-        if (carry) {
+        if (a & b) {                    // generate: a fresh carry starts here
+            run = 1;
+        } else if ((a ^ b) & carry) {   // propagate: the carry travels on
             ++run;
-            if (run > longest) {
-                longest = run;
-            }
-        } else {
+        } else {                        // no carry leaves this column
             run = 0;
         }
+        if (run > longest) {
+            longest = run;
+        }
+        carry = (a & b) | (carry & (a ^ b));
     }
     return longest;
 }

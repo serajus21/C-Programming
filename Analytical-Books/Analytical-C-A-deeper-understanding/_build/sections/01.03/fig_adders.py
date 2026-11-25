@@ -38,7 +38,8 @@ with schemdraw.Drawing(file='fig_full_adder.png', dpi=200, show=False) as d:
     d.add(elm.Dot().at((6.6, x2.in1[1]))); d.add(logic.Wire('|-').at((6.6, x2.in1[1])).to(a2.in1))
     # XOR1 output to XOR2 and AND2
     d.add(logic.Wire('-|').at(x1.out).to((7.2, x2.in2[1]))); d.add(elm.Line().at((7.2, x2.in2[1])).to(x2.in2))
-    d.add(elm.Dot().at((7.2, x2.in2[1]))); d.add(logic.Wire('|-').at((7.2, x2.in2[1])).to(a2.in2))
+    d.add(elm.Dot().at((7.2, x1.out[1])))
+    d.add(logic.Wire('|-').at((7.2, x2.in2[1])).to(a2.in2))
     # ORs
     d.add(logic.Wire('-|').at(a2.out).to(o.in1))
     d.add(logic.Wire('-|').at(a1.out).to(o.in2))

@@ -1,0 +1,15 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.5, ranksep=0.55, dpi=200, newrank=true];
+  node [fontname="DejaVu Sans", fontsize=12, shape=box, style="rounded,filled", penwidth=1.4];
+  edge [color="#5A6270", penwidth=1.5, arrowsize=0.75, fontname="DejaVu Sans", fontsize=10.5, fontcolor="#5A6270"];
+  subgraph cluster_v { label="von Neumann: one memory, one path"; fontname="DejaVu Sans"; fontsize=12; fontcolor="#1F5FAD"; color="#1F5FAD"; style="rounded,dashed";
+    cpu1 [label="processor", fillcolor="#EAF1FB", color="#1F5FAD", width=2.4];
+    m1 [label="memory\ninstructions + data", fillcolor="#E9ECF3", color="#1B2A4A", width=2.4];
+    cpu1 -> m1 [dir=both, label=" one bus: instructions\n and data take turns"]; }
+  subgraph cluster_h { label="Harvard: two memories, two paths"; fontname="DejaVu Sans"; fontsize=12; fontcolor="#2E7D32"; color="#2E7D32"; style="rounded,dashed";
+    cpu2 [label="processor", fillcolor="#EAF5EA", color="#2E7D32", width=2.4];
+    pm [label="program memory\n(on the AVR: flash)", fillcolor="#E9ECF3", color="#1B2A4A"];
+    dm [label="data memory\n(on the AVR: SRAM)", fillcolor="#E9ECF3", color="#1B2A4A"];
+    pm -> cpu2 [label=" instructions"]; cpu2 -> dm [dir=both, label=" data"]; }
+  {rank=same; cpu1; cpu2} {rank=same; m1; dm}
+}

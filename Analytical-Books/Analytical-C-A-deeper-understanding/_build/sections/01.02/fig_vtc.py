@@ -33,7 +33,7 @@ vouts = [vout_for(v) for v in vins]
 fig, ax = plt.subplots(figsize=(6.4, 4.2), dpi=200)
 ax.axvspan(1.5, 3.0, color="#FDECEA", alpha=0.7, lw=0)
 ax.plot(vins, vouts, color="#1F5FAD", lw=2)
-ax.text(2.25, 5.15, "the band an ATmega328P\ninput does not guarantee", ha="center", va="top",
+ax.text(1.97, 0.1, "band an\nATmega328P\ninput does\nnot guarantee", ha="center", va="bottom",
         fontsize=8.5, color="#B42318")
 ax.annotate("input LOW: output firmly HIGH", xy=(0.9, 5.0), xytext=(0.1, 3.4), fontsize=9,
             arrowprops=dict(arrowstyle="->", color="#5A6270"))

@@ -5,7 +5,7 @@ digraph G {
   A [label="operand A (8 bits)", fillcolor="#E9ECF3", color="#1B2A4A"];
   B [label="operand B (8 bits)", fillcolor="#E9ECF3", color="#1B2A4A"];
   op [label="operation select\n(e.g. ADD, SUB, AND, OR, XOR)", fillcolor="#FBF3E4", color="#8A5A00"];
-  subgraph cluster_alu { label="ALU (combinational logic)"; fontname="DejaVu Sans"; fontsize=12; fontcolor="#1F5FAD"; color="#1F5FAD"; style="rounded,dashed"; labelloc="b";
+  subgraph cluster_alu { label="ALU (combinational logic)"; fontname="DejaVu Sans"; fontsize=12; fontcolor="#1F5FAD"; color="#1F5FAD"; style="rounded,dashed"; labelloc="b"; labeljust="r";
     add [label="adder /\nsubtractor", fillcolor="#EAF1FB", color="#1F5FAD"];
     lg [label="AND, OR, XOR\n(bit by bit)", fillcolor="#EAF1FB", color="#1F5FAD"];
     mux [label="multiplexer:\nchoose one result", fillcolor="#F1ECF8", color="#5B3E96"];

@@ -82,7 +82,10 @@ let i = 0;
 let para = [];
 function flushPara(extra = {}) {
   if (!para.length) return;
-  children.push(new Paragraph({ children: runs(para.join(' ')), ...extra }));
+  const txt = para.join(' ');
+  // a lead-in sentence ending in a colon stays with what it introduces
+  const lead = /:\s*$/.test(txt) ? { keepNext: true } : {};
+  children.push(new Paragraph({ children: runs(txt), ...lead, ...extra }));
   para = [];
 }
 function boxParaProps(key) {
@@ -103,7 +106,10 @@ function codeLines(kind, lines, title) {
     children: [new TextRun({ text: 'Output', font: SANS, size: 17, bold: true, color: MUTED })] }));
   const width = String(lines.length).length;
   lines.forEach((l, k) => {
-    const common = { spacing: { before: 0, after: 0, line: 260, lineRule: LineRuleType.AUTO }, keepLines: true, keepNext: k < lines.length - 1 && lines.length <= 30 };
+    const common = { spacing: { before: 0, after: 0, line: 260, lineRule: LineRuleType.AUTO }, keepLines: true,
+      // keep a listing of up to 50 lines on one page; keep a terminal block
+      // together with whatever follows it (normally its output)
+      keepNext: (k < lines.length - 1 && lines.length <= 50) || (kind === 'terminal' && lines.length <= 50) };
     let p;
     if (kind === 'c' || kind === 'asm' || kind === 'make') {
       p = new Paragraph({ ...common,
@@ -140,16 +146,19 @@ function pipeTable(rows, widthsPct, caption) {
   let pct = widthsPct || parsed[0].map(() => 100 / n);
   const widths = pct.map(p => Math.round(CONTENT_W * p / 100));
   widths[widths.length - 1] = CONTENT_W - widths.slice(0, -1).reduce((a, b) => a + b, 0);
-  const mk = (txt, w, head) => new TableCell({
+  // Keep short tables (up to 12 rows) on one page; for longer ones keep
+  // at least the header and the first two rows together.
+  const keepRows = parsed.length <= 12 ? parsed.length - 1 : 3;
+  const mk = (txt, w, head, keep) => new TableCell({
     width: { size: w, type: WidthType.DXA },
     borders: { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder },
     shading: head ? { type: ShadingType.CLEAR, fill: 'E4E8EE', color: 'auto' } : undefined,
     margins: { top: 60, bottom: 60, left: 100, right: 100 },
-    children: txt.split('<br>').map(t => new Paragraph({ spacing: { before: 0, after: 0 },
+    children: txt.split('<br>').map(t => new Paragraph({ spacing: { before: 0, after: 0 }, keepNext: keep,
       children: runs(t, head ? { bold: true, font: SANS, size: 19 } : { size: 20 }) })),
   });
   children.push(new Table({ width: { size: CONTENT_W, type: WidthType.DXA }, columnWidths: widths,
-    rows: parsed.map((r, k) => new TableRow({ tableHeader: k === 0, cantSplit: true, children: r.map((c, j) => mk(c, widths[j], k === 0)) })) }));
+    rows: parsed.map((r, k) => new TableRow({ tableHeader: k === 0, cantSplit: true, children: r.map((c, j) => mk(c, widths[j], k === 0, k < keepRows)) })) }));
   children.push(new Paragraph({ spacing: { before: 0, after: 160 }, children: [] }));
 }
 function pngSize(file) {
@@ -196,7 +205,8 @@ while (i < lines.length) {
           children: [new TextRun({ text: ml || ' ', font: MONO, size: 18, color: INK })] })));
         return;
       }
-      children.push(new Paragraph({ ...props, spacing: { before: 0, after: last ? 200 : 80 }, keepNext: !last,
+      // long box paragraphs may break across pages, to avoid half-empty pages
+      children.push(new Paragraph({ ...props, keepLines: it.t.length < 700, spacing: { before: 0, after: last ? 200 : 80 }, keepNext: !last,
         ...(it.bullet ? { numbering: { reference: 'boxbullets', level: 0 } } : {}),
         children: runs(it.t) }));
       if (it.bullet) usedNumbering.add('boxbullets');

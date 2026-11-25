@@ -28,7 +28,9 @@ void show(uint8_t a, const char *op, uint8_t b) {
     Serial.print("    I T H S V N Z C = ");
     for (int bit = 7; bit >= 0; --bit) {
         Serial.print((sreg >> bit) & 1);
-        Serial.print(" ");
+        if (bit > 0) {
+            Serial.print(" ");
+        }
     }
     Serial.println();
 }

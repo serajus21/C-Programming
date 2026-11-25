@@ -1,4 +1,4 @@
-// gates.c
+// gates.c  (Experiment 01.02-1: the sum-of-products variant)
 // Logic gates as C functions on 0 and 1, all built from NAND alone.
 #include <stdio.h>
 

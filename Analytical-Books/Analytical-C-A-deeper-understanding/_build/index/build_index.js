@@ -6,7 +6,7 @@ const {
 
 const book = JSON.parse(fs.readFileSync('toc.json', 'utf8'));
 
-// ---------- house fonts & colours ----------
+// ---------- house fonts & colors ----------
 const SERIF = 'Noto Serif', SANS = 'Noto Sans', MONO = 'Noto Sans Mono';
 const INK = '1B1F24', NAVY = '1B2A4A', MUTED = '5A6270';
 const CONTENT_W = 9638; // A4 (11906) minus 2 x 1134 (2 cm) margins
@@ -146,7 +146,7 @@ children.push(
   new Paragraph({ spacing: { after: 120 }, children: [new TextRun({ text: 'Book Index', font: SANS, size: 32, bold: true, color: INK })] }),
   new Paragraph({ spacing: { after: 600 }, children: [new TextRun({ text: 'Table of Contents · House Style · Revision Log', font: SANS, size: 24, color: MUTED })] }),
   new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: 'Serajus, written with Claude', font: SERIF, size: 24, color: INK })] }),
-  new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: 'Version 1.2 · Approved 24 November 2026', font: SERIF, size: 22, color: MUTED })] }),
+  new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: 'Version 1.7 · Approved November 24, 2026', font: SERIF, size: 22, color: MUTED })] }),
   new Paragraph({ children: [new TextRun({ text: `${allChapters.length} chapters · ${nSections} sections`, font: SERIF, size: 22, color: MUTED })] }),
   pageBreak(),
 );
@@ -159,7 +159,7 @@ children.push(B('**Part 3** fixes the language baseline and the three machines o
 children.push(B('**Part 4** is the house style: files, the anatomy of a section, typography, code, boxes, claims and sources, visuals and workflow.'));
 children.push(B('**Part 5** is the detailed Table of Contents: for each section, its reference, file name, dependencies and the branches it must explore.'));
 children.push(B('**Part 6** is the revision log.'));
-children.push(P('Facts named in Part 5 (version numbers, dates, behaviours) are topics to be verified when their section is written, not claims already settled.', { run: { italics: true, color: MUTED } }));
+children.push(P('Facts named in Part 5 (version numbers, dates, behaviors) are topics to be verified when their section is written, not claims already settled.', { run: { italics: true, color: MUTED } }));
 
 // 2. At a glance
 children.push(pageBreak(), H1('2. The Book at a Glance'));
@@ -179,7 +179,7 @@ children.push(P('**Order of dependence.** The machine → why C exists and how a
 // 3. Baseline
 children.push(pageBreak(), H1('3. Language Baseline and Machines'));
 children.push(H2('3.1 The C standard taught'));
-children.push(B('**Primary baseline: C23**, as GCC 15 compiles it by default on Fedora (`-std=gnu23`). Strict standard behaviour is shown with `-std=c23 -pedantic`.'));
+children.push(B('**Primary baseline: C23**, as GCC 15 compiles it by default on Fedora (`-std=gnu23`). Strict standard behavior is shown with `-std=c23 -pedantic`.'));
 children.push(B('**Earlier standards are marked where they differ.** Each difference from C99, C11 or C17 appears in a *Precisely speaking* box naming the version.'));
 children.push(B('**Two embedded toolchains, compared honestly.** The Arduino IDE ships an older avr-gcc (7.3.0, default dialect GNU C11; sketches compiled as C++). Bare-metal work uses Fedora’s current avr-gcc. Where the same source is judged differently, the book shows it.'));
 children.push(H2('3.2 The three machines'));
@@ -263,7 +263,7 @@ children.push(...box('In orbit', ['Why the topic matters to spacecraft and satel
 
 children.push(H2('4.6 Claims, sources and precision'));
 children.push(B('Every factual claim is either verified against a primary source (the standard, GCC or avr-libc manuals, ABI documents, datasheets) or tested by running a program.'));
-children.push(B('Three kinds of statement are kept visibly apart: **the standard** (what C requires), **the implementation** (what a named toolchain on a named machine does), and **inference** (the author’s reasoning, labelled as such).'));
+children.push(B('Four kinds of statement are kept visibly apart: **established fact** (documented outside the standard, with its source named), **the standard** (what C requires), **the implementation** (what a named toolchain on a named machine does), and **inference** (the author’s reasoning, labeled as such).'));
 children.push(B('Where the author is unsure, the text says so. Nothing is quietly guessed.'));
 children.push(B('Outside knowledge and research are listed in the section’s *Sources and verification*. Nothing is copied from any book; quotations, where unavoidable, are short and attributed.'));
 
@@ -292,6 +292,7 @@ children.push(B('Plain, precise English; every technical term defined when it fi
 children.push(B('Storytelling in the manner of a ground-up textbook: the reader is led through a journey to the concept, not handed a list of facts. Standards and rules appear when the story needs them, not as the main theme.'));
 children.push(B('Intuition before formulas; the reason a concept exists before the procedure for using it; and the meaning of every symbol explained.'));
 children.push(B('Mistakes and misconceptions are named plainly and corrected precisely.'));
+children.push(B('American English spelling throughout (behavior, organize, meter, gray), and dates written month first (November 24, 2026). Punctuation stays logical: a period or comma goes inside quotation marks only when it belongs to the quoted text, so that quoted code and commands are never altered.'));
 
 children.push(H2('4.10 Workflow'));
 children.push(N('Sections are written strictly one at a time, in order, each reviewed before the next begins.', 'n410'));
@@ -329,9 +330,14 @@ book.back.forEach(chapterBlock);
 children.push(pageBreak(), H1('6. Revision Log'));
 children.push(P('Every change after approval is entered here, newest last.'));
 children.push(table([1300, 1900, 6438], ['Version', 'Date', 'Change'], [
-  { cells: ['1.0', '24 Nov 2026', `Table of Contents approved: ${allChapters.length} chapters, ${nSections} sections. House style, naming rules, language baseline and visual rules established.`] },
-  { cells: ['1.1', '24 Nov 2026', 'Folder layout: `_Analytical-C-Lab/` added for experiments. §00.02 updated: lab path changed to match; Table 00.02-2 now records GCC 16.2.1 on Fedora 44 printing 202311 (run by the reader).'] },
-  { cells: ['1.2', '24 Nov 2026', 'Folder layout: `_build/` added, holding the converter, section drafts, figure sources and programs, so that any later session can rebuild the files identically.'] },
+  { cells: ['1.0', 'Nov 24, 2026', `Table of Contents approved: ${allChapters.length} chapters, ${nSections} sections. House style, naming rules, language baseline and visual rules established.`] },
+  { cells: ['1.1', 'Nov 24, 2026', 'Folder layout: `_Analytical-C-Lab/` added for experiments. §00.02 updated: lab path changed to match; Table 00.02-2 now records GCC 16.2.1 on Fedora 44 printing 202311 (run by the reader).'] },
+  { cells: ['1.2', 'Nov 24, 2026', 'Folder layout: `_build/` added, holding the converter, section drafts, figure sources and programs, so that any later session can rebuild the files identically.'] },
+  { cells: ['1.3', 'Nov 24, 2026', 'Proofreading of Chapter 00 (author’s pass and an independent review). §00.01: four kinds of statement (established fact added); compile-time folding of 0.1 + 0.2 stated; `double` is 32-bit on avr-gcc; C23 macro `__STDC_IEC_60559_BFP__`; Patriot account made precise and its return fixed at §07.08; Experiment 00.01-3 uses `%.70f`; ESP32 identified as the original Xtensa LX6 part; Figure 00.01-1 relabelled. §00.02: Arduino IDE and ESP32 board package added; exact `file` output; warnings, `-std=c23`, `-pedantic`, `__STDC_HOSTED__` and error-position explanations corrected; VS Code install now `dnf install --refresh code`; `dnf search` fields; avr-gcc 15.3 on Fedora; long commands split. House style: four kinds of statement; short tables kept on one page. TOC: §00.02 bullet 4 and §03.02 bullet 2 corrected.'] },
+  { cells: ['1.4', 'Nov 25, 2026', 'House style: American English spelling, month-first dates, comma thousands separators; applied to §00.01, §00.02, §01.01 and the TOC (e.g. Four Kinds of Behavior, A Catalog of Undefined Behavior). Proofreading of §01.01 (author’s pass and an independent review): ESP32-to-Uno logic levels corrected (2.64 V guaranteed, below the 3.0 V threshold; level shifter); ATmega328P VOH at 3 V is 2.3 V (HIGH margin 0.5 V); ENIAC and von Neumann history corrected (two-state elements grouped in tens); SRAM cell, SSD charge trap, voltage definition, single-event-upset mechanism and Figure 01.01-3 made precise; ESP32 variant and safety notes added to the hands-on. TOC: §01.01 builds on §00.01, §00.02. Converter: listings up to 50 lines and terminal blocks kept with what follows; long box paragraphs may break.'] },
+  { cells: ['1.5', 'Nov 25, 2026', 'Proofreading of §01.02, §01.03 and §01.04 (author’s pass and an independent review of each). §01.02: cross-references corrected (§09.01 and §02.03 for pure functions, §35.01 for latch-up, §36.03 for the pin circuitry); MOSFET blocking mechanism (two back-to-back junctions), the weak HIGH of nMOS, Shannon’s hindrance notation and the 74HC00’s buffered gates made precise; Figures 01.02-1 and 01.02-3 redrawn; expected hands-on output, a decoupling capacitor and an ESP32 note added. §01.03: §20.01 for file scope; Self-check 6 and Experiment 01.03-1 answers corrected; carry rows aligned; Listing 01.03-3 now measures true carry propagation (128 pairs, one in 512, travel all eight stages); flags described for processors that keep them (RISC-V and Xtensa keep none); AVR SUB flag rules sourced to the Instruction Set Manual; Figure 01.03-2 junction dot moved. §01.04: hands-on latch sketch corrected so that the power-up line shows the real race (pull-up resistors; HIGH written before OUTPUT); EEPROM wear time corrected to about 5.5 minutes (3.3 ms per write); `inc` acknowledged; ceramic resonator, hold time, scrubbing write-back, DDR4 temperature limit, MMU translation and cross-references (§13.05, §35.03, §37.03, §27.02) corrected; Figures 01.04-5, -6 and -8 redrawn. TOC: §01.04 builds on §01.02, §01.03, and its bullets now name metastability, DRAM and the compiler’s view of a variable; §39.02 gains a bullet on functions without side effects.'] },
+  { cells: ['1.6', 'Nov 25, 2026', 'Proofreading of §01.05 (author’s pass and an independent review). Cross-references corrected (§03.05 and §21.03 for relocation, §08.01 for character codes, §03.07, §36.05 and §16.06 for start-up code; the wrong §06.04 removed; §34.06 described as avoiding code injection, not preventing it); a broken promise that §01.06 would decode the reset vector removed. Technical corrections: memory is built from storage cells, not flip-flops; on the AVR, data becomes code only through SPM from the boot section; tests and jumps described without assuming flags (the Xtensa has none); instructions that touch data memory take two cycles; only SRAM1 (128 KB) of the ESP32 is on both buses; x86-64 traps on invalid opcodes; the reset vector shown is that of the plain C blink program, and start-up code calls main. Voyager 1 dates and the General Electric attribution made precise. Figures 01.05-1, -2 and -3 redrawn (Figure 01.05-2 now shows the instruction’s address field reaching memory). TOC: §01.05 builds on §01.02, §01.03, §01.04.'] },
+  { cells: ['1.7', 'Nov 25, 2026', 'Proofreading of §01.06 (author’s pass and an independent review); Chapters 00 and 01 are now fully proofread. Corrections: x × 10 computed as 2 × (x + 4x); the Apollo Guidance Computer’s program memory (about 70 KB) is larger than the Uno’s flash, not smaller; the example of two encodings is now a true one (`add %rdi,%rax` as 48 01 f8 or 48 03 c7); padding after `add8` includes a 1-byte nop; -Wconversion gives two warnings; the chapter summary no longer claims Figure 01.06-3 follows the chapter’s order; feedback gives latches, flip-flops and registers, stored charge gives larger memories. Made precise: the one-instruction-per-line principle (pseudo-instructions), the link between LDI and avr-gcc’s register conventions (labeled as inference), clr/inc for loading 1, cycle-exact timing against the resonator’s accuracy, reset through the Uno’s bootloader, Kathleen Booth’s 1947 report and David Wheeler’s role. Figures 01.06-1 and 01.06-2 enlarged. American spelling and comma thousands throughout.'] },
 ]));
 
 // ---------- document ----------

@@ -20,7 +20,7 @@
       },
       {
        "lvl": 0,
-       "text": "How claims are labelled: established fact, standard text, implementation behaviour, and the author's inference."
+       "text": "How claims are labeled: established fact, standard text, implementation behavior, and the author's inference."
       },
       {
        "lvl": 0,
@@ -52,7 +52,7 @@
       },
       {
        "lvl": 0,
-       "text": "The AVR toolchain (`avr-gcc`, `avr-libc`, `avrdude`) and the ESP32 toolchain (ESP-IDF), installed lightly on an 8 GB machine."
+       "text": "The AVR toolchain (`avr-gcc`, `avr-libc`, `avrdude`); the Arduino IDE with Espressif's ESP32 package for the hands-on projects; and why ESP-IDF is deferred to Chapter 38 on an 8 GB machine."
       },
       {
        "lvl": 0,
@@ -77,7 +77,7 @@
       {
        "ref": "01.01",
        "title": "Information as Physical States",
-       "builds": "§00.01",
+       "builds": "§00.01, §00.02",
        "bullets": [
         {
          "lvl": 0,
@@ -161,11 +161,11 @@
       {
        "ref": "01.04",
        "title": "Remembering: Latches, Registers and Memory",
-       "builds": "§01.02",
+       "builds": "§01.02, §01.03",
        "bullets": [
         {
          "lvl": 0,
-         "text": "Feedback creates memory: the SR latch, D latch and flip-flop; the clock."
+         "text": "Feedback creates memory: the SR latch, D latch and flip-flop; the clock; setup and hold times, and metastability."
         },
         {
          "lvl": 0,
@@ -177,7 +177,11 @@
         },
         {
          "lvl": 0,
-         "text": "SRAM, flash and EEPROM: how each physically holds a bit, and the ATmega328P's 32 KB / 2 KB / 1 KB."
+         "text": "SRAM, DRAM, flash and EEPROM: how each physically holds a bit, and the ATmega328P's 32 KB / 2 KB / 1 KB."
+        },
+        {
+         "lvl": 0,
+         "text": "Variables as memory cells: what the compiler makes of `count = count + 1` on the AVR and on x86-64."
         },
         {
          "lvl": 0,
@@ -189,7 +193,7 @@
       {
        "ref": "01.05",
        "title": "The Stored-Program Machine",
-       "builds": "§01.03, §01.04",
+       "builds": "§01.02, §01.03, §01.04",
        "bullets": [
         {
          "lvl": 0,
@@ -316,7 +320,7 @@
         },
         {
          "lvl": 0,
-         "text": "Observable behaviour, and the \"as-if\" rule."
+         "text": "Observable behavior, and the \"as-if\" rule."
         },
         {
          "lvl": 0,
@@ -331,16 +335,16 @@
       },
       {
        "ref": "02.04",
-       "title": "Four Kinds of Behaviour",
+       "title": "Four Kinds of Behavior",
        "builds": "§02.03",
        "bullets": [
         {
          "lvl": 0,
-         "text": "Defined, implementation-defined, unspecified and undefined behaviour, plus locale-specific behaviour."
+         "text": "Defined, implementation-defined, unspecified and undefined behavior, plus locale-specific behavior."
         },
         {
          "lvl": 0,
-         "text": "Why undefined behaviour exists: the diversity of hardware, and room for optimization."
+         "text": "Why undefined behavior exists: the diversity of hardware, and room for optimization."
         },
         {
          "lvl": 0,
@@ -352,10 +356,10 @@
         },
         {
          "lvl": 0,
-         "text": "The engineer's habit: always asking \"which kind of behaviour is this?\""
+         "text": "The engineer's habit: always asking \"which kind of behavior is this?\""
         }
        ],
-       "file": "02-Why-C-Exists-04-Four-Kinds-of-Behaviour.docx"
+       "file": "02-Why-C-Exists-04-Four-Kinds-of-Behavior.docx"
       },
       {
        "ref": "02.05",
@@ -455,7 +459,7 @@
         },
         {
          "lvl": 0,
-         "text": "The `gcc` *driver* and the separate programs it runs (`cpp`, `cc1`, `as`, `ld`), seen with `-v`."
+         "text": "The `gcc` *driver* and the separate programs it runs (`cc1`, which also does the preprocessing; `as`; `collect2` and `ld`), seen with `-v`."
         },
         {
          "lvl": 0,
@@ -507,7 +511,7 @@
         },
         {
          "lvl": 0,
-         "text": "The compiler as a translator that must preserve observable behaviour."
+         "text": "The compiler as a translator that must preserve observable behavior."
         }
        ],
        "file": "03-From-Source-to-Running-Program-04-Compiling-From-C-to-Assembly.docx"
@@ -700,7 +704,7 @@
        "bullets": [
         {
          "lvl": 0,
-         "text": "The hardware's overflow flag, set against C's undefined behaviour."
+         "text": "The hardware's overflow flag, set against C's undefined behavior."
         },
         {
          "lvl": 0,
@@ -712,7 +716,7 @@
         },
         {
          "lvl": 0,
-         "text": "The compiler options `-fwrapv` and `-ftrapv`, and the undefined-behaviour sanitizer."
+         "text": "The compiler options `-fwrapv` and `-ftrapv`, and the undefined-behavior sanitizer."
         },
         {
          "lvl": 0,
@@ -1397,7 +1401,7 @@
         },
         {
          "lvl": 0,
-         "text": "Why `i = i++ + ++i` is undefined behaviour."
+         "text": "Why `i = i++ + ++i` is undefined behavior."
         }
        ],
        "file": "09-Expressions-and-Evaluation-03-Order-of-Evaluation-and-Sequencing.docx"
@@ -1540,7 +1544,7 @@
         },
         {
          "lvl": 0,
-         "text": "Float-to-int truncation, and undefined behaviour when the value is out of range."
+         "text": "Float-to-int truncation, and undefined behavior when the value is out of range."
         },
         {
          "lvl": 0,
@@ -2263,7 +2267,7 @@
         },
         {
          "lvl": 0,
-         "text": "Behaviour in nested loops."
+         "text": "Behavior in nested loops."
         },
         {
          "lvl": 0,
@@ -3065,7 +3069,7 @@
         },
         {
          "lvl": 0,
-         "text": "Out-of-bounds access is undefined behaviour."
+         "text": "Out-of-bounds access is undefined behavior."
         },
         {
          "lvl": 0,
@@ -3483,7 +3487,7 @@
         },
         {
          "lvl": 0,
-         "text": "`strncpy`'s surprising behaviour."
+         "text": "`strncpy`'s surprising behavior."
         },
         {
          "lvl": 0,
@@ -3838,7 +3842,7 @@
         },
         {
          "lvl": 0,
-         "text": "In orbit: an example modelled on CCSDS (space data) packets."
+         "text": "In orbit: an example modeled on CCSDS (space data) packets."
         }
        ],
        "file": "28-Structures-06-Structures-for-Protocols-and-Telemetry.docx"
@@ -4073,7 +4077,7 @@
         },
         {
          "lvl": 0,
-         "text": "Why a mismatched format is undefined behaviour."
+         "text": "Why a mismatched format is undefined behavior."
         }
        ],
        "file": "31-Streams-and-Formatted-IO-03-How-Variadic-Functions-Work.docx"
@@ -4299,7 +4303,7 @@
      "sections": [
       {
        "ref": "34.01",
-       "title": "A Catalogue of Undefined Behaviour",
+       "title": "A Catalog of Undefined Behavior",
        "builds": "§33.03, §02.04",
        "bullets": [
         {
@@ -4307,7 +4311,7 @@
          "text": "Code that works at `-O0` and fails at `-O2`."
         }
        ],
-       "file": "34-Writing-Correct-C-01-A-Catalogue-of-Undefined-Behaviour.docx"
+       "file": "34-Writing-Correct-C-01-A-Catalog-of-Undefined-Behavior.docx"
       },
       {
        "ref": "34.02",
@@ -4774,6 +4778,10 @@
         {
          "lvl": 0,
          "text": "Inlining and link-time optimization (LTO)."
+        },
+        {
+         "lvl": 0,
+         "text": "What the compiler may do with functions that have no side effects."
         },
         {
          "lvl": 0,

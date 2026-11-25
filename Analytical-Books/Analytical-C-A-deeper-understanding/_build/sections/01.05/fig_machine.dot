@@ -1,0 +1,23 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.45, ranksep=0.75, dpi=200, newrank=true];
+  node [fontname="DejaVu Sans", fontsize=15, shape=box, style="rounded,filled", penwidth=1.4];
+  edge [color="#5A6270", penwidth=1.4, arrowsize=0.8, fontname="DejaVu Sans", fontsize=13, fontcolor="#5A6270"];
+  mem [label="memory: instructions and data, all as numbers", fillcolor="#E9ECF3", color="#1B2A4A", width=9, height=0.7];
+  subgraph cluster_cpu { label="processor"; labelloc="b"; fontname="DejaVu Sans"; fontsize=15; fontcolor="#1B2A4A"; color="#1B2A4A"; style="rounded";
+    subgraph cluster_cu { label="control unit"; labelloc="b"; fontname="DejaVu Sans"; fontsize=14; fontcolor="#8A5A00"; color="#8A5A00"; style="rounded,dashed";
+      pc [label="PC\nprogram counter", fillcolor="#FBF3E4", color="#8A5A00"];
+      ir [label="IR\ninstruction register", fillcolor="#FBF3E4", color="#8A5A00"];
+      dec [label="decoder:\nwhich operation?", fillcolor="#FBF3E4", color="#8A5A00"]; }
+    acc [label="accumulator\n(registers)", fillcolor="#F1ECF8", color="#5B3E96"];
+    alu [label="ALU\n(+ flags)", fillcolor="#EAF1FB", color="#1F5FAD"]; }
+  {rank=same; pc; ir; acc}
+  pc -> mem [label=" address of the\n next instruction"];
+  mem -> ir [label=" instruction"];
+  ir -> mem [label=" address field\n (for a data cell)", color="#8A5A00", fontcolor="#8A5A00"];
+  acc -> mem [dir=both, label=" data\n (load / store)"];
+  ir -> dec;
+  dec -> alu [label=" control signals", style=dashed];
+  dec -> acc [style=dashed];
+  acc -> alu; alu -> acc [label=" result"];
+  pc -> pc [label=" +1"];
+}

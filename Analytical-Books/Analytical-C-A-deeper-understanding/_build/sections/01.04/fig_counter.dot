@@ -1,0 +1,13 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.6, ranksep=0.7, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=14, shape=box, style="rounded,filled", penwidth=1.5];
+  edge [color="#5A6270", penwidth=1.4, arrowsize=0.75, fontname="DejaVu Sans", fontsize=13, fontcolor="#5A6270"];
+  reg [label="8-bit register\n(8 D flip-flops)\nholds count", fillcolor="#F1ECF8", color="#5B3E96", height=1.1];
+  add [label="adder\n(§01.03)\ncount + 1", fillcolor="#EAF1FB", color="#1F5FAD", height=1.1];
+  one [label="constant 1", shape=plaintext, style=""];
+  clk [label="clock", shape=plaintext, style="", fontcolor="#B42318"];
+  reg -> add [label=" Q: present value"];
+  one -> add;
+  add -> reg [label=" D: next value", constraint=false];
+  clk -> reg [color="#B42318", label=" each rising edge:\n D is copied to Q", fontcolor="#B42318"];
+}

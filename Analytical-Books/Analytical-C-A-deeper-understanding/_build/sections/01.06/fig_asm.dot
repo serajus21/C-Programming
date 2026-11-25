@@ -1,0 +1,12 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.4, ranksep=0.55, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=14, shape=box, style="rounded,filled", penwidth=1.4];
+  edge [color="#5A6270", penwidth=1.4, arrowsize=0.75, fontname="DejaVu Sans", fontsize=13, fontcolor="#5A6270"];
+  src [label="source text\l\lloop:  LOAD sum\l       ADD  n\l       ...\l       JUMP loop\l", fillcolor="#F4F5F7", color="#5A6270", fontname="DejaVu Sans Mono", fontsize=13];
+  p1 [label="pass 1\ncount addresses,\nrecord each label", fillcolor="#FBF3E4", color="#8A5A00"];
+  sym [label="symbol table\l\lloop → 0\ldone → 8\ln    → 24\lsum  → 25\lone  → 26\l", fillcolor="#FFFFFF", color="#8A5A00", fontname="DejaVu Sans Mono", fontsize=13];
+  p2 [label="pass 2\nlook up each name,\nencode each line", fillcolor="#EAF1FB", color="#1F5FAD"];
+  out [label="machine code\n\n0x39\n0x78\n...\n0xA0", fillcolor="#E9ECF3", color="#1B2A4A", fontname="DejaVu Sans Mono", fontsize=13];
+  src -> p1 -> sym -> p2 -> out;
+  src -> p2 [style=dashed, constraint=false, label="read again"];
+}

@@ -1,0 +1,13 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.3, ranksep=0.32, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=11.5, shape=box, style="rounded,filled", penwidth=1.4, width=4.2];
+  edge [color="#5A6270", penwidth=1.4, arrowsize=0.75, fontname="DejaVu Sans", fontsize=10.5, fontcolor="#5A6270"];
+  c [label="C:   result = a + b;", fillcolor="#EAF5EA", color="#2E7D32", fontname="DejaVu Sans Mono"];
+  a [label="assembly:   ldi r24, 0x0D   /   sts 0x0100, r24", fillcolor="#FBF3E4", color="#8A5A00", fontname="DejaVu Sans Mono"];
+  m [label="machine code:   8D E0   80 93 00 01", fillcolor="#EAF1FB", color="#1F5FAD", fontname="DejaVu Sans Mono"];
+  f [label="flash cells: trapped charge on floating gates (§01.04)", fillcolor="#E9ECF3", color="#1B2A4A"];
+  v [label="instruction register: voltages on wires (§01.05)", fillcolor="#F1ECF8", color="#5B3E96"];
+  g [label="decoder and ALU: transistors switching (§01.02, §01.03)", fillcolor="#F4F5F7", color="#5A6270"];
+  c -> a [xlabel="compiler  "]; a -> m [xlabel="assembler  "]; m -> f [xlabel="avrdude + bootloader  "];
+  f -> v [xlabel="fetch  "]; v -> g [xlabel="decode, execute  "];
+}
