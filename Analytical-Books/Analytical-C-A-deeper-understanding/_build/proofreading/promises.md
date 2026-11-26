@@ -7,14 +7,14 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §00.01 -> §16.03: the 0.05 loop from the opening, with exact stored values.
 - §00.01 -> §07.08: the Patriot (Dhahran, 1991) 24-bit fixed-point timing error, worked through arithmetically.
 - §00.01 -> §04.01: binary and hexadecimal notation (0b1010, 0x2F) explained fully.
-- §00.01 -> §02.05: the editions C99, C11, C17, C23 and how they are named.
+- §00.01 -> §02.05: the editions C99, C11, C17, C23 and how they are named. KEPT (§02.05).
 - §00.02 -> Chapter 03 (§03.06 or §03.07): why the default output name is a.out (historical reasons).
-- §00.02 -> Chapter 03: the order cc1 -> as -> collect2/ld, and why it must be this order.
-- §00.02 -> §02.06: hosted vs freestanding environments.
+- §00.02 -> Chapter 03: the order cc1 -> as -> collect2/ld, and why it must be this order. KEPT (§03.02).
+- §00.02 -> §02.06: hosted vs freestanding environments. KEPT (§02.06).
 - §00.02 -> Chapter 05 (§05.03): why int is 2 bytes on the Uno.
 - §00.02 -> Chapter 36: every line of the C blink program; leaving the Arduino IDE behind.
 - §00.02 -> Chapter 38: re-check the ESP-IDF installation steps against Espressif's documentation before use.
-- §00.02 -> §32.05: first real use of strace.
+- §00.02 -> §32.05: first real use of strace. UPDATED (§03.01): strace was first used, briefly, in §03.01 (one write call); §32.05 treats it in depth.
 
 ## Made in Chapter 01
 - §01.01 -> §36.03: how the Schmitt trigger at each digital input works (hysteresis), "what happens electrically at the pin".
@@ -26,7 +26,7 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §01.02 -> §12.02: short-circuit evaluation with side effects; De Morgan's laws in C conditions.
 - §01.02 -> §13.01: the bitwise operators &, |, ^ and ~ as gates applied to every bit.
 - §01.02 -> §09.01: side effects, linked back to combinational logic as "pure functions".
-- §01.02 -> §02.03, §39.02: what the as-if rule lets a compiler do with functions that have no side effects (TOC bullet added to §39.02).
+- §01.02 -> §02.03, §39.02: what the as-if rule lets a compiler do with functions that have no side effects (TOC bullet added to §39.02). KEPT for §02.03 (§02.03); §39.02 part still open.
 - §01.02 -> §35.01: single-event latch-up, and current-sensing power cycling.
 - §01.02 -> §36.03: the pin circuitry the ATmega328P datasheet actually draws.
 - §01.03 -> §04.01, §04.02, §04.03: binary notation; unsigned arithmetic defined modulo 2^n; two's complement.
@@ -50,7 +50,7 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §01.05 -> §27.02: pages, per-page permissions, what a segmentation fault really is.
 - §01.05 -> §03.07, §36.05, §16.06: reset vector -> start-up code -> main; Arduino's main calling setup().
 - §01.05 -> §14.02, §15.02, §16.09, §16.06: if/while/for as tests and conditional jumps; for (;;) as a backward jump.
-- §01.05 -> §02.03, §39.02: the as-if rule; why a + b became a constant.
+- §01.05 -> §02.03, §39.02: the as-if rule; why a + b became a constant. KEPT for §02.03 (§02.03); §39.02 part still open.
 - §01.05 -> §36.04: volatile (Hands-on A).
 - §01.05 -> §03.05, §21.03: relocation.
 - §01.05 -> §08.01: character codes (13 = carriage return).
@@ -66,7 +66,91 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §01.06 -> §19.03: avr-gcc's calling convention and register rules.
 - §01.06 -> §39.03: instructions only assembly can reach; inline assembly.
 - §01.06 -> Chapter 35: how modern flight software is written, with sources.
-- §01.06 -> Chapter 02: the origins of C.
+- §01.06 -> Chapter 02: the origins of C. KEPT (§02.01).
 - §01.06 -> Chapter 10: why a + b on uint8_t is computed as int; conversion warnings.
 - §01.06 -> Chapters 23, 25, 31: arrays, strings, strcmp, sscanf.
-- §01.06 -> §02.03, §39.02: what the optimizer is permitted to do (-O0 vs -O2).
+- §01.06 -> §02.03, §39.02: what the optimizer is permitted to do (-O0 vs -O2). KEPT for §02.03 (§02.03); §39.02 part still open.
+
+## Made in Chapter 02
+- §02.01 -> §02.02: the price of C's freedom (trusting the programmer, no checks); C's philosophy of adopting the machine's natural sizes. KEPT (§02.02).
+- §02.01 -> §02.05: the standards from C89/C90 to C23 (also promised by §00.01). KEPT (§02.05).
+- §02.01 -> §02.06: why a program with no operating system needs the UART lines of steps.c (hosted vs freestanding). KEPT (§02.06).
+- §02.01 -> §05.02, §05.03: CHAR_BIT and the meaning of "byte"; int/long/pointer sizes across machines.
+- §02.01 -> §06.02, §06.04: sizeof; alignment (the laptop's int at multiples of 4, the AVR's at odd addresses).
+- §02.01 -> Chapter 07: avr-gcc 7.3's 4-byte double, which does not meet the standard's precision requirement for double.
+- §02.01 -> §19.02, §19.03, §19.04: calling conventions as the meeting point between languages; the word "auto".
+- §02.01 -> §22.01, §22.05: the preprocessor's history; #ifdef.
+- §02.01 -> Chapter 24 (§24.05, §24.06): converting an integer to a pointer (when it is meaningful); pointer steps scaled by the element size; array names converted to pointers.
+- §02.01 -> §27.02: why the laptop's addresses change on every run (address-space randomization). CHECK at proofreading: §27.02's TOC bullets do not yet name randomization.
+- §02.01 -> §27.03: the AVR stack near 0x08FF, the top of SRAM.
+- §02.01 -> Chapter 28: structures. Chapter 34: static analyzers (lint's descendants).
+- §02.01 -> §31.06, §37.04: printf connected to the UART (retargeting); the UART at register level (corrected from "Chapter 36" at review).
+- §02.01 -> §06.06: const (arrived with the 1989 standard).
+- §02.01 -> Chapter 08: character codes (octal 150 = h).
+- §02.01 -> Chapter 39 (§39.06): designing a processor that a language must target.
+- §02.01 -> §35.02: Holzmann's Power of Ten rules, with full sources.
+- §02.01 -> §39.04: sketches are C++. §39.05: a compiler's front and back ends opened up.
+- §02.02 -> §02.04: undefined, implementation-defined and unspecified behavior in full (overrun.c giving 7 at -O0 and 1234 at -O2). KEPT (§02.04).
+- §02.02 -> §02.06: hosted vs freestanding made precise (avr-gcc on the bare ATmega328P reports itself hosted). KEPT (§02.06).
+- §02.02 -> §36.04, §36.05: volatile; the start-up code that runs before main.
+- §02.02 -> Chapter 19, Chapter 26: stack storage; malloc and free.
+- §02.02 -> Chapter 28: flexible array members (why -fsanitize=bounds skips a trailing array; -fstrict-flex-arrays).
+- §02.02 -> Chapter 34: defending against undefined behavior; sanitizers and static analysis.
+- §02.02 -> §35.02, §35.04: MISRA C and the Power of Ten rules with reasons; bounded stack use (static stack analysis).
+- §02.02 -> §04.05, §10.05: the Ariane 5 conversion (also promised by §01.03).
+- §02.03 -> §02.04: the four kinds of behavior; why undefined behavior exists (overrun.c's 1234 explained); unspecified orders that need not be documented or consistent. KEPT (§02.04).
+- §02.03 -> §09.01, §09.03, §09.05: side effects in expressions; order of evaluation (f() + g()); constant folding.
+- §02.03 -> §03.04: gcc -S, objdump -d and optimization levels.
+- §02.03 -> §31.01: buffering and the input/output dynamics of interactive devices (prompts before input).
+- §02.03 -> §36.04: volatile proved in the assembly, and what volatile does not promise.
+- §02.03 -> Chapter 37, §37.02: interrupts setting flags; how Arduino's delay() works (volatile reads of a hardware timer).
+- §02.03 -> §35.03: memory scrubbing; triple modular redundancy in software (with the twice.c lesson).
+- §02.03 -> §34.01: code that changes between -O0 and -O2, including loops assumed to terminate (C23 §6.8.5). §34.06: secure erasure (explicit_bzero, memset_explicit).
+- §02.03 -> §39.02: GCC's pure and const attributes. CHECK at proofreading: confirm §39.02's TOC bullets name them.
+- §02.03 -> §39.03: writing a critical part in assembly. §20.03: static (internal linkage). §21.06: position-independent code. §19.02: x86-64 calling rules.
+- §02.03 -> §02.04 (implicit): what counts as a volatile access is implementation-defined; KEPT (§02.04 points to GCC's "Qualifiers" page).
+- §02.04 -> §05.02, §05.03: <limits.h> and <float.h> as records of implementation choices.
+- §02.04 -> §06.05: indeterminate values; reading an uninitialized automatic variable.
+- §02.04 -> §09.03: indeterminately sequenced vs unsequenced (i++ + i++, i = i++ + 1).
+- §02.04 -> Chapter 10: integer promotions (uint16_t * uint16_t overflowing as int on the laptop but not on the AVR).
+- §02.04 -> §19.02: the ABI and calling rules. §27.03: the ATmega328P memory map (registers r0-r31 at data addresses 0-31).
+- §02.04 -> §31.01: buffered output lost when a program is killed (divzero.c redirected to a file).
+- §02.04 -> Chapter 34 (§34.01): sanitizers (-fsanitize=undefined, -fsanitize=address); the catalogue of undefined behavior; -fwrapv and -fno-delete-null-pointer-checks as policies.
+- §02.04 -> §35.02: MISRA C's rules on undefined behavior.
+- §02.03 -> §02.05 (implicit): why explicit_bzero failed under -std=c23 (__STRICT_ANSI__ and GCC 14's implicit-declaration error). KEPT (§02.05).
+- §02.05 -> §05.04: exact-width types (optional, provided wherever the machine has the widths). §05.05: bool as a C23 keyword.
+- §02.05 -> §06.04: _Alignas/_Alignof/alignas. Chapter 08: characters, wide characters, encodings.
+- §02.05 -> §18.04: prototypes, old-style declarations, () vs (void) through C17 and in C23.
+- §02.05 -> §19.02: where a missing argument comes from (Listing 02.05-1's garbage value). §27.02: address randomization (CHECK still open).
+- §02.05 -> §22.01, §22.05: predefined macros, #if/#elif/defined, __has_include, __has_c_attribute.
+- §02.05 -> Chapter 38: C11 memory model, atomics and threads.
+- §02.05 -> §39.04: sketches are C++; extern "C" and name mangling; __cplusplus.
+- §02.05 -> book-wide rule: AVR listings keep to C11 unless marked; the edition that introduced a feature is named at its first appearance; C23-only listings say so and show the older form.
+- §02.06 -> §03.06: the startup files (Scrt1.o, crti.o, crtbeginS.o, crtendS.o, crtn.o). §03.07: loading and running in detail (execve, ld.so, _start -> __libc_start_main -> main; the AVR journey to main; main returning on a microcontroller) without repeating §02.06's overview.
+- §02.06 -> §19.02: stack alignment at _start. §20.02: static storage zeroed. §21.05: archive extraction (a sketch's own main). §21.06: ld.so. §21.07: frameworks that own main (Arduino).
+- §02.06 -> §25.07: argc/argv layout. §27.02: segmentation faults. §27.03/§27.04: memory map, .data copy and linker scripts. §32.05: printf down to system calls. §33.02: SIGSEGV.
+- §02.06 -> §31.06: connecting printf to the UART on the AVR (the mechanism behind steps.c). §37.04: the UART at register level.
+- §02.06 -> §36.05: writing a minimal startup; what init() adds (timers, sei()); Optiboot only mentioned in §02.06. §37.02: millis() and delay() without init().
+- §02.06 -> §38.03: FreeRTOS tasks; app_main as another framework that owns main. §39.03: inline assembly (the syscall asm of bare.c).
+- §03.01 -> §03.02: the phases of translation (comments replaced by a space in phase 3); preprocessing tokens becoming tokens; -c, -E and -S.
+- §03.01 -> §03.03: the -E output of hello.c (573 lines on the reader's Fedora); header (declarations) against library (definitions).
+- §03.01 -> §03.04: the seven instructions of main (non-PIE on Fedora: mov $0x4004b0,%edi; call puts), and why Ubuntu's PIE build differs (endbr64, lea ...(%rip), 30 bytes).
+- §03.01 -> §03.05: the symbol table recording the source file's name; the string "hello, world" (13 bytes, newline removed for puts) in .rodata.
+- §03.01 -> §03.06: the address of main (0x401136) chosen by the linker; libc.so.6 and the U symbols; the name a.out still promised (§00.02).
+- §03.01 -> §03.07: the exit status was treated in §03.01 (least significant byte, $?, && and ||, 126/127/128+N); §03.07 should refer to it, not repeat it.
+- §03.01 -> §03.08: reading the messages of noinclude.c, glued.c and indent.c.
+- §03.01 -> §11.03: x+++y read as x++ + y (maximal munch). §15.01: an if controls one statement; the book's braces rule from Chapter 15 on. §35.02: coding standards requiring braces.
+- §03.01 -> §18.04: implicit declaration and why a wrong guess fails at run time; prototypes. §21.02: include guards (GCC skips a guarded header without reopening it). §22.05: #if 0 for disabling code.
+- §03.01 -> §25.01/§25.02: why C ends strings with a null character; string literals in read-only memory; on the AVR literals cost SRAM (with §27.03).
+- §03.01 -> §27.02: page alignment and padding in the executable (about 6 KB of zero bytes in hello).
+- §03.01 -> §31.01: buffering (line-buffered terminal, fully buffered file/pipe). §32.04/§34.03: detecting a failed write with fflush/fclose; SIGPIPE on a closed pipe.
+- §03.01 -> §34.02: assert turning names into text. §39.02: printf replaced by puts when the result is unused; inlining of a static function (avr_hello.c).
+- §03.02 -> §03.03: line markers (# 5 "splice.c") in -E output; the header search list printed by gcc -v; #pragma lines kept by -E.
+- §03.02 -> §03.06: crt1.o/crtbegin.o (non-PIE, Fedora) against Scrt1.o/crtbeginS.o (PIE, Ubuntu); the link command built by hand.
+- §03.02 -> §05.06: C23 digit separator ' (also part of the preprocessing-number rule). §08.01/§08.03: character codes; universal character names.
+- §03.02 -> §21.01/§21.08: separate compilation, relinking after a change. §22.04: line continuation in long macros. §22.06: #pragma.
+- §03.02 -> §36.01: the avrdude command for uploading a .hex file. §39.02: link-time optimization (-flto; collect2's -plugin/lto-wrapper).
+- §03.02 (rework) -> §03.05: R_X86_64_PLT32 and its -0x4 addend; the relocation as a hole with a note. §03.07: the dynamic loader filling the puts hole (at start or at first call, lazy binding).
+- §03.02 (rework) -> §03.04/§39.05: what the compiler does between parsing and code, starting from -fdump-tree-original; where printf becomes puts (GCC's "lower" pass).
+- §03.02 (rework) -> §22.04: the ## operator (replacing a/**/b pasting). §22.05: #if 0 and preprocessing tokens in skipped text. §24.06/§10.05: "A"[0] and the cast to unsigned char.
+- §03.02 (rework) -> §21.04: the linker's search. §39.03: inline assembly as a source of assembler errors. §11.03: a+++++b (the Rationale's comparison for 0x123E+1).

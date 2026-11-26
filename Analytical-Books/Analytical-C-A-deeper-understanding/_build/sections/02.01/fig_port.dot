@@ -1,0 +1,24 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.22, ranksep=0.45, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", penwidth=1.3, fontcolor="#1B2A4A"];
+  edge [color="#5A6270", penwidth=1.3, arrowsize=0.7];
+  src [label="one C source file\n(the same text\nfor every machine)", fillcolor="#EAF5EA", color="#2E7D32", penwidth=2];
+  fe  [label="pcc front end:\nreads and checks C,\nbuilds an internal form", fillcolor="#F4F5F7", color="#5A6270"];
+  fe2 [label="GCC front end:\nreads and checks C,\nbuilds an internal form", fillcolor="#F4F5F7", color="#5A6270"];
+  subgraph cluster_then { label="Johnson's pcc, late 1970s"; fontname="DejaVu Sans"; fontsize=11; fontcolor="#8A93A3"; color="#C9CED8"; style="rounded,dashed";
+    b1 [label="back end: Honeywell 6000", fillcolor="#EAF1FB", color="#1F5FAD"];
+    b2 [label="back end: IBM System/370", fillcolor="#EAF1FB", color="#1F5FAD"];
+    b3 [label="back end: Interdata 8/32", fillcolor="#EAF1FB", color="#1F5FAD"];
+    b4 [label="back end: VAX-11/780", fillcolor="#EAF1FB", color="#1F5FAD"];
+  }
+  subgraph cluster_now { label="GCC, in this book"; fontname="DejaVu Sans"; fontsize=11; fontcolor="#8A93A3"; color="#C9CED8"; style="rounded,dashed";
+    n1 [label="back end: x86-64 (laptop)", fillcolor="#FBF3E4", color="#8A5A00"];
+    n2 [label="back end: AVR (Uno)", fillcolor="#FBF3E4", color="#8A5A00"];
+    n3 [label="back end: Xtensa (ESP32)", fillcolor="#FBF3E4", color="#8A5A00"];
+  }
+  note [shape=note, style="filled", fillcolor="#FFFFFF", color="#8A93A3", fontsize=10,
+        label="moving Unix to a new machine meant rewriting:\n• the compiler's back end (instruction choice)\n• the small part of the kernel in assembly,\n  and the device drivers\n• whatever programs assumed\n  about sizes and byte order"];
+  src -> fe;
+  fe -> b1; fe -> b2; fe -> b3; fe -> b4; src -> fe2; fe2 -> n1; fe2 -> n2; fe2 -> n3;
+  b4 -> note [style=invis];
+}

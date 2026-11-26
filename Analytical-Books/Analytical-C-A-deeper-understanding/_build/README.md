@@ -27,3 +27,12 @@ GCC 14.2.0 (`-std=c23 -Wall -Wextra -pedantic`) and avr-gcc 7.3.0 / avr-libc 2.0
 AVR programs that need a chip are run on the simulator simavr 1.6 (`simavr -m atmega328p -f 16000000 prog.elf`);
 for Arduino sketches a minimal stand-in for `Serial` writing to the UART is used (see `sections/01.03/mock_main.cpp`).
 The reader's machine: Fedora 44, GCC 16.2.1.
+
+## The lab runner (from Chapter 03, November 26, 2026)
+Programs are now run on the reader's own machine: Fedora 45, GCC 16.2.1, glibc 2.44, binutils 2.47,
+Clang 23.1.5, avr-gcc 15.3.0 / avr-libc 2.2.1 (Fedora has no simavr package, so AVR simulation stays in
+the author's workspace). The runner is `_Analytical-C-Lab/_runner/`: a systemd user path unit
+(`analytical-c-lab.path`) watches `queue/`; each `*.sh` job placed there is run once with bash from
+`_Analytical-C-Lab/`, and its combined output and exit status go to `done/NAME.out` and `done/NAME.meta`.
+Setup: `setup-runner.sh`; stop: `systemctl --user disable --now analytical-c-lab.path`.
+Each section's Fedora build products are kept in `sections/CC.SS/fedora/`.

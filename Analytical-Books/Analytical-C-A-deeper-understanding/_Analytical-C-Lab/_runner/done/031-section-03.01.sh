@@ -1,0 +1,45 @@
+# Job 03.01: run every program of §03.01 on the reader's Fedora.
+set -u
+S="$PWD/../_build/sections/03.01"
+F="$S/fedora"; mkdir -p "$F"; cd "$F" || exit 1
+cp ../*.c . 
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+O="-std=c23 -Wall -Wextra -pedantic"
+echo "LANG=${LANG:-unset}"
+run "gcc --version | head -1"
+run "gcc $O hello.c -o hello"
+run "./hello"
+run "ls -l hello.c hello"
+run "size hello"
+run "nm hello | grep -E ' (main|puts|printf)'"
+run "objdump -d --no-show-raw-insn hello | sed -n '/<main>:/,/ret/p'"
+run "gcc $O -c hello.c -o hello.o && objcopy -O binary -j .text hello.o main.bin && ls -l main.bin"
+run "strace -o write.trace -e trace=write ./hello; cat write.trace"
+run "gcc -std=c23 -E hello.c | wc -l"
+run "gcc -std=c23 -E hello.c | grep -n 'printf (const'"
+run "gcc -std=c23 -E hello.c | tail -8"
+run "ls /usr/include/stdio.h && wc -l /usr/include/stdio.h"
+run "gcc -std=c23 -H -fsyntax-only hello.c 2>&1 | head -40"
+run "gcc $O count.c -o count && ./count"
+run "gcc $O status.c -o status"
+for a in "" 3 300 -1 256; do run "./status $a; echo \$?"; done
+run "./hello && echo succeeded"
+run "./status 1 && echo succeeded || echo failed"
+for f in noinclude glued voidmain comments indent; do run "gcc $O $f.c -o $f"; done
+run "./comments"
+run "./indent; echo \$?"
+run "gcc $O -S hello.c -o hello.s && gcc $O -S squashed.c -o squashed.s && gcc $O -S layout.c -o layout.s; diff hello.s squashed.s; diff hello.s layout.s"
+run "cat hello.s"
+run "gcc $O -c squashed.c -o squashed.o && objcopy -O binary -j .text squashed.o sq.bin && cmp main.bin sq.bin && echo same-machine-code"
+run "command -v clang && clang --version | head -1"
+run "clang -std=c23 -fsyntax-only -Xclang -dump-tokens hello.c 2>&1 | wc -l"
+run "clang -std=c23 -fsyntax-only -Xclang -dump-tokens hello.c 2>&1 | grep 'hello.c:'"
+run "printf 'int main(void){ /* nested /* comment */ */ return 0; }\n' > nest.c; gcc $O nest.c -o nest"
+run "printf '#include <stdio.h>\nint main(void){ int n = printf(\"hello, world\\\\n\"); return n; }\n' > retn.c; cat retn.c; gcc $O retn.c -o retn && ./retn; echo \$?"
+run "gcc $O hello.c; ls -l a.out; ./a.out"
+run "ldd hello"
+run "avr-gcc --version | head -1"
+for f in avr_hello avr_verbose; do run "avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic $f.c -o $f.elf && avr-objcopy -O ihex -R .eeprom $f.elf $f.hex"; done
+run "ls -l avr_hello.c avr_verbose.c avr_hello.elf avr_verbose.elf avr_hello.hex avr_verbose.hex; cmp avr_hello.hex avr_verbose.hex && echo HEX-IDENTICAL; avr-size avr_hello.elf avr_verbose.elf"
+run "avr-objdump -s -j .data avr_hello.elf | tail -2"
+run "command -v simavr && timeout 2 stdbuf -o0 -e0 simavr -m atmega328p -f 16000000 avr_hello.elf"

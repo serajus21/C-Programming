@@ -1,0 +1,16 @@
+int 'int' Loc=<hello.c:5:1> [StartOfLine]
+identifier 'main' Loc=<hello.c:5:5> [LeadingSpace]
+l_paren '(' Loc=<hello.c:5:9> 
+void 'void' Loc=<hello.c:5:10> 
+r_paren ')' Loc=<hello.c:5:14> 
+l_brace '{' Loc=<hello.c:5:16> [LeadingSpace]
+identifier 'printf' Loc=<hello.c:6:5> [StartOfLine] [LeadingSpace]
+l_paren '(' Loc=<hello.c:6:11> 
+string_literal '\"hello, world\\n\"' Loc=<hello.c:6:12> 
+r_paren ')' Loc=<hello.c:6:28> 
+semi ';' Loc=<hello.c:6:29> 
+return 'return' Loc=<hello.c:7:5> [StartOfLine] [LeadingSpace]
+numeric_constant '0' Loc=<hello.c:7:12> [LeadingSpace]
+semi ';' Loc=<hello.c:7:13> 
+r_brace '}' Loc=<hello.c:8:1> [StartOfLine]
+eof '' Loc=<hello.c:8:2> 

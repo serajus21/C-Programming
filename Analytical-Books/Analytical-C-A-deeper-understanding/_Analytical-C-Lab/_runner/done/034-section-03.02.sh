@@ -1,0 +1,32 @@
+# Job 03.02: run every program of §03.02 on the reader's Fedora.
+set -u
+S="$PWD/../_build/sections/03.02"
+F="$S/fedora"; mkdir -p "$F"; cd "$F" || exit 1
+cp ../*.c .
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+O="-std=c23 -Wall -Wextra -pedantic"
+run "gcc $O splice.c -o splice && ./splice"
+run "gcc -std=c23 -E splice.c | tail -6"
+run "gcc $O trap.c -o trap; ./trap; echo \$?"
+run "gcc $O ppnum.c -o ppnum"
+run "gcc $O escape.c -o escape && ./escape"
+run "gcc -std=c23 -E escape.c | tail -6"
+run "gcc $O -S escape.c -o escape.s && grep -E 'string|ascii' escape.s"
+run "printf 'int main(void){ return sizeof \"\\\\x41BC\"; }\n' > one.c; cat one.c; gcc $O one.c -o one; ./one; echo \$?"
+run "gcc $O -c greet.c && ls -l greet.o && gcc greet.o -o greet"
+run "printf 'int main(void){ int x = ; return x; }\n' > syn.c; gcc $O syn.c -o syn"
+run "printf 'int main(void){ int x = \"five\"; return x; }\n' > sem.c; gcc $O sem.c -o sem"
+run "gcc -v $O hello.c -o hello 2>&1 | grep -n -E '/cc1 | as |/collect2 |^Target|^gcc version|^Configured'"
+run "gcc -v $O hello.c -o hello 2>&1 | wc -l"
+run "gcc -### $O hello.c -o hello 2>&1 | grep -E '^ \"'"
+run "gcc -### -E hello.c 2>&1 | grep -E '^ \"'"
+run "gcc $O -save-temps hello.c -o hello && ls -l hello.c hello.i hello.s hello.o hello && file hello.c hello.i hello.s hello.o hello"
+run "head -5 hello.i"
+run "CC1=\$(gcc -print-prog-name=cc1); \$CC1 -quiet -std=c23 hello.c -o byhand.s && as byhand.s -o byhand.o && ls -l byhand.s byhand.o && gcc byhand.o -o byhand && ./byhand"
+run "gcc -E hello.c -o h.i && gcc -S h.i -o h.s && gcc -c h.s -o h.o && gcc h.o -o h && ./h"
+run "gcc -c hello.c && gcc -c greet.c && ls *.o"
+run "time (gcc $O -E hello.c -o /dev/null)"
+run "avr-gcc -v -mmcu=atmega328p -std=c11 -Os avr_hello.c -o avr_hello.elf 2>&1 | grep -E '/cc1 | as |/collect2 |avr-as|^gcc version' | cut -c1-200"
+run "avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic -save-temps avr_hello.c -o avr_hello.elf && avr-objcopy -O ihex -R .eeprom avr_hello.elf avr_hello.hex && ls -l avr_hello.c avr_hello.i avr_hello.s avr_hello.o avr_hello.elf avr_hello.hex && file avr_hello.o avr_hello.elf avr_hello.hex"
+run "head -3 avr_hello.hex; tail -2 avr_hello.hex"
+run "gcc -print-prog-name=cc1; gcc -print-prog-name=as; which as ld; ls -l \$(which ld); readlink -f \$(which ld)"

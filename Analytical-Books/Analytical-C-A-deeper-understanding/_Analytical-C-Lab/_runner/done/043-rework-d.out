@@ -1,0 +1,20 @@
+== first dump mentioning puts:
+hello.c.011t.lower
+hello.c.014t.eh
+hello.c.016t.cfg
+== dumps mentioning printf (call):
+hello.c.007t.gimple
+hello.c.010t.omplower
+== ebcdic block
+$ cat ebc.c nl.c hx.c
+int main(void){ return (unsigned char)"A"[0]; }
+int main(void){ return (unsigned char)"\n"[0]; }
+int main(void){ return (unsigned char)"\x41"[0]; }
+$ gcc -std=c23 ebc.c -o ebc && ./ebc; echo $?
+65
+$ gcc -std=c23 -fexec-charset=IBM1047 ebc.c -o ebc2 && ./ebc2; echo $?
+193
+$ gcc -std=c23 -fexec-charset=IBM1047 nl.c -o nl && ./nl; echo $?
+37
+$ gcc -std=c23 -fexec-charset=IBM1047 hx.c -o hx && ./hx; echo $?
+65

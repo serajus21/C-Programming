@@ -1,0 +1,11 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.3, ranksep=0.18, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", penwidth=1.4, width=7.2, fontcolor="#1B2A4A"];
+  edge [style=invis];
+  p [label=<<b>You, the programmer</b><br/>keep every index in range, every pointer valid, every value within its type;<br/>know which of your assumptions depend on the machine>, fillcolor="#FCEBEB", color="#B3261E"];
+  l [label=<<b>The C language: a small core</b><br/>types, operators, statements; about sixty keywords;<br/>no input or output statements, no run-time checks, no garbage collector>, fillcolor="#EAF5EA", color="#2E7D32"];
+  s [label=<<b>The standard library: separate, and paid for only when used</b><br/>printf, strlen, malloc, sqrt, ... ordinary functions written (mostly) in C>, fillcolor="#EAF1FB", color="#1F5FAD"];
+  i [label=<<b>The implementation: one compiler and library for one machine</b><br/>chooses what the standard leaves open (sizes of int and long, the sign of plain char,<br/>&gt;&gt; on negative numbers, ...), and must document its choices>, fillcolor="#FBF3E4", color="#8A5A00"];
+  m [label=<<b>The machine</b><br/>its instructions, registers and memory: AVR, x86-64, Xtensa>, fillcolor="#F4F5F7", color="#5A6270"];
+  p -> l -> s -> i -> m;
+}

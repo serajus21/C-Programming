@@ -1,0 +1,214 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c greet.c && objdump -dr greet.o
+
+greet.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <main>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	e8 00 00 00 00       	call   9 <main+0x9>
+			5: R_X86_64_PLT32	greet-0x4
+   9:	b8 00 00 00 00       	mov    $0x0,%eax
+   e:	5d                   	pop    %rbp
+   f:	c3                   	ret
+[exit 0]
+
+$ cat loop.c; gcc -std=c23 -S loop.c -o - | grep -E 'jmp|jl|jle|jg|\.L[0-9]+:'
+int f(int n){ int s = 0; for (int i = 0; i < n; ++i) s += i; return s; }
+	jmp	.L2
+.L3:
+.L2:
+	jl	.L3
+[exit 0]
+
+$ gcc -std=c23 -c loop.c && objdump -d loop.o | grep -E 'jmp|jl|jle|jg'; objdump -r loop.o
+  15:	eb 0a                	jmp    21 <f+0x21>
+  27:	7c ee                	jl     17 <f+0x17>
+
+loop.o:     file format elf64-x86-64
+
+RELOCATION RECORDS FOR [.eh_frame]:
+OFFSET           TYPE              VALUE
+0000000000000020 R_X86_64_PC32     .text
+
+
+[exit 0]
+
+$ gcc -dumpspecs | grep -A1 '^\*startfile:' | cut -c1-400
+*startfile:
+%{!mandroid|tno-android-ld:%{shared:;      pg|p|profile:%{static-pie:grcrt1.o%s;:gcrt1.o%s};      static:crt1.o%s;      static-pie:rcrt1.o%s;      pie:Scrt1.o%s;      :crt1.o%s} crti.o%s    %{static:crtbeginT.o%s;      shared|static-pie|pie:crtbeginS.o%s;      :crtbegin.o%s}    %{fvtable-verify=none:%s;      fvtable-verify=preinit:vtv_start_preinit.o%s;      fvtable-verify=std:vtv_start.o%s} %{fop
+[exit 0]
+
+$ avr-gcc -v -mmcu=atmega328p -c avr_hello.c -o /dev/null 2>&1 | grep -i 'specs'
+Using built-in specs.
+Reading specs from /usr/lib/gcc/avr/15.3.0/device-specs/specs-atmega328p
+COLLECT_GCC_OPTIONS='-v'  '-c' '-o' '/dev/null' '-mdouble=32' '-mlong-double=64' '-specs=device-specs/specs-atmega328p' '-mmcu=avr5'
+COLLECT_GCC_OPTIONS='-v'  '-c' '-o' '/dev/null' '-mdouble=32' '-mlong-double=64' '-specs=device-specs/specs-atmega328p' '-mmcu=avr5'
+COLLECT_GCC_OPTIONS='-v'  '-c' '-o' '/dev/null' '-mdouble=32' '-mlong-double=64' '-specs=device-specs/specs-atmega328p' '-mmcu=avr5'
+[exit 0]
+
+$ grep -A1 -E '^\*(cpp|asm_arch):' "$(avr-gcc -print-file-name=device-specs/specs-atmega328p)"
+*asm_arch:
+	-mmcu=avr5
+--
+*cpp:
+	%(cpp_mcu) %(cpp_rodata_in_ram) %(cpp_avrlibc)
+[exit 0]
+
+$ gcc -pipe -v -std=c23 hello.c -o hp 2>&1 | grep -E '^ as '
+ as -v --64 -o /tmp/cc5dyiHt.o
+[exit 0]
+
+$ gcc -no-integrated-cpp -v -std=c23 hello.c -o hn 2>&1 | grep -E '/cc1 | as |/collect2 ' | cut -c1-110
+ /usr/libexec/gcc/x86_64-redhat-linux/16/cc1 -E -quiet -v hello.c -mtune=generic -march=x86-64 -mtls-dialect=g
+ /usr/libexec/gcc/x86_64-redhat-linux/16/cc1 -fpreprocessed /tmp/ccGuKrJf.i -quiet -dumpdir hn- -dumpbase hell
+ as -v --64 -o /tmp/ccm3sXY0.o /tmp/cc4Y7cYy.s
+ /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugi
+[exit 0]
+
+$ gcc -Wl,-v -std=c23 hello.c -o hv 2>&1 | head -3 | cut -c1-200
+collect2 version 16.2.1 20261029 (Red Hat 16.2.1-3)
+/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccA1VWT1.res -plugin-opt=-pas
+GNU ld version 2.47.20260726
+[exit 0]
+
+$ cat old.c; gcc -E -P old.c; gcc -E -P -traditional-cpp old.c | grep -v '^$'
+#define CAT(a,b) a/**/b
+int CAT(foo,bar) = 1;
+int foo bar = 1;
+int foobar = 1;
+[exit 0]
+
+$ cat mac.c; gcc -std=c23 -E -P mac.c; gcc -std=c23 -c mac.c
+#define abc + 1
+int x = 12abc;
+int y = 12 abc;
+int x = 12abc;
+int y = 12 + 1;
+mac.c:2:9: error: invalid suffix ‘abc’ on integer constant
+    2 | int x = 12abc;
+      |         ^~~~~
+[exit 1]
+
+$ cat at.c; gcc -std=c23 at.c -o at
+int main(void){ int a = 1 @ 2; return a; }
+at.c: In function ‘main’:
+at.c:1:27: error: stray ‘@’ in program
+    1 | int main(void){ int a = 1 @ 2; return a; }
+      |                           ^
+at.c:1:29: error: expected ‘,’ or ‘;’ before numeric constant
+    1 | int main(void){ int a = 1 @ 2; return a; }
+      |                             ^
+[exit 1]
+
+$ cat kw.c; gcc -std=c23 -Wall -Wextra -pedantic kw.c -o kw && ./kw; echo $?
+#define int long
+int main(void){ int x = sizeof(int); return x; }
+kw.c:2:5: warning: return type of ‘main’ is not ‘int’ [-Wmain]
+    2 | int main(void){ int x = sizeof(int); return x; }
+      |     ^~~~
+8
+[exit 0]
+
+$ cat ebc.c; gcc -std=c23 ebc.c -o ebc && ./ebc; echo $?; gcc -std=c23 -fexec-charset=IBM1047 ebc.c -o ebc2 && ./ebc2; echo $?
+int main(void){ return (unsigned char)"A"[0]; }
+65
+193
+[exit 0]
+
+$ cat nl.c; gcc -std=c23 -fexec-charset=IBM1047 nl.c -o nl && ./nl; echo $?
+int main(void){ return (unsigned char)"\\n"[0]; }
+224
+[exit 0]
+
+$ cat hx.c; gcc -std=c23 -fexec-charset=IBM1047 hx.c -o hx && ./hx; echo $?
+int main(void){ return (unsigned char)"\\x41"[0]; }
+224
+[exit 0]
+
+$ gcc -std=c23 -fdump-tree-original -c hello.c -o /dev/null; ls hello.c.*original*; cat hello.c.*.original
+hello.c.006t.original
+
+;; Function main (null)
+;; enabled by -tree-original
+
+
+{
+  printf ((const char * restrict) "hello, world\n");
+  return 0;
+}
+return 0;
+
+[exit 0]
+
+$ clang -### -fno-integrated-as -std=c23 hello.c -o hc 2>&1 | grep -E '^ "' | cut -c1-80
+ "/usr/bin/clang-23" "-cc1" "-triple" "x86_64-redhat-linux-gnu" "-S" "-dumpdir" 
+ "/usr/bin/as" "--64" "-o" "/tmp/hello-64cb74.o" "/tmp/hello-a6dba8.s"
+ "/usr/bin/ld" "--hash-style=gnu" "--build-id" "--eh-frame-hdr" "-m" "elf_x86_64
+[exit 0]
+
+$ cat -A bsp.c; gcc -std=c23 -Wall bsp.c -o bsp; ./bsp; echo $?
+#define X 1 \ $
++1$
+int main(void){ return X; }$
+bsp.c:1:13: warning: backslash and newline separated by space
+    1 | #define X 1 \
+2
+[exit 0]
+
+$ cat q.c; gcc -std=c23 -c q.c -o q.o && echo compiled
+int x = 12abc;
+q.c:1:9: error: invalid suffix ‘abc’ on integer constant
+    1 | int x = 12abc;
+      |         ^~~~~
+[exit 1]
+
+$ cat q.c; gcc -std=c23 -c q.c -o q.o && echo compiled
+int x = 0b2;
+q.c:1:9: error: invalid suffix ‘b2’ on integer constant
+    1 | int x = 0b2;
+      |         ^~~
+[exit 1]
+
+$ cat q.c; gcc -std=c23 -c q.c -o q.o && echo compiled
+int x = 0xE+1;
+q.c:1:9: error: invalid suffix ‘+1’ on integer constant
+    1 | int x = 0xE+1;
+      |         ^~~~~
+[exit 1]
+
+$ cat q.c; gcc -std=c23 -c q.c -o q.o && echo compiled
+int x = 1.2.3.4;
+q.c:1:9: error: too many decimal points in number
+    1 | int x = 1.2.3.4;
+      |         ^~~~~~~
+[exit 1]
+
+$ cat q.c; gcc -std=c23 -c q.c -o q.o && echo compiled
+int x = 0xF+1;
+compiled
+[exit 0]
+
+$ printf 'int x = 0xF+1;\nint main(void){ return x; }\n' > q2.c; gcc -std=c23 q2.c -o q2 && ./q2; echo $?
+16
+[exit 0]
+
+$ gcc -std=c23 -S escape.c -o - | grep -E 'call'
+	call	puts
+	call	puts
+	call	printf
+[exit 0]
+
+$ gcc -std=c23 -E escape.c | grep -c '' ; gcc -std=c23 -g -c greet.c -o greetg.o && gcc greetg.o -o greetg
+576
+/usr/bin/ld.bfd: greetg.o: in function `main':
+/home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.02/fedora/rw/greet.c:6:(.text+0x5): undefined reference to `greet'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ rpm -q glibc-gconv-extra 2>&1
+glibc-gconv-extra-2.44-2.fc45.x86_64
+[exit 0]

@@ -1,0 +1,10 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.3, ranksep=0.35, dpi=200];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", penwidth=1.4, fontcolor="#1B2A4A"];
+  edge [color="#5A6270", penwidth=1.4, arrowsize=0.7, fontname="DejaVu Sans", fontsize=10, fontcolor="#5A6270"];
+  am [label=<<b>The abstract machine: what your program means</b><br/>(C23, draft N3096 §5.1.2.3: the standard's model, with no optimization in it)<br/><br/>every expression evaluated as written; every object a value in memory;<br/>every side effect happens, in the order the rules require>, fillcolor="#EAF5EA", color="#2E7D32", width=7.3];
+  ob [label=<<b>Observable behavior: the only things that must match</b><br/>1. volatile accesses, exactly as the abstract machine makes them<br/>2. the data written to files, when the program ends<br/>3. the input and output of interactive devices, as the library's stream rules specify>, fillcolor="#FBF3E4", color="#8A5A00", width=7.3];
+  rm [label=<<b>The real machine: what the compiled program does</b><br/>(chosen freely by the compiler)<br/><br/>which instructions, which registers, which order; whole loops replaced by constants;<br/>computations shared, unused work deleted: whatever cannot be observed is free to change>, fillcolor="#EAF1FB", color="#1F5FAD", width=7.3];
+  am -> ob [label="  must produce"];
+  ob -> rm [label="  must produce", dir=back];
+}

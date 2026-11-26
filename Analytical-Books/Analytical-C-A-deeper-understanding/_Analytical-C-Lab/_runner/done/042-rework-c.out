@@ -1,0 +1,12 @@
+
+$ file cr.c; gcc -std=c23 -Wall -Wextra -pedantic cr.c -o cr && ./cr
+cr.c: C source, ASCII text, with CR line terminators
+cr
+[exit 0]
+
+$ time (gcc -std=c23 -c hello.c -o /dev/null)
+
+real	0m0.014s
+user	0m0.009s
+sys	0m0.005s
+[exit 0]

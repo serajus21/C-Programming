@@ -1,0 +1,55 @@
+
+$ gcc -### -std=c23 hello.c -o hello 2>&1 | tail -4 | cut -c1-160
+LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-r
+COLLECT_GCC_OPTIONS='-std=c23' '-o' 'hello' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'hello.'
+ /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so "-plugin-opt=/usr/libexec/gcc/x86_64-redhat-l
+COLLECT_GCC_OPTIONS='-std=c23' '-o' 'hello' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'hello.'
+[exit 0]
+
+$ ls avr_hello*
+avr_hello.c
+avr_hello.elf
+avr_hello.elf-avr_hello.i
+avr_hello.elf-avr_hello.o
+avr_hello.elf-avr_hello.s
+avr_hello.hex
+[exit 0]
+
+$ avr-gcc -v -mmcu=atmega328p -std=c11 -Os avr_hello.c -o avr_hello.elf 2>&1 | grep -n -E 'cc1|/as|collect2' | cut -c1-120
+11: /usr/libexec/gcc/avr/15.3.0/cc1 -quiet -v -imultilib avr5 -D__AVR_ATmega328P__ -D__AVR_RODATA_IN_RAM__=1 -D__AVR_DEV
+24: /usr/lib/gcc/avr/15.3.0/../../../../avr/bin/as -mmcu=avr5 -mgcc-isr -mno-skip-bug -o /tmp/ccoVeCRg.o /tmp/cc5DLDQ3.s
+28: /usr/libexec/gcc/avr/15.3.0/collect2 -plugin /usr/libexec/gcc/avr/15.3.0/liblto_plugin.so -plugin-opt=/usr/libexec/g
+[exit 0]
+
+$ mkdir -p avr && cd avr && cp ../avr_hello.c . && avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic -save-temps avr_hello.c -o avr_hello.elf && avr-objcopy -O ihex -R .eeprom avr_hello.elf avr_hello.hex && ls -l && file *
+total 32
+-rw-r--r--. 1 serajus21 serajus21   740 Nov 26 11:35 avr_hello.c
+-rwxr-xr-x. 1 serajus21 serajus21 10356 Nov 26 11:35 avr_hello.elf
+-rw-r--r--. 1 serajus21 serajus21  3878 Nov 26 11:35 avr_hello.elf-avr_hello.i
+-rw-r--r--. 1 serajus21 serajus21  1176 Nov 26 11:35 avr_hello.elf-avr_hello.o
+-rw-r--r--. 1 serajus21 serajus21   745 Nov 26 11:35 avr_hello.elf-avr_hello.s
+-rw-r--r--. 1 serajus21 serajus21   639 Nov 26 11:35 avr_hello.hex
+avr_hello.c:               C source, Unicode text, UTF-8 text
+avr_hello.elf:             ELF 32-bit LSB executable, Atmel AVR 8-bit, version 1 (SYSV), statically linked, with debug_info, not stripped
+avr_hello.elf-avr_hello.i: C source, ASCII text
+avr_hello.elf-avr_hello.o: ELF 32-bit LSB relocatable, Atmel AVR 8-bit, version 1 (SYSV), not stripped
+avr_hello.elf-avr_hello.s: assembler source, ASCII text
+avr_hello.hex:             Intel hexadecimal object, 0x10 record length, 0x0000 offset, '00' type, data+checksum 0C9434000C9449000C9449000C94490061
+[exit 0]
+
+$ gcc -save-temps -std=c23 hello.c -o prog && ls prog* hello.*
+hello.c
+hello.i
+hello.o
+hello.s
+prog
+prog-hello.i
+prog-hello.o
+prog-hello.s
+[exit 0]
+
+$ rpm -q gcc binutils glibc
+gcc-16.2.1-3.fc45.x86_64
+binutils-2.47-1.fc45.x86_64
+glibc-2.44-2.fc45.x86_64
+[exit 0]

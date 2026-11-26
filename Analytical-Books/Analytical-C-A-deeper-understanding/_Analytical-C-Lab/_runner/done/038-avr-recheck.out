@@ -1,0 +1,40 @@
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_hello.c -o avr_hello.elf && avr-objcopy -O ihex -R .eeprom avr_hello.elf avr_hello.hex
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_verbose.c -o avr_verbose.elf && avr-objcopy -O ihex -R .eeprom avr_verbose.elf avr_verbose.hex
+[exit 0]
+
+$ ls -l avr_hello.c avr_verbose.c avr_hello.elf avr_verbose.elf avr_hello.hex avr_verbose.hex; cmp avr_hello.hex avr_verbose.hex && echo HEX-IDENTICAL; avr-size avr_hello.elf avr_verbose.elf
+-rw-r--r--. 1 serajus21 serajus21   740 Nov 26 10:59 avr_hello.c
+-rwxr-xr-x. 1 serajus21 serajus21 10356 Nov 26 11:53 avr_hello.elf
+-rw-r--r--. 1 serajus21 serajus21   639 Nov 26 11:53 avr_hello.hex
+-rw-r--r--. 1 serajus21 serajus21  4895 Nov 26 10:59 avr_verbose.c
+-rwxr-xr-x. 1 serajus21 serajus21 10356 Nov 26 11:53 avr_verbose.elf
+-rw-r--r--. 1 serajus21 serajus21   639 Nov 26 11:53 avr_verbose.hex
+HEX-IDENTICAL
+   text	   data	    bss	    dec	    hex	filename
+    206	     16	      0	    222	     de	avr_hello.elf
+    206	     16	      0	    222	     de	avr_verbose.elf
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic -save-temps avr_hello.c -o avr_hello.elf && avr-objcopy -O ihex -R .eeprom avr_hello.elf avr_hello.hex && ls -l && file *
+total 32
+-rw-r--r--. 1 serajus21 serajus21   740 Nov 26 11:53 avr_hello.c
+-rwxr-xr-x. 1 serajus21 serajus21 10356 Nov 26 11:53 avr_hello.elf
+-rw-r--r--. 1 serajus21 serajus21  3878 Nov 26 11:53 avr_hello.elf-avr_hello.i
+-rw-r--r--. 1 serajus21 serajus21  1176 Nov 26 11:53 avr_hello.elf-avr_hello.o
+-rw-r--r--. 1 serajus21 serajus21   745 Nov 26 11:53 avr_hello.elf-avr_hello.s
+-rw-r--r--. 1 serajus21 serajus21   639 Nov 26 11:53 avr_hello.hex
+avr_hello.c:               C source, Unicode text, UTF-8 text
+avr_hello.elf:             ELF 32-bit LSB executable, Atmel AVR 8-bit, version 1 (SYSV), statically linked, with debug_info, not stripped
+avr_hello.elf-avr_hello.i: C source, ASCII text
+avr_hello.elf-avr_hello.o: ELF 32-bit LSB relocatable, Atmel AVR 8-bit, version 1 (SYSV), not stripped
+avr_hello.elf-avr_hello.s: assembler source, ASCII text
+avr_hello.hex:             Intel hexadecimal object, 0x10 record length, 0x0000 offset, '00' type, data+checksum 0C9434000C9449000C9449000C94490061
+[exit 0]
+
+$ head -1 avr_hello.hex; tail -1 avr_hello.hex
+:100000000C9434000C9449000C9449000C94490061
+:00000001FF
+[exit 0]

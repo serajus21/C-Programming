@@ -1,0 +1,3 @@
+write(1, "hello, world\n", 13)          = -1 ENOSPC (No space left on device)
+exit_group(13)                          = ?
++++ exited with 13 +++

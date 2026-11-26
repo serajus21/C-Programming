@@ -1,0 +1,76 @@
+
+$ cat e1.c; gcc -std=c23 -Wall -Wextra -pedantic e1.c -o e1 && ./e1
+#include <stdio.h>
+#define GREETING "hello, " \
+"world\n"
+int main(void) { printf(GREETING); return 0; }
+hello, world
+[exit 0]
+
+$ cat e1b.c; gcc -std=c23 -Wall -Wextra -pedantic e1b.c -o e1b
+#include <stdio.h>
+#define GREETING "hello, "
+"world\n"
+int main(void) { printf(GREETING); return 0; }
+e1b.c:3:1: error: expected identifier or ‘(’ before string constant
+    3 | "world\n"
+      | ^~~~~~~~~
+[exit 1]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 0x1E+1;
+e2.c:1:9: error: invalid suffix ‘+1’ on integer constant
+    1 | int x = 0x1E+1;
+      |         ^~~~~~
+[exit 1]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 0x1E + 1;
+compiled
+[exit 0]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 0x1F+1;
+compiled
+[exit 0]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 1e+1;
+compiled
+[exit 0]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 1.5.2;
+e2.c:1:9: error: too many decimal points in number
+    1 | int x = 1.5.2;
+      |         ^~~~~
+[exit 1]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 08;
+e2.c:1:9: error: invalid digit ‘8’ in octal constant
+    1 | int x = 08;
+      |         ^~
+[exit 1]
+
+$ cat e2.c; gcc -std=c23 -Wall -Wextra -pedantic -c e2.c -o e2.o && echo compiled
+int x = 0b101;
+compiled
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c greet.c && gcc -std=c23 -Wall -Wextra -pedantic -c greet_def.c && gcc greet.o greet_def.o -o greet && ./greet
+hello from greet
+[exit 0]
+
+$ gcc -v -std=c23 hello.c -o hello 2>&1 | sed -n '/search starts here/,/End of search/p'
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/gcc/x86_64-redhat-linux/16/include
+ /usr/local/include
+ /usr/include
+End of search list.
+[exit 0]
+
+$ gcc -### hello.c 2>&1 | grep -c 'search starts'
+0
+[exit 1]

@@ -1,0 +1,43 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.3, nodesep=0.25, ranksep=0.22, dpi=200, newrank=true, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#F4F6F9", color="#5A6270", fontname="DejaVu Sans", fontsize=10, fontcolor="#1B2A4A", penwidth=1.1, width=2.9];
+  edge [color="#5A6270", arrowsize=0.6, penwidth=1.1];
+
+  subgraph cluster_linux {
+    label=<<b>Linux on your laptop</b><br/><font point-size="9">hosted</font>>; fontsize=12; fontcolor="#1F5FAD"; color="#1F5FAD"; style="rounded"; penwidth=1.3;
+    l1 [label="kernel: execve() loads the file and\nputs argc, argv and the environment\non the new program's stack"];
+    l2 [label="dynamic loader (ld.so)\nloads the C library, then\njumps to the entry point"];
+    l3 [label="_start  (from Scrt1.o)"];
+    l4 [label="__libc_start_main: library set-up,\nconstructors"];
+    l5 [label=<<b>main(argc, argv)</b>>, fillcolor="#EAF1FB", color="#1F5FAD", penwidth=1.8];
+    l6 [label="exit(): atexit functions,\nstreams flushed and closed"];
+    l7 [label="exit_group system call: the kernel\nends the process, the shell\nreceives the exit status"];
+    l1 -> l2 -> l3 -> l4 -> l5 -> l6 -> l7;
+  }
+
+  subgraph cluster_avr {
+    label=<<b>Bare ATmega328P</b><br/><font point-size="9">no operating system</font>>; fontsize=12; fontcolor="#8A5A00"; color="#8A5A00"; style="rounded"; penwidth=1.3;
+    a1 [label="reset: the program counter becomes 0\n(on an Uno, the Optiboot bootloader\nruns first, then jumps to 0)"];
+    a2 [label="vector 0: jmp to the\nstartup code"];
+    a3 [label="startup code: r1 = 0, SREG = 0,\nstack pointer = top of SRAM"];
+    a4 [label="copy .data from flash to SRAM;\nset .bss to zero"];
+    a5 [label=<<b>main()</b><br/><font point-size="9">with Arduino: the core's main,<br/>which calls init(), setup(),<br/>then loop() forever</font>>, fillcolor="#FBF3E4", color="#8A5A00", penwidth=1.8];
+    a6 [label="_exit: cli (interrupts off),\nthen a jump to itself, forever"];
+    a7 [label="nobody receives\nthe exit status", style="rounded,dashed", fillcolor="white"];
+    a1 -> a2 -> a3 -> a4 -> a5 -> a6 -> a7 [];
+  }
+
+  subgraph cluster_esp {
+    label=<<b>ESP32 with ESP-IDF</b><br/><font point-size="9">FreeRTOS</font>>; fontsize=12; fontcolor="#2E7D32"; color="#2E7D32"; style="rounded"; penwidth=1.3;
+    e1 [label="first-stage bootloader\n(in the chip's ROM)"];
+    e2 [label="second-stage bootloader\n(in flash): loads the application"];
+    e3 [label="call_start_cpu0: C run-time\nset-up, clocks, second core"];
+    e4 [label="start_cpu0: heap, C library,\nconstructors, components"];
+    e5 [label="the main task is created;\nthe FreeRTOS scheduler starts"];
+    e6 [label=<<b>app_main()</b>  (there is no main)<br/><font point-size="9">with Arduino: app_main starts the<br/>task loopTask: setup(), then loop()</font>>, fillcolor="#EAF5EA", color="#2E7D32", penwidth=1.8];
+    e7 [label="if app_main returns, its task\nis deleted; other tasks go on"];
+    e1 -> e2 -> e3 -> e4 -> e5 -> e6 -> e7;
+  }
+  {rank=same; l1; a1; e1}
+  {rank=same; l5; a5; e6}
+}

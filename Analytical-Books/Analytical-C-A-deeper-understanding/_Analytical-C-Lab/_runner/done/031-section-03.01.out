@@ -1,0 +1,340 @@
+LANG=en_US.UTF-8
+
+$ gcc --version | head -1
+gcc (GCC) 16.2.1 20261029 (Red Hat 16.2.1-3)
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.c -o hello
+[exit 0]
+
+$ ./hello
+hello, world
+[exit 0]
+
+$ ls -l hello.c hello
+-rwxr-xr-x. 1 serajus21 serajus21 12624 Nov 26 10:59 hello
+-rw-r--r--. 1 serajus21 serajus21   162 Nov 26 10:59 hello.c
+[exit 0]
+
+$ size hello
+   text	   data	    bss	    dec	    hex	filename
+   1068	    532	      4	   1604	    644	hello
+[exit 0]
+
+$ nm hello | grep -E ' (main|puts|printf)'
+0000000000401136 T main
+                 U puts@GLIBC_2.2.5
+[exit 0]
+
+$ objdump -d --no-show-raw-insn hello | sed -n '/<main>:/,/ret/p'
+0000000000401136 <main>:
+  401136:	push   %rbp
+  401137:	mov    %rsp,%rbp
+  40113a:	mov    $0x4004b0,%edi
+  40113f:	call   401030 <puts@plt>
+  401144:	mov    $0x0,%eax
+  401149:	pop    %rbp
+  40114a:	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c hello.c -o hello.o && objcopy -O binary -j .text hello.o main.bin && ls -l main.bin
+-rw-r--r--. 1 serajus21 serajus21 21 Nov 26 10:59 main.bin
+[exit 0]
+
+$ strace -o write.trace -e trace=write ./hello; cat write.trace
+hello, world
+write(1, "hello, world\n", 13)          = 13
++++ exited with 0 +++
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | wc -l
+573
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -n 'printf (const'
+380:extern int printf (const char *__restrict __format, ...);
+395:extern int vprintf (const char *__restrict __format, __gnuc_va_list __arg);
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | tail -8
+# 4 "hello.c" 2
+
+
+# 5 "hello.c"
+int main(void) {
+    printf("hello, world\n");
+    return 0;
+}
+[exit 0]
+
+$ ls /usr/include/stdio.h && wc -l /usr/include/stdio.h
+/usr/include/stdio.h
+979 /usr/include/stdio.h
+[exit 0]
+
+$ gcc -std=c23 -H -fsyntax-only hello.c 2>&1 | head -40
+. /usr/include/stdio.h
+.. /usr/include/bits/libc-header-start.h
+... /usr/include/features.h
+.... /usr/include/features-time64.h
+..... /usr/include/bits/wordsize.h
+..... /usr/include/bits/timesize.h
+...... /usr/include/bits/wordsize.h
+.... /usr/include/sys/cdefs.h
+..... /usr/include/bits/wordsize.h
+..... /usr/include/bits/long-double.h
+.... /usr/include/gnu/stubs.h
+..... /usr/include/gnu/stubs-64.h
+.. /usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h
+.. /usr/lib/gcc/x86_64-redhat-linux/16/include/stdarg.h
+.. /usr/include/bits/types.h
+... /usr/include/bits/wordsize.h
+... /usr/include/bits/timesize.h
+.... /usr/include/bits/wordsize.h
+... /usr/include/bits/typesizes.h
+... /usr/include/bits/time64.h
+.. /usr/include/bits/types/__fpos_t.h
+... /usr/include/bits/types/__mbstate_t.h
+.. /usr/include/bits/types/__fpos64_t.h
+.. /usr/include/bits/types/__FILE.h
+.. /usr/include/bits/types/FILE.h
+.. /usr/include/bits/types/struct_FILE.h
+... /usr/include/bits/wordsize.h
+.. /usr/include/bits/stdio_lim.h
+.. /usr/include/bits/floatn.h
+... /usr/include/bits/floatn-common.h
+.... /usr/include/bits/long-double.h
+Multiple include guards may be useful for:
+/usr/include/bits/libc-header-start.h
+/usr/include/bits/time64.h
+/usr/include/bits/typesizes.h
+/usr/include/features-time64.h
+/usr/include/gnu/stubs-64.h
+/usr/include/gnu/stubs.h
+/usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic count.c -o count && ./count
+hello, world
+printf reported 13 characters
+the literal occupies 14 bytes
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic status.c -o status
+[exit 0]
+
+$ ./status ; echo $?
+1
+[exit 0]
+
+$ ./status 3; echo $?
+3
+[exit 0]
+
+$ ./status 300; echo $?
+44
+[exit 0]
+
+$ ./status -1; echo $?
+255
+[exit 0]
+
+$ ./status 256; echo $?
+0
+[exit 0]
+
+$ ./hello && echo succeeded
+hello, world
+succeeded
+[exit 0]
+
+$ ./status 1 && echo succeeded || echo failed
+failed
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic noinclude.c -o noinclude
+noinclude.c: In function ‘main’:
+noinclude.c:4:5: error: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    4 |     printf("hello, world\n");
+      |     ^~~~~~
+noinclude.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+  +++ |+#include <stdio.h>
+    1 | // noinclude.c
+noinclude.c:4:5: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
+    4 |     printf("hello, world\n");
+      |     ^~~~~~
+noinclude.c:4:5: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic glued.c -o glued
+glued.c:5:1: error: return type defaults to ‘int’ [-Wimplicit-int]
+    5 | intmain(void) {
+      | ^~~~~~~
+glued.c: In function ‘intmain’:
+glued.c:7:5: error: ‘return0’ undeclared (first use in this function)
+    7 |     return0;
+      |     ^~~~~~~
+glued.c:7:5: note: each undeclared identifier is reported only once for each function it appears in
+glued.c:8:1: warning: control reaches end of non-void function [-Wreturn-type]
+    8 | }
+      | ^
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic voidmain.c -o voidmain
+voidmain.c:5:6: warning: return type of ‘main’ is not ‘int’ [-Wmain]
+    5 | void main(void) {
+      |      ^~~~
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic comments.c -o comments
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic indent.c -o indent
+indent.c: In function ‘check’:
+indent.c:6:5: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+    6 |     if (err != 0)
+      |     ^~
+indent.c:8:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+    8 |         return 1;
+      |         ^~~~~~
+[exit 0]
+
+$ ./comments
+/* not a comment */
+15
+[exit 0]
+
+$ ./indent; echo $?
+1
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S hello.c -o hello.s && gcc -std=c23 -Wall -Wextra -pedantic -S squashed.c -o squashed.s && gcc -std=c23 -Wall -Wextra -pedantic -S layout.c -o layout.s; diff hello.s squashed.s; diff hello.s layout.s
+1c1
+< 	.file	"hello.c"
+---
+> 	.file	"squashed.c"
+1c1
+< 	.file	"hello.c"
+---
+> 	.file	"layout.c"
+[exit 1]
+
+$ cat hello.s
+	.file	"hello.c"
+	.text
+	.section	.rodata
+.LC0:
+	.string	"hello, world"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.ident	"GCC: (GNU) 16.2.1 20261029 (Red Hat 16.2.1-3)"
+	.section	.note.GNU-stack,"",@progbits
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c squashed.c -o squashed.o && objcopy -O binary -j .text squashed.o sq.bin && cmp main.bin sq.bin && echo same-machine-code
+same-machine-code
+[exit 0]
+
+$ command -v clang && clang --version | head -1
+/usr/bin/clang
+clang version 23.1.5 (Fedora 23.1.5-2.fc45)
+[exit 0]
+
+$ clang -std=c23 -fsyntax-only -Xclang -dump-tokens hello.c 2>&1 | wc -l
+1898
+[exit 0]
+
+$ clang -std=c23 -fsyntax-only -Xclang -dump-tokens hello.c 2>&1 | grep 'hello.c:'
+int              'int'                           Loc=<hello.c:5:1>     [StartOfLine]
+identifier       'main'                          Loc=<hello.c:5:5>     [LeadingSpace]
+l_paren          '('                             Loc=<hello.c:5:9>    
+void             'void'                          Loc=<hello.c:5:10>   
+r_paren          ')'                             Loc=<hello.c:5:14>   
+l_brace          '{'                             Loc=<hello.c:5:16>    [LeadingSpace]
+identifier       'printf'                        Loc=<hello.c:6:5>     [StartOfLine] [LeadingSpace]
+l_paren          '('                             Loc=<hello.c:6:11>   
+string_literal   '\"hello, world\\n\"'           Loc=<hello.c:6:12>   
+r_paren          ')'                             Loc=<hello.c:6:28>   
+semi             ';'                             Loc=<hello.c:6:29>   
+return           'return'                        Loc=<hello.c:7:5>     [StartOfLine] [LeadingSpace]
+numeric_constant '0'                             Loc=<hello.c:7:12>    [LeadingSpace]
+semi             ';'                             Loc=<hello.c:7:13>   
+r_brace          '}'                             Loc=<hello.c:8:1>     [StartOfLine]
+eof              ''                              Loc=<hello.c:8:2>    
+[exit 0]
+
+$ printf 'int main(void){ /* nested /* comment */ */ return 0; }\n' > nest.c; gcc -std=c23 -Wall -Wextra -pedantic nest.c -o nest
+nest.c: In function ‘main’:
+nest.c:1:27: warning: ‘/*’ within comment [-Wcomment]
+    1 | int main(void){ /* nested /* comment */ */ return 0; }
+nest.c:1:42: error: expected expression before ‘/’ token
+    1 | int main(void){ /* nested /* comment */ */ return 0; }
+      |                                          ^
+[exit 1]
+
+$ printf '#include <stdio.h>\nint main(void){ int n = printf("hello, world\\n"); return n; }\n' > retn.c; cat retn.c; gcc -std=c23 -Wall -Wextra -pedantic retn.c -o retn && ./retn; echo $?
+#include <stdio.h>
+int main(void){ int n = printf("hello, world\n"); return n; }
+hello, world
+13
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.c; ls -l a.out; ./a.out
+-rwxr-xr-x. 1 serajus21 serajus21 12624 Nov 26 10:59 a.out
+hello, world
+[exit 0]
+
+$ ldd hello
+	linux-vdso.so.1 (0x00007f84ffa64000)
+	libc.so.6 => /lib64/libc.so.6 (0x00007f84ff84a000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f84ffa66000)
+[exit 0]
+
+$ avr-gcc --version | head -1
+avr-gcc (Fedora 15.3.0-1.fc45) 15.3.0
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_hello.c -o avr_hello.elf && avr-objcopy -O ihex -R .eeprom avr_hello.elf avr_hello.hex
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_verbose.c -o avr_verbose.elf && avr-objcopy -O ihex -R .eeprom avr_verbose.elf avr_verbose.hex
+[exit 0]
+
+$ ls -l avr_hello.c avr_verbose.c avr_hello.elf avr_verbose.elf avr_hello.hex avr_verbose.hex; cmp avr_hello.hex avr_verbose.hex && echo HEX-IDENTICAL; avr-size avr_hello.elf avr_verbose.elf
+-rw-r--r--. 1 serajus21 serajus21   740 Nov 26 10:59 avr_hello.c
+-rwxr-xr-x. 1 serajus21 serajus21 10356 Nov 26 10:59 avr_hello.elf
+-rw-r--r--. 1 serajus21 serajus21   639 Nov 26 10:59 avr_hello.hex
+-rw-r--r--. 1 serajus21 serajus21  4895 Nov 26 10:59 avr_verbose.c
+-rwxr-xr-x. 1 serajus21 serajus21 10356 Nov 26 10:59 avr_verbose.elf
+-rw-r--r--. 1 serajus21 serajus21   639 Nov 26 10:59 avr_verbose.hex
+HEX-IDENTICAL
+   text	   data	    bss	    dec	    hex	filename
+    206	     16	      0	    222	     de	avr_hello.elf
+    206	     16	      0	    222	     de	avr_verbose.elf
+[exit 0]
+
+$ avr-objdump -s -j .data avr_hello.elf | tail -2
+Contents of section .data:
+ 800100 68656c6c 6f2c2077 6f726c64 0d0a0000  hello, world....
+[exit 0]
+
+$ command -v simavr && timeout 2 stdbuf -o0 -e0 simavr -m atmega328p -f 16000000 avr_hello.elf
+[exit 1]

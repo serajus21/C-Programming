@@ -1,0 +1,1 @@
+#include <stdio.h>int main(void) {    printf("cr\n");    return 0;}

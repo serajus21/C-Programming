@@ -1,0 +1,32 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.25, nodesep=0.35, ranksep=0.42, dpi=200, newrank=true];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", penwidth=1.3];
+  edge [color="#5A6270", penwidth=1.3, arrowsize=0.7, fontname="DejaVu Sans", fontsize=9.5, fontcolor="#5A6270"];
+  node [shape=plaintext, style="", fontsize=11, fontcolor="#8A93A3", fontname="DejaVu Sans"];
+  y57 [label="1957"]; y60 [label="1959–60"]; y63 [label="1963"]; y67 [label="1967"]; y69 [label="1969–70"];
+  y71 [label="1971"]; y73 [label="1972–73"]; y78 [label="1977–78"]; y83 [label="1979–83"]; y89 [label="1989–90"];
+  y57 -> y60 -> y63 -> y67 -> y69 -> y71 -> y73 -> y78 -> y83 -> y89 [style=invis];
+  node [shape=box, style="rounded,filled", fontcolor="#1B2A4A", fontsize=11];
+  fortran [label="FORTRAN\nIBM, Backus: scientific formulas", fillcolor="#F4F5F7", color="#5A6270"];
+  cobol   [label="COBOL\nCODASYL: business records", fillcolor="#F4F5F7", color="#5A6270"];
+  algol   [label="ALGOL 60\ninternational committee:\nblocks, recursion, BNF", fillcolor="#F4F5F7", color="#5A6270"];
+  pli     [label="Multics, written in PL/I\n(MIT, GE; Bell Labs 1965–69)", fillcolor="#F4F5F7", color="#5A6270"];
+  unix    [label="Unix on the PDP-7 (1969),\nin assembly language;\nB was written for it", fillcolor="#F1ECF8", color="#5B3E96"];
+  cpl     [label="CPL\nCambridge and London:\nlarge, slow to implement", fillcolor="#EAF1FB", color="#1F5FAD"];
+  bcpl    [label="BCPL\nRichards, at MIT: typeless,\none type = the word", fillcolor="#EAF1FB", color="#1F5FAD"];
+  b       [label="B\nThompson, PDP-7: typeless,\nthreaded code", fillcolor="#EAF1FB", color="#1F5FAD"];
+  nb      [label="NB (\"new B\")\nRitchie, PDP-11: int, char,\nmachine instructions", fillcolor="#EAF5EA", color="#2E7D32"];
+  c       [label="C\nRitchie: types, structures;\nUnix kernel rewritten in C (1973)", fillcolor="#EAF5EA", color="#2E7D32", penwidth=2];
+  port    [label="Unix ported to Interdata (1977)\nK&R, The C Programming Language (1978)", fillcolor="#EAF5EA", color="#2E7D32"];
+  cpp     [label="C with Classes → C++\nStroustrup, Bell Labs", fillcolor="#FBF3E4", color="#8A5A00"];
+  ansi    [label="ANSI C (1989), ISO C (1990)\nthen C99, C11, C17, C23 (§02.05)", fillcolor="#EAF5EA", color="#2E7D32"];
+  {rank=same; y57; fortran;} {rank=same; y60; cobol; algol;} {rank=same; y63; cpl;}
+  {rank=same; y67; bcpl; pli;} {rank=same; y69; b; unix;} {rank=same; y71; nb;} {rank=same; y73; c;}
+  {rank=same; y78; port;} {rank=same; y83; cpp;} {rank=same; y89; ansi;}
+  fortran -> algol [style=dashed, xlabel="influence  "];
+  algol -> cpl; cpl -> bcpl [xlabel="cut down  "]; bcpl -> b [xlabel="made smaller  "];
+  b -> nb [xlabel="types added  "]; nb -> c; c -> port; c -> cpp; cpp -> ansi [style=dashed, label="  prototypes"];
+  port -> ansi;
+  pli -> unix [style=dashed, xlabel="Bell Labs withdraws  "];
+  unix -> b [constraint=false];
+}

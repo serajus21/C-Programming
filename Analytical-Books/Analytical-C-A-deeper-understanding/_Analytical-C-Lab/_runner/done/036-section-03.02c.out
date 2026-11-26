@@ -1,0 +1,63 @@
+
+$ cat tri.c
+// tri.c
+// Trigraphs: removed from the language in C23.
+#include <stdio.h>
+
+int main(void) {
+    printf("Is it true??!\n");
+    return 0;
+}
+[exit 0]
+
+$ gcc -std=c17 -Wall -Wextra -pedantic tri.c -o tri17 && ./tri17
+tri.c: In function ‘main’:
+tri.c:6:23: warning: trigraph ‘??!’ converted to ‘|’ [-Wtrigraphs]
+    6 |     printf("Is it true??!\n");
+Is it true|
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic tri.c -o tri23 && ./tri23
+tri.c: In function ‘main’:
+tri.c:6:23: warning: trigraph ‘??!’ ignored, use ‘-trigraphs’ to enable [-Wtrigraphs]
+    6 |     printf("Is it true??!\n");
+Is it true??!
+[exit 0]
+
+$ printf '#include <stdio.h>\r\nint main(void) {\r\n    printf("crlf\\n");\r\n    return 0;\r\n}\r\n' > crlf.c; file crlf.c; gcc -std=c23 -Wall -Wextra -pedantic crlf.c -o crlf && ./crlf
+crlf.c: C source, ASCII text, with CRLF line terminators
+crlf
+[exit 0]
+
+$ clang -### -std=c23 hello.c -o hello_clang 2>&1 | grep -E '^ "' | cut -c1-140
+ "/usr/bin/clang-23" "-cc1" "-triple" "x86_64-redhat-linux-gnu" "-emit-obj" "-dumpdir" "hello_clang-" "-disable-free" "-clear-ast-before-bac
+ "/usr/bin/ld" "--hash-style=gnu" "--build-id" "--eh-frame-hdr" "-m" "elf_x86_64" "-dynamic-linker" "/lib64/ld-linux-x86-64.so.2" "-o" "hell
+[exit 0]
+
+$ clang -std=c23 hello.c -o hello_clang && ./hello_clang
+hello, world
+[exit 0]
+
+$ printf 'int main(void){ return 0; }' > nonl.c; gcc -std=c23 -Wall -Wextra -pedantic nonl.c -o nonl; echo built
+built
+[exit 0]
+
+$ printf 'int main(void){ return 0x1F+1; }\n' > f.c; gcc -std=c23 f.c -o f && ./f; echo $?
+32
+[exit 0]
+
+$ gcc -std=c23 -E -P escape.c | tail -6
+int main(void) {
+    printf("hello, " "world" "\n");
+    printf("%s\n", "\x41" "BC");
+    printf("%zu\n", sizeof "\x41" "BC");
+    return 0;
+}
+[exit 0]
+
+$ gcc -std=c23 -ftime-report -c hello.c 2>&1 | head -12
+
+Time variable                                  wall           GGC
+ phase setup                        :   0.00 ( 22%)  1657k ( 71%)
+ TOTAL                              :   0.01         2330k
+[exit 0]

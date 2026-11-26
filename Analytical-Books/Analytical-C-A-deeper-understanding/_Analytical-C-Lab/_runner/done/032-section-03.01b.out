@@ -1,0 +1,186 @@
+
+$ cat /etc/fedora-release; uname -r
+Fedora release 45 (Forty Five)
+7.3.4-300.fc45.x86_64
+[exit 0]
+
+$ gcc -v 2>&1 | grep -o -- '--enable-default-pie' || echo no-default-pie; file hello
+no-default-pie
+hello: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=ddb234d9f741fd5bee907a9e3fca18f11cccdc7a, for GNU/Linux 3.2.0, not stripped
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S squashed.c -o squashed.s; diff hello.s squashed.s
+1c1
+< 	.file	"hello.c"
+---
+> 	.file	"squashed.c"
+[exit 1]
+
+$ gcc -std=c23 -H -fsyntax-only hello.c 2>&1 | wc -l; gcc -std=c23 -H -fsyntax-only hello.c 2>&1 | grep -c '^\.'; gcc -std=c23 -H -fsyntax-only hello.c 2>&1 | sed -n '30,60p'
+39
+31
+... /usr/include/bits/floatn-common.h
+.... /usr/include/bits/long-double.h
+Multiple include guards may be useful for:
+/usr/include/bits/libc-header-start.h
+/usr/include/bits/time64.h
+/usr/include/bits/typesizes.h
+/usr/include/features-time64.h
+/usr/include/gnu/stubs-64.h
+/usr/include/gnu/stubs.h
+/usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h
+[exit 0]
+
+$ script -q -c 'strace -e trace=write ./hello' /dev/null | cat -A | head
+bash: line 1: script: command not found
+[exit 0]
+
+$ objdump -s -j .rodata hello
+
+hello:     file format elf64-x86-64
+
+Contents of section .rodata:
+ 4004a0 01000200 00000000 00000000 00000000  ................
+ 4004b0 68656c6c 6f2c2077 6f726c64 00        hello, world.   
+[exit 0]
+
+$ readelf -S -W hello | sed -n '1,60p'
+There are 32 section headers, starting at offset 0x2950:
+
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
+  [ 1] .note.gnu.build-id NOTE            0000000000400318 000318 000024 00   A  0   0  4
+  [ 2] .interp           PROGBITS        000000000040033c 00033c 00001c 00   A  0   0  1
+  [ 3] .gnu.hash         GNU_HASH        0000000000400358 000358 00001c 00   A  4   0  8
+  [ 4] .dynsym           DYNSYM          0000000000400378 000378 000060 18   A  5   1  8
+  [ 5] .dynstr           STRTAB          00000000004003d8 0003d8 000048 00   A  0   0  1
+  [ 6] .gnu.version      VERSYM          0000000000400420 000420 000008 02   A  4   0  2
+  [ 7] .gnu.version_r    VERNEED         0000000000400428 000428 000030 00   A  5   1  8
+  [ 8] .rela.dyn         RELA            0000000000400458 000458 000030 18   A  4   0  8
+  [ 9] .rela.plt         RELA            0000000000400488 000488 000018 18  AI  4  23  8
+  [10] .rodata           PROGBITS        00000000004004a0 0004a0 00001d 00   A  0   0  8
+  [11] .eh_frame_hdr     PROGBITS        00000000004004c0 0004c0 000034 00   A  0   0  4
+  [12] .eh_frame         PROGBITS        00000000004004f8 0004f8 0000a4 00   A  0   0  8
+  [13] .note.gnu.property NOTE            00000000004005a0 0005a0 000040 00   A  0   0  8
+  [14] .note.ABI-tag     NOTE            00000000004005e0 0005e0 000020 00   A  0   0  4
+  [15] .init             PROGBITS        0000000000401000 001000 00001b 00  AX  0   0  4
+  [16] .plt              PROGBITS        0000000000401020 001020 000020 10  AX  0   0 16
+  [17] .text             PROGBITS        0000000000401040 001040 00010b 00  AX  0   0 16
+  [18] .fini             PROGBITS        000000000040114c 00114c 00000d 00  AX  0   0  4
+  [19] .init_array       INIT_ARRAY      0000000000402df8 001df8 000008 08  WA  0   0  8
+  [20] .fini_array       FINI_ARRAY      0000000000402e00 001e00 000008 08  WA  0   0  8
+  [21] .dynamic          DYNAMIC         0000000000402e08 001e08 0001d0 10  WA  5   0  8
+  [22] .got              PROGBITS        0000000000402fd8 001fd8 000010 08  WA  0   0  8
+  [23] .got.plt          PROGBITS        0000000000402fe8 001fe8 000020 08  WA  0   0  8
+  [24] .data             PROGBITS        0000000000403008 002008 000004 00  WA  0   0  1
+  [25] .bss              NOBITS          000000000040300c 00200c 000004 00  WA  0   0  1
+  [26] .comment          PROGBITS        0000000000000000 00200c 00005c 01  MS  0   0  1
+  [27] .annobin.notes    PROGBITS        0000000000000000 002068 00014f 01  MS  0   0  1
+  [28] .gnu.build.attributes NOTE            0000000000405010 0021b8 000144 00      0   0  4
+  [29] .symtab           SYMTAB          0000000000000000 002300 000348 18     30  18  8
+  [30] .strtab           STRTAB          0000000000000000 002648 0001c8 00      0   0  1
+  [31] .shstrtab         STRTAB          0000000000000000 002810 00013b 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  D (mbind), l (large), p (processor specific)
+[exit 0]
+
+$ python3 -c "import re;d=open('hello','rb').read();print(len(d), sum(len(m.group()) for m in re.finditer(rb'\\x00{64,}', d)))"
+12624 5985
+[exit 0]
+
+$ ls -lL /lib64/libc.so.6
+-rwxr-xr-x. 1 root root 2495368 Sep 29 06:00 /lib64/libc.so.6
+[exit 0]
+
+$ ./retn > /dev/full; echo $?
+13
+[exit 0]
+
+$ strace -o full.trace -e trace=write,exit_group ./retn > /dev/full; cat full.trace
+write(1, "hello, world\n", 13)          = -1 ENOSPC (No space left on device)
+exit_group(13)                          = ?
++++ exited with 13 +++
+[exit 0]
+
+$ printf '#include <stdio.h>\nint main(void){ int n=printf("hello, world\\n"); int a=ferror(stdout); int f=fflush(stdout); int b=ferror(stdout); fprintf(stderr,"n=%%d ferror-before=%%d fflush=%%d ferror-after=%%d\\n",n,a,f,b); return 0; }\n' > ferr.c; gcc -std=c23 -Wall -Wextra -pedantic ferr.c -o ferr && ./ferr > /dev/full
+n=13 ferror-before=0 fflush=-1 ferror-after=1
+[exit 0]
+
+$ nm count | grep -E ' U '
+                 U __libc_start_main@GLIBC_2.34
+                 U printf@GLIBC_2.2.5
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c layout.c -o layout.o && cmp hello.o layout.o; objcopy -O binary -j .text layout.o lay.bin && cmp main.bin lay.bin && echo text-identical
+hello.o layout.o differ: byte 353, line 1
+text-identical
+[exit 0]
+
+$ ./status 512; echo $?
+0
+[exit 0]
+
+$ sed 's/        printf("first check failed\\n");/        { printf("first check failed\\n");/; s/        return 1;/        return 1; }/' indent.c > indent2.c; sed -n 6,9p indent2.c; gcc -std=c23 -Wall -Wextra -pedantic indent2.c -o indent2 && ./indent2; echo $?
+    if (err != 0)
+        { printf("first check failed\n");
+        return 1; }
+    printf("all checks passed\n");
+all checks passed
+0
+[exit 0]
+
+$ cmp avr_hello.elf avr_verbose.elf; avr-readelf -s avr_hello.elf | grep FILE; avr-nm avr_hello.elf | grep -i -E ' (main|send)'
+avr_hello.elf avr_verbose.elf differ: byte 6233, line 88
+    11: 00000000     0 FILE    LOCAL  DEFAULT  ABS crtatmega328p.o
+    99: 00000000     0 FILE    LOCAL  DEFAULT  ABS avr_hello.c
+   108: 00000000     0 FILE    LOCAL  DEFAULT  ABS _exit.o
+   115: 00000000     0 FILE    LOCAL  DEFAULT  ABS _copy_data.o
+00000096 T main
+[exit 0]
+
+$ avr-objdump -d avr_hello.elf | sed -n '/<main>:/,$p' | head -30
+00000096 <main>:
+  96:	82 e0       	ldi	r24, 0x02	; 2
+  98:	80 93 c0 00 	sts	0x00C0, r24	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
+  9c:	80 e1       	ldi	r24, 0x10	; 16
+  9e:	90 e0       	ldi	r25, 0x00	; 0
+  a0:	90 93 c5 00 	sts	0x00C5, r25	; 0x8000c5 <__TEXT_REGION_LENGTH__+0x7f80c5>
+  a4:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__TEXT_REGION_LENGTH__+0x7f80c4>
+  a8:	88 e0       	ldi	r24, 0x08	; 8
+  aa:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__TEXT_REGION_LENGTH__+0x7f80c1>
+  ae:	e0 e0       	ldi	r30, 0x00	; 0
+  b0:	f1 e0       	ldi	r31, 0x01	; 1
+
+000000b2 <.L3>:
+  b2:	81 91       	ld	r24, Z+
+
+000000b4 <.L2>:
+  b4:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__TEXT_REGION_LENGTH__+0x7f80c0>
+  b8:	95 ff       	sbrs	r25, 5
+  ba:	fc cf       	rjmp	.-8      	; 0xb4 <.L2>
+  bc:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__TEXT_REGION_LENGTH__+0x7f80c6>
+  c0:	81 e0       	ldi	r24, 0x01	; 1
+  c2:	ee 30       	cpi	r30, 0x0E	; 14
+  c4:	f8 07       	cpc	r31, r24
+  c6:	a9 f7       	brne	.-22     	; 0xb2 <.L3>
+
+000000c8 <.L4>:
+  c8:	ff cf       	rjmp	.-2      	; 0xc8 <.L4>
+
+000000ca <_exit>:
+  ca:	f8 94       	cli
+[exit 0]
+
+$ dnf list --installed 2>/dev/null | grep -i -E '^(simavr|glibc-static|avr-gcc|avr-libc|clang)\.' ; dnf info simavr 2>&1 | head -3
+avr-gcc.x86_64                                       1:15.3.0-1.fc45                        updates
+avr-libc.noarch                                      2.2.1-6.fc45                           fedora
+clang.x86_64                                         23.1.5-2.fc45                          updates
+glibc-static.x86_64                                  2.44-2.fc45                            updates
+Updating and loading repositories:
+ Fedora 45 - x86_64 - Updates           100% |   2.6 KiB/s |   6.0 KiB |  00m02s
+ nordvpn - Created by dnf5 config-manag 100% | 810.0   B/s |   1.5 KiB |  00m02s
+[exit 0]
