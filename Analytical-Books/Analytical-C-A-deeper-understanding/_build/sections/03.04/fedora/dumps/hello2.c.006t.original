@@ -1,0 +1,38 @@
+
+;; Function vprintf (null)
+;; enabled by -tree-original
+
+
+{
+  return vfprintf ((struct FILE * restrict) stdout, __fmt, __arg);
+}
+
+
+;; Function getchar (null)
+;; enabled by -tree-original
+
+
+{
+  return getc (stdin);
+}
+
+
+;; Function putchar (null)
+;; enabled by -tree-original
+
+
+{
+  return putc (__c, stdout);
+}
+
+
+;; Function main (null)
+;; enabled by -tree-original
+
+
+{
+  printf ((const char * restrict) "hello, world\n");
+  return 0;
+}
+return 0;
+

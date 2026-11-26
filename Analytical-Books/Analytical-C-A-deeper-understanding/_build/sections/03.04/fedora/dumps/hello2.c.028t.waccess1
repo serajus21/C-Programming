@@ -1,0 +1,24 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3)
+
+pointer_query counters:
+  index cache size:   0
+  index entries:      0
+  access cache size:  0
+  access entries:     0
+  hits:               0
+  misses:             0
+  failures:           0
+  max_depth:          0
+int main ()
+{
+  int _3;
+
+  <bb 2> :
+  __builtin_puts (&"hello, world"[0]);
+  _3 = 0;
+  return _3;
+
+}
+
+

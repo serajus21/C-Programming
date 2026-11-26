@@ -1,0 +1,116 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic semi.c -o semi
+semi.c: In function ‘main’:
+semi.c:6:29: error: expected ‘;’ before ‘return’
+    6 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+    7 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ gcc -std=c23 -E semi.c -o semi.i && grep -n 'hello, world' semi.i && gcc -std=c23 -Wall -Wextra -pedantic -c semi.i -o semi.o
+571:    printf("hello, world\n")
+semi.c: In function ‘main’:
+semi.c:6:29: error: expected ‘;’ before ‘return’
+    6 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+    7 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ gcc -std=c23 -E -P semi.c -o flat.i && grep -n 'hello, world' flat.i && gcc -std=c23 -Wall -Wextra -pedantic -c flat.i -o flat.o
+221:    printf("hello, world\n")
+flat.i: In function ‘main’:
+flat.i:221:29: error: expected ‘;’ before ‘return’
+  221 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+  222 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ grep -v pragma pragma.c > nopragma.c; gcc -std=c23 -Wall -Wextra -pedantic nopragma.c -o nopragma
+nopragma.c: In function ‘main’:
+nopragma.c:5:9: warning: unused variable ‘unused’ [-Wunused-variable]
+    5 |     int unused;
+      |         ^~~~~~
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -fsyntax-only loop.c 2>&1 | grep -c 'from self.h'; gcc -std=c23 -Wall -Wextra -pedantic -fsyntax-only loop.c 2>&1 | grep -E 'error|depth'
+198
+self.h:2:18: error: ‘#include’ nested depth 200 exceeds maximum of 200 (use ‘-fmax-include-depth=DEPTH’ to increase the maximum)
+[exit 0]
+
+$ gcc -std=c23 -E -dD hello.c | grep -c '^#define'
+692
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -c avr_blink.c -o avr_blink.o && avr-nm avr_blink.o
+0000001a t L0
+00000010 t .L11
+00000004 t .L2
+00000000 T main
+0000003e a __SP_H__
+0000003d a __SP_L__
+0000003f a __SREG__
+00000000 a __tmp_reg__
+00000001 a __zero_reg__
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os avr_blink.c -o avr_blink.elf && avr-size avr_blink.elf
+   text	   data	    bss	    dec	    hex	filename
+    162	      0	      0	    162	     a2	avr_blink.elf
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -E -P avr_blink.c | grep -n -A3 '^_delay_ms\|void _delay_ms' | head -12
+In file included from avr_blink.c:5:
+/usr/avr/include/util/delay.h:111:3: warning: #warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed" [-Wcpp]
+  111 | # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+      |   ^~~~~~~
+61:static __inline__ __attribute__((__always_inline__)) void _delay_ms(double __ms);
+62-void
+63:_delay_ms(double __ms)
+64-{
+65- double __tmp ;
+66- uint16_t __ticks;
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -E -P avr_blink.c | wc -l; avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -E -P avr_led.c | wc -l
+In file included from avr_blink.c:5:
+/usr/avr/include/util/delay.h:111:3: warning: #warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed" [-Wcpp]
+  111 | # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+      |   ^~~~~~~
+116
+44
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -O0 -c avr_blink.c -o b0.o
+In file included from avr_blink.c:5:
+/usr/avr/include/util/delay.h:111:3: warning: #warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed" [-Wcpp]
+  111 | # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+      |   ^~~~~~~
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -S avr_blink.c -o - | sed -n '/^main:/,/rjmp/p'
+main:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	sbi 0x4,5
+	ldi r25,lo8(32)
+.L2:
+	in r24,0x5
+	eor r24,r25
+	out 0x5,r24
+	ldi r18,lo8(1599999)
+	ldi r19,hi8(1599999)
+	ldi r24,hlo8(1599999)
+1:	subi r18,1
+	sbci r19,0
+	sbci r24,0
+	brne 1b
+	rjmp .
+[exit 0]

@@ -1,0 +1,9 @@
+737:#define UCSR0A _SFR_MEM8(0xC0)
+739:#define U2X0 1
+743:#define UDRE0 5
+747:#define UCSR0B _SFR_MEM8(0xC1)
+751:#define TXEN0 3
+769:#define UBRR0 _SFR_MEM16(0xC4)
+771:#define UBRR0L _SFR_MEM8(0xC4)
+781:#define UBRR0H _SFR_MEM8(0xC5)
+787:#define UDR0 _SFR_MEM8(0xC6)

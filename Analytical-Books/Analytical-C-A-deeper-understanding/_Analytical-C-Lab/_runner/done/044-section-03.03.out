@@ -1,0 +1,360 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic paste.c -o paste && ./paste
+these lines came from body.txt
+the compiler never knew they were elsewhere
+[exit 0]
+
+$ gcc -std=c23 -E paste.c | tail -8
+# 5 "paste.c"
+int main(void) {
+# 1 "body.txt" 1
+    printf("these lines came from body.txt\n");
+    printf("the compiler never knew they were elsewhere\n");
+# 7 "paste.c" 2
+    return 0;
+}
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | head -12
+# 0 "hello.c"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3
+# 0 "<command-line>" 2
+# 1 "hello.c"
+
+
+# 1 "/usr/include/stdio.h" 1 3
+# 28 "/usr/include/stdio.h" 3
+# 1 "/usr/include/bits/libc-header-start.h" 1 3
+# 33 "/usr/include/bits/libc-header-start.h" 3
+hello.c:9: fatal error: when writing output to : Broken pipe
+compilation terminated.
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -c '^# '
+111
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -c '^$'
+238
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -v '^# ' | grep -c -v '^$'
+224
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep '^# ' | awk '{print $3}' | sort -u
+"<built-in>"
+"<command-line>"
+"hello.c"
+"/usr/include/bits/floatn-common.h"
+"/usr/include/bits/floatn.h"
+"/usr/include/bits/libc-header-start.h"
+"/usr/include/bits/long-double.h"
+"/usr/include/bits/stdio_lim.h"
+"/usr/include/bits/time64.h"
+"/usr/include/bits/timesize.h"
+"/usr/include/bits/types/__FILE.h"
+"/usr/include/bits/types/FILE.h"
+"/usr/include/bits/types/__fpos64_t.h"
+"/usr/include/bits/types/__fpos_t.h"
+"/usr/include/bits/types.h"
+"/usr/include/bits/typesizes.h"
+"/usr/include/bits/types/__mbstate_t.h"
+"/usr/include/bits/types/struct_FILE.h"
+"/usr/include/bits/wordsize.h"
+"/usr/include/features.h"
+"/usr/include/features-time64.h"
+"/usr/include/gnu/stubs-64.h"
+"/usr/include/gnu/stubs.h"
+"/usr/include/stdc-predef.h"
+"/usr/include/stdio.h"
+"/usr/include/sys/cdefs.h"
+"/usr/lib/gcc/x86_64-redhat-linux/16/include/stdarg.h"
+"/usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h"
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep '^# ' | awk '{print $3}' | sort -u | wc -l
+28
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -n 'hello.c' 
+1:# 0 "hello.c"
+6:# 1 "hello.c"
+566:# 4 "hello.c" 2
+569:# 5 "hello.c"
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -n -E '^extern int (printf|puts|scanf) '
+380:extern int printf (const char *__restrict __format, ...);
+416:extern int scanf (const char *__restrict __format, ...) ;
+440:extern int scanf (const char *__restrict __format, ...) __asm__ ("" "__isoc23_scanf")
+509:extern int puts (const char *__s);
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -c '^extern '
+56
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -n -E '^typedef struct _IO_FILE FILE;|^extern FILE \*stdout'
+245:typedef struct _IO_FILE FILE;
+334:extern FILE *stdout;
+[exit 0]
+
+$ grep -n -E '^#define (stdout|EOF|BUFSIZ)' /usr/include/stdio.h
+104:#define BUFSIZ 8192
+109:#define EOF (-1)
+158:#define stdout stdout
+[exit 0]
+
+$ grep -n -E 'extern int printf' /usr/include/stdio.h
+370:extern int printf (const char *__restrict __format, ...);
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -c -E '\) *\{|^\{'
+5
+[exit 0]
+
+$ gcc -std=c23 -O2 -E hello.c | grep -c -E '__extern_inline|__inline'
+3
+[exit 0]
+
+$ gcc -std=c23 -O2 -E hello.c | wc -l
+601
+[exit 0]
+
+$ printf '#include <stdio.h>\nint main(void) {\n    printf("hello, world\\n")\n    return 0;\n}\n' > err.c; cat -n err.c; gcc -std=c23 err.c -o err
+     1	#include <stdio.h>
+     2	int main(void) {
+     3	    printf("hello, world\n")
+     4	    return 0;
+     5	}
+err.c: In function ‘main’:
+err.c:3:29: error: expected ‘;’ before ‘return’
+    3 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+    4 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ gcc -std=c23 -E -P hello.c | tail -5; gcc -std=c23 -E -P hello.c | wc -l
+
+int main(void) {
+    printf("hello, world\n");
+    return 0;
+}
+223
+[exit 0]
+
+$ gcc -std=c23 -E pragma.c | grep -n -E 'pragma|GREETING|define'
+1:# 0 "pragma.c"
+6:# 1 "pragma.c"
+10:#pragma GCC diagnostic ignored "-Wunused-variable"
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic pragma.c -o pragma
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic macros.c -o macros && ./macros
+10
+9
+5
+9
+[exit 0]
+
+$ gcc -std=c23 -E -P macros.c | tail -8
+
+int main(void) {
+    printf("%d\n", 10);
+    printf("%d\n", 3 * 3);
+    printf("%d\n", 1 + 2 * 1 + 2);
+    printf("%d\n", ((1 + 2) * (1 + 2)));
+    return 0;
+}
+[exit 0]
+
+$ gcc -std=c23 -dM -E - < /dev/null | wc -l; gcc -std=c23 -dM -E - < /dev/null | grep -E '__STDC_VERSION__|__x86_64__ |__GNUC__ |__linux__ |__CHAR_BIT__'
+408
+#define __CHAR_BIT__ 8
+#define __GNUC__ 16
+#define __x86_64__ 1
+#define __STDC_VERSION__ 202311L
+#define __linux__ 1
+[exit 0]
+
+$ gcc -std=c23 -dM -E hello.c | wc -l; gcc -std=c23 -dM -E hello.c | grep -E '^#define (EOF|stdout|BUFSIZ|SEEK_SET) '
+670
+#define SEEK_SET 0
+#define BUFSIZ 8192
+#define stdout stdout
+#define EOF (-1)
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic root.c -o root
+/usr/bin/ld.bfd: /tmp/ccylBDjt.o: in function `main':
+root.c:(.text+0x1f): undefined reference to `sqrt'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic root.c -o root -lm && ./root
+1.414214
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic noheader.c -o noheader -lm
+noheader.c: In function ‘main’:
+noheader.c:7:20: error: implicit declaration of function ‘sqrt’ [-Wimplicit-function-declaration]
+    7 |     printf("%f\n", sqrt(x));
+      |                    ^~~~
+noheader.c:4:1: note: include ‘<math.h>’ or provide a declaration of ‘sqrt’
+    3 | #include <stdio.h>
+  +++ |+#include <math.h>
+    4 | 
+noheader.c:7:20: warning: incompatible implicit declaration of built-in function ‘sqrt’ [-Wbuiltin-declaration-mismatch]
+    7 |     printf("%f\n", sqrt(x));
+      |                    ^~~~
+noheader.c:7:20: note: include ‘<math.h>’ or provide a declaration of ‘sqrt’
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 root.c -o root2 && ./root2
+1.414214
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S root.c -o - | grep -E 'call|sqrt'
+	call	printf
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c root.c -o root.o && nm root.o
+0000000000000000 T main
+                 U printf
+                 U sqrt
+[exit 0]
+
+$ ls -lL /lib64/libc.so.6 /lib64/libm.so.6 /usr/include/stdio.h /usr/include/math.h; file -L /lib64/libc.so.6 /usr/include/stdio.h
+-rwxr-xr-x. 1 root root 2495368 Sep 29 06:00 /lib64/libc.so.6
+-rwxr-xr-x. 1 root root 1174800 Sep 29 06:00 /lib64/libm.so.6
+-rw-r--r--. 1 root root   53032 Sep 29 06:00 /usr/include/math.h
+-rw-r--r--. 1 root root   34258 Sep 29 06:00 /usr/include/stdio.h
+/lib64/libc.so.6:     ELF 64-bit LSB shared object, x86-64, version 1 (GNU/Linux), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=02120880204b69a3b1f1e23a2eb47b2b12bc2636, for GNU/Linux 3.2.0, not stripped
+/usr/include/stdio.h: C source, ASCII text
+[exit 0]
+
+$ nm -D /lib64/libc.so.6 | grep -E ' (printf|puts)(@|$)'
+00000000000b0c50 T printf@@GLIBC_2.2.5
+00000000000d9a60 T puts@@GLIBC_2.2.5
+[exit 0]
+
+$ nm -D /lib64/libm.so.6 | grep -E ' sqrt(@|$)'
+000000000008da70 W sqrt@@GLIBC_2.2.5
+[exit 0]
+
+$ nm -D /lib64/libc.so.6 | grep -c ' T '
+2198
+[exit 0]
+
+$ ar t /usr/lib64/libc.a | wc -l; ar t /usr/lib64/libc.a | grep -E '^(printf|puts|ioputs)\.o$'
+2227
+printf.o
+ioputs.o
+[exit 0]
+
+$ cd /tmp && rm -rf lc && mkdir lc && cd lc && ar x /usr/lib64/libc.a printf.o && nm printf.o && objdump -d printf.o | head -20
+0000000000000000 T _IO_printf
+0000000000000000 T __printf
+0000000000000000 T printf
+                 U __stack_chk_fail
+                 U stdout
+                 U __vfprintf_internal
+
+printf.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <_IO_printf>:
+   0:	f3 0f 1e fa          	endbr64
+   4:	55                   	push   %rbp
+   5:	48 89 e5             	mov    %rsp,%rbp
+   8:	48 81 ec d0 00 00 00 	sub    $0xd0,%rsp
+   f:	48 89 b5 58 ff ff ff 	mov    %rsi,-0xa8(%rbp)
+  16:	48 89 95 60 ff ff ff 	mov    %rdx,-0xa0(%rbp)
+  1d:	48 89 8d 68 ff ff ff 	mov    %rcx,-0x98(%rbp)
+  24:	4c 89 85 70 ff ff ff 	mov    %r8,-0x90(%rbp)
+  2b:	4c 89 8d 78 ff ff ff 	mov    %r9,-0x88(%rbp)
+  32:	84 c0                	test   %al,%al
+  34:	74 20                	je     56 <_IO_printf+0x56>
+  36:	0f 29 45 80          	movaps %xmm0,-0x80(%rbp)
+  3a:	0f 29 4d 90          	movaps %xmm1,-0x70(%rbp)
+[exit 0]
+
+$ rpm -qf /usr/include/stdio.h /lib64/libc.so.6 /usr/lib64/libc.a /lib64/libm.so.6
+glibc-devel-2.44-2.fc45.x86_64
+glibc-2.44-2.fc45.x86_64
+glibc-static-2.44-2.fc45.x86_64
+glibc-2.44-2.fc45.x86_64
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | wc -c; wc -c hello.c
+13958
+162 hello.c
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os avr_led.c -o avr_led.elf && avr-objdump -d avr_led.elf | sed -n '/<main>:/,/rjmp/p'
+00000080 <main>:
+  80:	25 9a       	sbi	0x04, 5	; 4
+  82:	2d 9a       	sbi	0x05, 5	; 5
+
+00000084 <.L2>:
+  84:	ff cf       	rjmp	.-2      	; 0x84 <.L2>
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -E -P avr_led.c | tail -6
+} __fuse_t;
+int main(void) {
+    (*(volatile uint8_t *)((0x04) + 0x20)) |= (1 << 5);
+    (*(volatile uint8_t *)((0x05) + 0x20)) |= (1 << 5);
+    for (;;) { }
+}
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -E avr_led.c | grep '^# ' | awk '{print $3}' | sort -u
+"avr_led.c"
+"<built-in>"
+"<command-line>"
+"/usr/avr/include/avr/common.h"
+"/usr/avr/include/avr/fuse.h"
+"/usr/avr/include/avr/io.h"
+"/usr/avr/include/avr/iom328p.h"
+"/usr/avr/include/avr/lock.h"
+"/usr/avr/include/avr/portpins.h"
+"/usr/avr/include/avr/sfr_defs.h"
+"/usr/avr/include/avr/version.h"
+"/usr/avr/include/inttypes.h"
+"/usr/avr/include/stdint.h"
+"/usr/lib/gcc/avr/15.3.0/include/stdint.h"
+[exit 0]
+
+$ grep -n -E 'define (PORTB|DDRB|PB5|DDB5) ' $(avr-gcc -print-sysroot 2>/dev/null)/usr/avr/include/avr/iom328p.h /usr/avr/include/avr/iom328p.h 2>/dev/null | head
+/usr/avr/include/avr/iom328p.h:64:#define DDRB _SFR_IO8(0x04)
+/usr/avr/include/avr/iom328p.h:70:#define DDB5 5
+/usr/avr/include/avr/iom328p.h:74:#define PORTB _SFR_IO8(0x05)
+/usr/avr/include/avr/iom328p.h:64:#define DDRB _SFR_IO8(0x04)
+/usr/avr/include/avr/iom328p.h:70:#define DDB5 5
+/usr/avr/include/avr/iom328p.h:74:#define PORTB _SFR_IO8(0x05)
+[exit 0]
+
+$ grep -n -E 'define _SFR_IO8|define _MMIO_BYTE|define __SFR_OFFSET' /usr/avr/include/avr/sfr_defs.h
+72:#define __SFR_OFFSET 0
+128:#define _MMIO_BYTE(mem_addr) (*(volatile uint8_t *)(mem_addr))
+139:#    define __SFR_OFFSET 0x00
+141:#    define __SFR_OFFSET 0x20
+152:#define _SFR_IO8(io_addr) ((io_addr) + __SFR_OFFSET)
+170:#    define __SFR_OFFSET 0x00
+172:#    define __SFR_OFFSET 0x20
+179:#define _SFR_IO8(io_addr) _MMIO_BYTE((io_addr) + __SFR_OFFSET)
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -dM -E avr_led.c | wc -l
+1555
+[exit 0]

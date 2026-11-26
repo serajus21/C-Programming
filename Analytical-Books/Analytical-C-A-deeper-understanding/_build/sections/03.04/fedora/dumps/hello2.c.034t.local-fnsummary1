@@ -1,0 +1,32 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3)
+
+
+Analyzing function body size: main/4
+
+IPA function summary for main/4 inlinable
+  global time:     13.000000
+  self size:       5
+  global size:     0
+  min size:       0
+  self stack:      0
+  global stack:    0
+    size:0.000000, time:0.000000
+    size:3.000000, time:2.000000,  executed if:(not inlined)
+  calls:
+    __builtin_puts/5 function body not available
+      freq:1.00 loop depth: 0 size: 2 time: 11
+       op0 is compile time invariant
+
+int main ()
+{
+  int _3;
+
+  <bb 2> :
+  __builtin_puts (&"hello, world"[0]);
+  _3 = 0;
+  return _3;
+
+}
+
+

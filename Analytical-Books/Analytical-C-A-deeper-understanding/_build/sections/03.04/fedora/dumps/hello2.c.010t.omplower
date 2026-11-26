@@ -1,0 +1,17 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3)
+
+int main ()
+{
+  int D.2671;
+
+  {
+    printf ("hello, world\n");
+    D.2671 = 0;
+    return D.2671;
+  }
+  D.2671 = 0;
+  return D.2671;
+}
+
+

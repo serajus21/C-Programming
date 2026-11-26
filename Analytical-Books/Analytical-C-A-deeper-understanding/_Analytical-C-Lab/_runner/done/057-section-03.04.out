@@ -1,0 +1,1071 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S hello.c -o hello.s && wc -l hello.s && cat hello.s
+27 hello.s
+	.file	"hello.c"
+	.text
+	.section	.rodata
+.LC0:
+	.string	"hello, world"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.ident	"GCC: (GNU) 16.2.1 20261029 (Red Hat 16.2.1-3)"
+	.section	.note.GNU-stack,"",@progbits
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -fno-asynchronous-unwind-tables hello.c -o hello_nocfi.s && wc -l hello_nocfi.s
+19 hello_nocfi.s
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.c -o hello && objdump -d hello | sed -n '/<main>:/,/ret/p'
+0000000000401136 <main>:
+  401136:	55                   	push   %rbp
+  401137:	48 89 e5             	mov    %rsp,%rbp
+  40113a:	bf b0 04 40 00       	mov    $0x4004b0,%edi
+  40113f:	e8 ec fe ff ff       	call   401030 <puts@plt>
+  401144:	b8 00 00 00 00       	mov    $0x0,%eax
+  401149:	5d                   	pop    %rbp
+  40114a:	c3                   	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c hello.c -o hello.o && objdump -dr hello.o | sed -n '/<main>:/,$p'
+0000000000000000 <main>:
+   0:	55                   	push   %rbp
+   1:	48 89 e5             	mov    %rsp,%rbp
+   4:	bf 00 00 00 00       	mov    $0x0,%edi
+			5: R_X86_64_32	.rodata
+   9:	e8 00 00 00 00       	call   e <main+0xe>
+			a: R_X86_64_PLT32	puts-0x4
+   e:	b8 00 00 00 00       	mov    $0x0,%eax
+  13:	5d                   	pop    %rbp
+  14:	c3                   	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -masm=intel hello.c -o - | sed -n '/^main:/,/\.cfi_endproc/p'
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -fverbose-asm hello.c -o - | sed -n '/^main:/,/\.cfi_endproc/p'
+main:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+# hello.c:6:     printf("hello, world\n");
+	movl	$.LC0, %edi	#,
+	call	puts	#
+# hello.c:7:     return 0;
+	movl	$0, %eax	#, _3
+# hello.c:8: }
+	popq	%rbp	#
+	.cfi_def_cfa 7, 8
+	ret	
+	.cfi_endproc
+[exit 0]
+
+$ gcc -v 2>&1 | tr ' ' '\n' | grep -E 'pie|cf-protection|default' ; echo | gcc -dM -E - | grep -E '__pie__|__PIE__|__CET__|__SSP'
+--enable-offload-defaulted
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -fPIE -fcf-protection=full -S hello.c -o - | sed -n '/^main:/,/\.cfi_endproc/p'
+main:
+.LFB0:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	leaq	.LC0(%rip), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	movl	$0, %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -fPIE -pie -fcf-protection=full hello.c -o hello_pie && objdump -d hello_pie | sed -n '/<main>:/,/ret/p' && file hello_pie
+0000000000001159 <main>:
+    1159:	f3 0f 1e fa          	endbr64
+    115d:	55                   	push   %rbp
+    115e:	48 89 e5             	mov    %rsp,%rbp
+    1161:	48 8d 05 7c f4 ff ff 	lea    -0xb84(%rip),%rax        # 5e4 <_IO_stdin_used+0x4>
+    1168:	48 89 c7             	mov    %rax,%rdi
+    116b:	e8 e0 fe ff ff       	call   1050 <puts@plt>
+    1170:	b8 00 00 00 00       	mov    $0x0,%eax
+    1175:	5d                   	pop    %rbp
+    1176:	c3                   	ret
+hello_pie: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=ac6e42f8fc30cb921e57e715155cea3aeea2c86c, for GNU/Linux 3.2.0, not stripped
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -fno-asynchronous-unwind-tables call.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	subq	$16, %rsp
+	movl	$7, -4(%rbp)
+	movsd	.LC0(%rip), %xmm0
+	movsd	%xmm0, -16(%rbp)
+	movq	-16(%rbp), %rdx
+	movl	-4(%rbp), %eax
+	movq	%rdx, %xmm0
+	movl	%eax, %esi
+	movl	$.LC1, %edi
+	movl	$1, %eax
+	call	printf
+	movl	$0, %eax
+	leave
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic call.c -o call && ./call
+7 2.500000
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S -fno-asynchronous-unwind-tables call.c -o - | sed -n '/^main:/,/ret/p'; gcc -std=c23 -Wall -Wextra -pedantic -O2 -S call.c -o - | grep -A3 '^\.LC'
+main:
+	subq	$8, %rsp
+	movl	$7, %esi
+	movl	$.LC1, %edi
+	movsd	.LC0(%rip), %xmm0
+	movl	$1, %eax
+	call	printf
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	ret
+.LC1:
+	.string	"%d %f\n"
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+--
+.LC0:
+	.long	0
+	.long	1074003968
+	.ident	"GCC: (GNU) 16.2.1 20261029 (Red Hat 16.2.1-3)"
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	popq	%rbp
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O1 -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	subq	$8, %rsp
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	addq	$8, %rsp
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	subq	$8, %rsp
+	movl	$.LC0, %edi
+	call	puts
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O3 -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	subq	$8, %rsp
+	movl	$.LC0, %edi
+	call	puts
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	pushq	%rax
+	movl	$.LC0, %edi
+	call	puts
+	xorl	%eax, %eax
+	popq	%rdx
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Og -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	subq	$8, %rsp
+	movl	$.LC0, %edi
+	call	puts
+	movl	$0, %eax
+	addq	$8, %rsp
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -S -fno-asynchronous-unwind-tables ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+times10:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	movl	%edi, -4(%rbp)
+	movl	-4(%rbp), %edx
+	movl	%edx, %eax
+	sall	$2, %eax
+	addl	%edx, %eax
+	addl	%eax, %eax
+	popq	%rbp
+	ret
+div10:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	movl	%edi, -4(%rbp)
+	movl	-4(%rbp), %eax
+	movl	%eax, %edx
+	movl	$3435973837, %eax
+	imulq	%rdx, %rax
+	shrq	$32, %rax
+	shrl	$3, %eax
+	popq	%rbp
+	ret
+sum_to:
+	pushq	%rbp
+	movq	%rsp, %rbp
+	movl	%edi, -20(%rbp)
+	movl	$0, -4(%rbp)
+	movl	$1, -8(%rbp)
+	jmp	.L6
+.L7:
+	movl	-8(%rbp), %eax
+	addl	%eax, -4(%rbp)
+	addl	$1, -8(%rbp)
+.L6:
+	movl	-8(%rbp), %eax
+	cmpl	-20(%rbp), %eax
+	jle	.L7
+	movl	-4(%rbp), %eax
+	popq	%rbp
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O1 -S -fno-asynchronous-unwind-tables ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+times10:
+	leal	(%rdi,%rdi,4), %eax
+	addl	%eax, %eax
+	ret
+div10:
+	movl	%edi, %eax
+	movl	$3435973837, %edx
+	imulq	%rdx, %rax
+	shrq	$35, %rax
+	ret
+sum_to:
+	testl	%edi, %edi
+	jle	.L6
+	addl	$1, %edi
+	movl	$1, %eax
+	movl	$0, %edx
+.L5:
+	addl	%eax, %edx
+	addl	$1, %eax
+	cmpl	%edi, %eax
+	jne	.L5
+.L3:
+	movl	%edx, %eax
+	ret
+.L6:
+	movl	$0, %edx
+	jmp	.L3
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S -fno-asynchronous-unwind-tables ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+times10:
+	leal	(%rdi,%rdi,4), %eax
+	addl	%eax, %eax
+	ret
+div10:
+	movl	%edi, %eax
+	movl	$3435973837, %edx
+	imulq	%rdx, %rax
+	shrq	$35, %rax
+	ret
+sum_to:
+	testl	%edi, %edi
+	jle	.L7
+	leal	1(%rdi), %ecx
+	xorl	%edx, %edx
+	andl	$1, %edi
+	movl	$1, %eax
+	je	.L6
+	movl	$2, %eax
+	movl	$1, %edx
+	cmpl	%ecx, %eax
+	je	.L4
+.L6:
+	leal	1(%rdx,%rax,2), %edx
+	addl	$2, %eax
+	cmpl	%ecx, %eax
+	jne	.L6
+.L4:
+	movl	%edx, %eax
+	ret
+.L7:
+	xorl	%edx, %edx
+	movl	%edx, %eax
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O3 -S -fno-asynchronous-unwind-tables ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+times10:
+	leal	(%rdi,%rdi,4), %eax
+	addl	%eax, %eax
+	ret
+div10:
+	movl	%edi, %eax
+	movl	$3435973837, %edx
+	imulq	%rdx, %rax
+	shrq	$35, %rax
+	ret
+sum_to:
+	testl	%edi, %edi
+	jle	.L8
+	leal	-1(%rdi), %eax
+	cmpl	$3, %eax
+	jbe	.L9
+	movl	%edi, %edx
+	movl	$4, %esi
+	pxor	%xmm0, %xmm0
+	xorl	%eax, %eax
+	movdqa	.LC0(%rip), %xmm1
+	movd	%esi, %xmm2
+	shrl	$2, %edx
+	pshufd	$0, %xmm2, %xmm2
+.L7:
+	addl	$1, %eax
+	paddd	%xmm1, %xmm0
+	paddd	%xmm2, %xmm1
+	cmpl	%edx, %eax
+	jne	.L7
+	movdqa	%xmm0, %xmm1
+	sall	$2, %eax
+	psrldq	$8, %xmm1
+	paddd	%xmm1, %xmm0
+	movdqa	%xmm0, %xmm1
+	psrldq	$4, %xmm1
+	paddd	%xmm1, %xmm0
+	movd	%xmm0, %edx
+	cmpl	%eax, %edi
+	je	.L4
+	addl	$1, %eax
+.L6:
+	leal	1(%rax), %ecx
+	addl	%eax, %edx
+	cmpl	%ecx, %edi
+	jl	.L4
+	addl	%ecx, %edx
+	leal	2(%rax), %ecx
+	cmpl	%ecx, %edi
+	jl	.L4
+	addl	$3, %eax
+	addl	%ecx, %edx
+	xorl	%ecx, %ecx
+	cmpl	%eax, %edi
+	cmovl	%ecx, %eax
+	addl	%eax, %edx
+.L4:
+	movl	%edx, %eax
+	ret
+.L8:
+	xorl	%edx, %edx
+	movl	%edx, %eax
+	ret
+.L9:
+	movl	$1, %eax
+	xorl	%edx, %edx
+	jmp	.L6
+.LC0:
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -S -fno-asynchronous-unwind-tables ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+times10:
+	imull	$10, %edi, %eax
+	ret
+div10:
+	movl	%edi, %eax
+	movl	$10, %ecx
+	xorl	%edx, %edx
+	divl	%ecx
+	ret
+sum_to:
+	movl	$1, %eax
+	xorl	%edx, %edx
+.L4:
+	cmpl	%edi, %eax
+	jg	.L7
+	addl	%eax, %edx
+	incl	%eax
+	jmp	.L4
+.L7:
+	movl	%edx, %eax
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Og -S -fno-asynchronous-unwind-tables ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+times10:
+	leal	(%rdi,%rdi,4), %eax
+	addl	%eax, %eax
+	ret
+div10:
+	movl	%edi, %eax
+	movl	$3435973837, %edx
+	imulq	%rdx, %rax
+	shrq	$35, %rax
+	ret
+sum_to:
+	movl	$1, %eax
+	movl	$0, %edx
+	jmp	.L4
+.L5:
+	addl	%eax, %edx
+	addl	$1, %eax
+.L4:
+	cmpl	%edi, %eax
+	jle	.L5
+	movl	%edx, %eax
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -c ops.c -o ops_O0.o && size ops_O0.o | tail -1
+    265	      0	      0	    265	    109	ops_O0.o
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O1 -c ops.c -o ops_O1.o && size ops_O1.o | tail -1
+    203	      0	      0	    203	     cb	ops_O1.o
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -c ops.c -o ops_O2.o && size ops_O2.o | tail -1
+    237	      0	      0	    237	     ed	ops_O2.o
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O3 -c ops.c -o ops_O3.o && size ops_O3.o | tail -1
+    358	      0	      0	    358	    166	ops_O3.o
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -c ops.c -o ops_Os.o && size ops_Os.o | tail -1
+    172	      0	      0	    172	     ac	ops_Os.o
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Og -c ops.c -o ops_Og.o && size ops_Og.o | tail -1
+    196	      0	      0	    196	     c4	ops_Og.o
+[exit 0]
+
+$ gcc -O0 -Q --help=optimizers | grep -c '\[enabled\]'
+51
+[exit 0]
+
+$ gcc -O1 -Q --help=optimizers | grep -c '\[enabled\]'
+93
+[exit 0]
+
+$ gcc -O2 -Q --help=optimizers | grep -c '\[enabled\]'
+144
+[exit 0]
+
+$ gcc -O3 -Q --help=optimizers | grep -c '\[enabled\]'
+157
+[exit 0]
+
+$ gcc -Os -Q --help=optimizers | grep -c '\[enabled\]'
+135
+[exit 0]
+
+$ gcc -Og -Q --help=optimizers | grep -c '\[enabled\]'
+81
+[exit 0]
+
+$ gcc -Q --help=optimizers | grep -c '\[disabled\]'
+188
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -c ops.c -o t_O0.o && gcc -std=c23 -Wall -Wextra -pedantic test_ops.c t_O0.o -o test_O0 && ./test_O0
+17e8766f16198655
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -c ops.c -o t_O2.o && gcc -std=c23 -Wall -Wextra -pedantic test_ops.c t_O2.o -o test_O2 && ./test_O2
+17e8766f16198655
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -c ops.c -o t_Os.o && gcc -std=c23 -Wall -Wextra -pedantic test_ops.c t_Os.o -o test_Os && ./test_Os
+17e8766f16198655
+[exit 0]
+
+$ clang -std=c23 -O2 -S -fno-asynchronous-unwind-tables ops.c -o - | sed -n '/^sum_to:/,/ret/p'
+sum_to:                                 # @sum_to
+# %bb.0:
+                                        # kill: def $edi killed $edi def $rdi
+	testl	%edi, %edi
+	jle	.LBB2_1
+# %bb.2:
+	leal	-1(%rdi), %eax
+	leal	-2(%rdi), %ecx
+	imulq	%rax, %rcx
+	shrq	%rcx
+	leal	(%rcx,%rdi,2), %eax
+	decl	%eax
+	retq
+[exit 0]
+
+$ clang -std=c23 -Wall -Wextra -pedantic -O2 -c ops.c -o t_clang.o && gcc -std=c23 -Wall -Wextra -pedantic test_ops.c t_clang.o -o test_clang && ./test_clang
+17e8766f16198655
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 check10.c -o check10 && time ./check10
+mismatches with 3435973837: 0
+mismatches with 3435973836: 429496729
+
+real	0m6.482s
+user	0m6.473s
+sys	0m0.000s
+[exit 0]
+
+$ gcc -std=c23 -O0 -fdump-tree-all -fdump-rtl-all -S hello.c && ls hello.c.* | wc -l && ls hello.c.* | tr '\n' ' '
+54
+hello.c.006t.original hello.c.007t.gimple hello.c.010t.omplower hello.c.011t.lower hello.c.014t.eh hello.c.016t.cfg hello.c.018t.ompexp hello.c.023t.fixup_cfg1 hello.c.024t.ssa hello.c.025t.walloca1 hello.c.028t.waccess1 hello.c.033t.fixup_cfg2 hello.c.034t.local-fnsummary1 hello.c.035t.einline hello.c.055t.profile_estimate hello.c.059t.release_ssa hello.c.060t.local-fnsummary2 hello.c.105t.fixup_cfg3 hello.c.112t.adjust_alignment hello.c.257t.veclower hello.c.258t.cplxlower0 hello.c.259t.bitintlower0 hello.c.261t.switchlower_O0 hello.c.269t.isel hello.c.272t.waccess3 hello.c.273t.optimized hello.c.274r.expand hello.c.275r.vregs hello.c.276r.into_cfglayout hello.c.277r.jump hello.c.291r.reginfo hello.c.317r.outof_cfglayout hello.c.318r.split1 hello.c.320r.dfinit hello.c.321r.mode_sw hello.c.322r.asmcons hello.c.329r.ira hello.c.330r.reload hello.c.338r.pro_and_epilogue hello.c.341r.jump2 hello.c.354r.split4 hello.c.355r.stack hello.c.357r.zero_call_used_regs hello.c.358r.alignments hello.c.360r.mach hello.c.361r.barriers hello.c.367r.shorten hello.c.368r.nothrow hello.c.369r.dwarf2 hello.c.370r.final hello.c.371r.dfinish hello.c.372t.statistics hello.c.373t.earlydebug hello.c.374t.debug [exit 0]
+
+$ cat hello.c.*t.gimple
+int main ()
+{
+  int D.2661;
+
+  {
+    printf ("hello, world\n");
+    D.2661 = 0;
+    return D.2661;
+  }
+  D.2661 = 0;
+  return D.2661;
+}
+
+
+[exit 0]
+
+$ grep -l '__builtin_puts' hello.c.*t.* | head -3; cat hello.c.*t.lower
+hello.c.011t.lower
+hello.c.014t.eh
+hello.c.016t.cfg
+
+;; Function main (main, funcdef_no=0, decl_uid=2658, cgraph_uid=1, symbol_order=0)
+
+int main ()
+{
+  int D.2661;
+
+  __builtin_puts (&"hello, world"[0]);
+  D.2661 = 0;
+  goto <D.2662>;
+  D.2661 = 0;
+  goto <D.2662>;
+  <D.2662>:
+  return D.2661;
+}
+
+
+[exit 0]
+
+$ gcc -std=c23 -O2 -fdump-tree-all -fdump-rtl-all -S hello.c -o hello2.s && ls hello.c.* | wc -l
+54
+[exit 0]
+
+$ gcc -std=c23 -O2 -fdump-tree-gimple -fdump-tree-ssa -fdump-tree-optimized -fdump-rtl-expand -S ops.c && cat ops.c.*t.gimple
+int times10 (int x)
+{
+  int D.2345;
+
+  D.2345 = x * 10;
+  return D.2345;
+}
+
+
+unsigned int div10 (unsigned int x)
+{
+  unsigned int D.2347;
+
+  D.2347 = x / 10;
+  return D.2347;
+}
+
+
+int sum_to (int n)
+{
+  int D.2349;
+  int s;
+
+  s = 0;
+  {
+    int i;
+
+    i = 1;
+    goto <D.2343>;
+    <D.2342>:
+    s = s + i;
+    i = i + 1;
+    <D.2343>:
+    if (i <= n) goto <D.2342>; else goto <D.2340>;
+    <D.2340>:
+  }
+  D.2349 = s;
+  return D.2349;
+}
+
+
+[exit 0]
+
+$ sed -n '/Function sum_to/,/^}/p' ops.c.*t.ssa
+;; Function sum_to (sum_to, funcdef_no=2, decl_uid=2336, cgraph_uid=3, symbol_order=2)
+
+int sum_to (int n)
+{
+  int i;
+  int s;
+  int _6;
+
+  <bb 2> :
+  s_3 = 0;
+  i_4 = 1;
+  goto <bb 4>; [INV]
+
+  <bb 3> :
+  s_8 = s_1 + i_2;
+  i_9 = i_2 + 1;
+
+  <bb 4> :
+  # s_1 = PHI <s_3(2), s_8(3)>
+  # i_2 = PHI <i_4(2), i_9(3)>
+  if (i_2 <= n_5(D))
+    goto <bb 3>; [INV]
+  else
+    goto <bb 5>; [INV]
+
+  <bb 5> :
+  _6 = s_1;
+  return _6;
+
+}
+[exit 0]
+
+$ sed -n '/Function div10/,/^}/p' ops.c.*t.optimized
+;; Function div10 (div10, funcdef_no=1, decl_uid=2333, cgraph_uid=2, symbol_order=1)
+
+unsigned int div10 (unsigned int x)
+{
+  unsigned int _2;
+
+  <bb 2> [local count: 1073741824]:
+  _2 = x_1(D) / 10;
+  return _2;
+
+}
+[exit 0]
+
+$ grep -c '' ops.c.*r.expand; sed -n '/Function div10/,/^;; Function/p' ops.c.*r.expand | grep -n -E 'mult|lshiftrt|udiv|const_int' | head -12
+249
+35:        (const_int 3435973837 [0xcccccccd])) "ops.c":8:14 -1
+39:                (mult:DI (reg:DI 101)
+46:                (lshiftrt:DI (reg:DI 102)
+47:                    (const_int 32 [0x20])))
+53:                (lshiftrt:SI (subreg:SI (reg:DI 104) 0)
+54:                    (const_int 3 [0x3])))
+57:     (expr_list:REG_EQUAL (udiv:SI (reg/v:SI 99 [ x ])
+58:            (const_int 10 [0xa]))
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -O0 -S ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|globl|type|size)'
+__SP_H__ = 0x3e
+__SP_L__ = 0x3d
+__SREG__ = 0x3f
+__tmp_reg__ = 0
+__zero_reg__ = 1
+.global	times10
+times10:
+	push r28
+	push r29
+	rcall .
+	in r28,__SP_L__
+	in r29,__SP_H__
+/* prologue: function */
+/* frame size = 2 */
+/* stack size = 4 */
+.L__stack_usage = 4
+	std Y+2,r25
+	std Y+1,r24
+	ldd r18,Y+1
+	ldd r19,Y+2
+	movw r24,r18
+	lsl r24
+	rol r25
+	lsl r24
+	rol r25
+	add r24,r18
+	adc r25,r19
+	lsl r24
+	rol r25
+/* epilogue start */
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop r29
+	pop r28
+	ret
+.global	div10
+div10:
+	push r28
+	push r29
+	rcall .
+	in r28,__SP_L__
+	in r29,__SP_H__
+/* prologue: function */
+/* frame size = 2 */
+/* stack size = 4 */
+.L__stack_usage = 4
+	std Y+2,r25
+	std Y+1,r24
+	ldd r24,Y+1
+	ldd r25,Y+2
+	movw r18,r24
+	ldi r26,lo8(-51)
+	ldi r27,lo8(-52)
+	call __umulhisi3
+	lsr r25
+	ror r24
+	lsr r25
+	ror r24
+	lsr r25
+	ror r24
+/* epilogue start */
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop r29
+	pop r28
+	ret
+.global	sum_to
+sum_to:
+	push r28
+	push r29
+	rcall .
+	rcall .
+	rcall .
+	in r28,__SP_L__
+	in r29,__SP_H__
+/* prologue: function */
+/* frame size = 6 */
+/* stack size = 8 */
+.L__stack_usage = 8
+	std Y+6,r25
+	std Y+5,r24
+	std Y+2,__zero_reg__
+	std Y+1,__zero_reg__
+	ldi r24,lo8(1)
+	ldi r25,0
+	std Y+4,r25
+	std Y+3,r24
+	rjmp .L6
+.L7:
+	ldd r18,Y+1
+	ldd r19,Y+2
+	ldd r24,Y+3
+	ldd r25,Y+4
+	add r24,r18
+	adc r25,r19
+	std Y+2,r25
+	std Y+1,r24
+	ldd r24,Y+3
+	ldd r25,Y+4
+	adiw r24,1
+	std Y+4,r25
+	std Y+3,r24
+.L6:
+	ldd r24,Y+3
+	ldd r25,Y+4
+	ldd r18,Y+5
+	ldd r19,Y+6
+	cp r18,r24
+	cpc r19,r25
+	brge .L7
+	ldd r24,Y+1
+	ldd r25,Y+2
+/* epilogue start */
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop __tmp_reg__
+	pop r29
+	pop r28
+	ret
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -S ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|globl|type|size)'
+__SP_H__ = 0x3e
+__SP_L__ = 0x3d
+__SREG__ = 0x3f
+__tmp_reg__ = 0
+__zero_reg__ = 1
+.global	times10
+times10:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	ldi r18,lo8(10)
+	movw r20,r24
+	mul r18,r20
+	movw r24,r0
+	mul r18,r21
+	add r25,r0
+	clr __zero_reg__
+/* epilogue start */
+	ret
+.global	div10
+div10:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	ldi r22,lo8(10)
+	ldi r23,0
+	call __udivmodhi4
+	movw r24,r22
+/* epilogue start */
+	ret
+.global	sum_to
+sum_to:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	movw r20,r24
+	ldi r18,lo8(1)
+	ldi r19,0
+	ldi r24,0
+	ldi r25,0
+.L4:
+	cp r20,r18
+	cpc r21,r19
+	brge .L5
+/* epilogue start */
+	ret
+.L5:
+	add r24,r18
+	adc r25,r19
+	subi r18,-1
+	sbci r19,-1
+	rjmp .L4
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -O2 -S ops.c -o - | grep -v -E '^\s*\.(file|ident|section|text|globl|type|size)'
+__SP_H__ = 0x3e
+__SP_L__ = 0x3d
+__SREG__ = 0x3f
+__tmp_reg__ = 0
+__zero_reg__ = 1
+.global	times10
+times10:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	movw r18,r24
+	lsl r18
+	rol r19
+	lsl r18
+	rol r19
+	add r24,r18
+	adc r25,r19
+	lsl r24
+	rol r25
+/* epilogue start */
+	ret
+.global	div10
+div10:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	movw r18,r24
+	ldi r26,lo8(-51)
+	ldi r27,lo8(-52)
+	call __umulhisi3
+	lsr r25
+	ror r24
+	lsr r25
+	ror r24
+	lsr r25
+	ror r24
+/* epilogue start */
+	ret
+.global	sum_to
+sum_to:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	cp __zero_reg__,r24
+	cpc __zero_reg__,r25
+	brge .L7
+	movw r20,r24
+	subi r20,-1
+	sbci r21,-1
+	ldi r18,lo8(1)
+	ldi r19,0
+	ldi r24,0
+	ldi r25,0
+.L6:
+	add r24,r18
+	adc r25,r19
+	subi r18,-1
+	sbci r19,-1
+	cp r18,r20
+	cpc r19,r21
+	brne .L6
+	ret
+.L7:
+	ldi r24,0
+	ldi r25,0
+/* epilogue start */
+	ret
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -O0 -c ops.c -o avrops_O0.o && avr-size avrops_O0.o | tail -1
+    190	      0	      0	    190	     be	avrops_O0.o
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -c ops.c -o avrops_Os.o && avr-size avrops_Os.o | tail -1
+     56	      0	      0	     56	     38	avrops_Os.o
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -O2 -c ops.c -o avrops_O2.o && avr-size avrops_O2.o | tail -1
+     86	      0	      0	     86	     56	avrops_O2.o
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -S avr_hello.c -o - | sed -n '/^main:/,/\.size/p'
+main:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	ldi r24,lo8(2)
+	sts 192,r24
+	ldi r24,lo8(16)
+	ldi r25,0
+	sts 196+1,r25
+	sts 196,r24
+	ldi r24,lo8(8)
+	sts 193,r24
+	ldi r30,lo8(.LC0)
+	ldi r31,hi8(.LC0)
+.L3:
+	ld r24,Z+
+.L2:
+	lds r25,192
+	sbrs r25,5
+	rjmp .L2
+	sts 198,r24
+	ldi r24,hi8(.LC0+14)
+	cpi r30,lo8(.LC0+14)
+	cpc r31,r24
+	brne .L3
+.L4:
+	rjmp .L4
+	.size	main, .-main
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os avr_ops.c -o avr_ops.elf && avr-objdump -d avr_ops.elf | sed -n '/<main>:/,/<__udivmodhi4_ep>/p'; avr-objdump -d avr_ops.elf | sed -n '/<__udivmodhi4_ep>:/,/ret/p'
+0000008c <main>:
+  8c:	83 b1       	in	r24, 0x03	; 3
+  8e:	90 e0       	ldi	r25, 0x00	; 0
+  90:	6a e0       	ldi	r22, 0x0A	; 10
+  92:	70 e0       	ldi	r23, 0x00	; 0
+  94:	0e 94 4e 00 	call	0x9c	; 0x9c <__udivmodhi4>
+  98:	65 b9       	out	0x05, r22	; 5
+
+0000009a <.L3>:
+  9a:	ff cf       	rjmp	.-2      	; 0x9a <.L3>
+
+0000009c <__udivmodhi4>:
+  9c:	aa 1b       	sub	r26, r26
+
+0000009e <.Loc.1>:
+  9e:	bb 1b       	sub	r27, r27
+
+000000a0 <.Loc.2>:
+  a0:	51 e1       	ldi	r21, 0x11	; 17
+
+000000a2 <.Loc.3>:
+  a2:	07 c0       	rjmp	.+14     	; 0xb2 <__udivmodhi4_ep>
+000000b2 <__udivmodhi4_ep>:
+  b2:	88 1f       	adc	r24, r24
+
+000000b4 <.Loc.12>:
+  b4:	99 1f       	adc	r25, r25
+
+000000b6 <.Loc.13>:
+  b6:	5a 95       	dec	r21
+
+000000b8 <.Loc.14>:
+  b8:	a9 f7       	brne	.-22     	; 0xa4 <__udivmodhi4_loop>
+
+000000ba <.Loc.15>:
+  ba:	80 95       	com	r24
+
+000000bc <.Loc.16>:
+  bc:	90 95       	com	r25
+
+000000be <.Loc.17>:
+  be:	bc 01       	movw	r22, r24
+
+000000c0 <.Loc.18>:
+  c0:	cd 01       	movw	r24, r26
+
+000000c2 <.Loc.19>:
+  c2:	08 95       	ret
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -c avr_ops.c -o avr_ops.o && avr-nm avr_ops.o
+00000000 T div10
+0000000e t .L3
+00000000 T main
+0000003e a __SP_H__
+0000003d a __SP_L__
+0000003f a __SREG__
+00000000 a __tmp_reg__
+         U __udivmodhi4
+00000001 a __zero_reg__
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -print-libgcc-file-name; avr-nm $(avr-gcc -mmcu=atmega328p -print-libgcc-file-name) 2>/dev/null | grep -E ' T __udivmodhi4$'
+/usr/lib/gcc/avr/15.3.0/avr5/libgcc.a
+00000000 T __udivmodhi4
+[exit 0]

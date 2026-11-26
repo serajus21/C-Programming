@@ -1,0 +1,49 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic cosa.c -o cosa -lm
+cosa.c: In function ‘main’:
+cosa.c:3:20: error: implicit declaration of function ‘cos’ [-Wimplicit-function-declaration]
+    3 |     printf("%f\n", cos(0.0));
+      |                    ^~~
+cosa.c:2:1: note: include ‘<math.h>’ or provide a declaration of ‘cos’
+    1 | #include <stdio.h>
+  +++ |+#include <math.h>
+    2 | int main(void) {
+cosa.c:3:20: warning: incompatible implicit declaration of built-in function ‘cos’ [-Wbuiltin-declaration-mismatch]
+    3 |     printf("%f\n", cos(0.0));
+      |                    ^~~
+cosa.c:3:20: note: include ‘<math.h>’ or provide a declaration of ‘cos’
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 cosb.c -o cosb
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 cosb.c -o cosc && ./cosc
+1.000000
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Iinc hello.c -o h1
+In file included from hello.c:3:
+inc/stdio.h:1:2: error: #error this is not the real stdio.h
+    1 | #error this is not the real stdio.h
+      |  ^~~~~
+hello.c: In function ‘main’:
+hello.c:6:5: error: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    6 |     printf("hello, world\n");
+      |     ^~~~~~
+hello.c:4:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+    3 | #include <stdio.h>
+  +++ |+#include <stdio.h>
+    4 | 
+hello.c:6:5: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
+    6 |     printf("hello, world\n");
+      |     ^~~~~~
+hello.c:6:5: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -idirafter inc hello.c -o h2 && ./h2
+hello, world
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic arr.c -o arr && ./arr
+4
+[exit 0]

@@ -1,0 +1,152 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -masm=intel hello.c -o hello_intel.s; grep -n -A12 '^main:' hello_intel.s
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -c hello.c -o h2.o && objdump -d h2.o | sed -n '/<main>:/,/ret/p'
+0000000000000000 <main>:
+   0:	48 83 ec 08          	sub    $0x8,%rsp
+   4:	bf 00 00 00 00       	mov    $0x0,%edi
+   9:	e8 00 00 00 00       	call   e <main+0xe>
+   e:	31 c0                	xor    %eax,%eax
+  10:	48 83 c4 08          	add    $0x8,%rsp
+  14:	c3                   	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -c hello.c -o hs.o && objdump -d hs.o | sed -n '/<main>:/,/ret/p'
+0000000000000000 <main>:
+   0:	50                   	push   %rax
+   1:	bf 00 00 00 00       	mov    $0x0,%edi
+   6:	e8 00 00 00 00       	call   b <main+0xb>
+   b:	31 c0                	xor    %eax,%eax
+   d:	5a                   	pop    %rdx
+   e:	c3                   	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S hello.c -o - | grep -n -E 'section|^main:'
+3:	.section	.rodata.str1.1,"aMS",@progbits,1
+6:	.section	.text.startup,"ax",@progbits
+10:main:
+25:	.section	.note.GNU-stack,"",@progbits
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -c ops.c -o o0.o && objdump -d o0.o | sed -n '/<div10>:/,/ret/p'
+0000000000000015 <div10>:
+  15:	55                   	push   %rbp
+  16:	48 89 e5             	mov    %rsp,%rbp
+  19:	89 7d fc             	mov    %edi,-0x4(%rbp)
+  1c:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  1f:	89 c2                	mov    %eax,%edx
+  21:	b8 cd cc cc cc       	mov    $0xcccccccd,%eax
+  26:	48 0f af c2          	imul   %rdx,%rax
+  2a:	48 c1 e8 20          	shr    $0x20,%rax
+  2e:	c1 e8 03             	shr    $0x3,%eax
+  31:	5d                   	pop    %rbp
+  32:	c3                   	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -c ops.c -o os.o && objdump -d os.o | sed -n '/<div10>:/,/ret/p'
+0000000000000004 <div10>:
+   4:	89 f8                	mov    %edi,%eax
+   6:	b9 0a 00 00 00       	mov    $0xa,%ecx
+   b:	31 d2                	xor    %edx,%edx
+   d:	f7 f1                	div    %ecx
+   f:	c3                   	ret
+[exit 0]
+
+$ objdump -d --no-show-raw-insn o0.o | grep -c '^ *[0-9a-f]*:'; objdump -d --no-show-raw-insn os.o | grep -c '^ *[0-9a-f]*:'
+36
+16
+[exit 0]
+
+$ avr-objdump -d avr_ops.elf | sed -n '/<__udivmodhi4>:/,/ret/p' | grep -v -E '^$|Loc'
+0000009c <__udivmodhi4>:
+  9c:	aa 1b       	sub	r26, r26
+  9e:	bb 1b       	sub	r27, r27
+  a0:	51 e1       	ldi	r21, 0x11	; 17
+  a2:	07 c0       	rjmp	.+14     	; 0xb2 <__udivmodhi4_ep>
+000000a4 <__udivmodhi4_loop>:
+  a4:	aa 1f       	adc	r26, r26
+  a6:	bb 1f       	adc	r27, r27
+  a8:	a6 17       	cp	r26, r22
+  aa:	b7 07       	cpc	r27, r23
+  ac:	10 f0       	brcs	.+4      	; 0xb2 <__udivmodhi4_ep>
+  ae:	a6 1b       	sub	r26, r22
+  b0:	b7 0b       	sbc	r27, r23
+000000b2 <__udivmodhi4_ep>:
+  b2:	88 1f       	adc	r24, r24
+  b4:	99 1f       	adc	r25, r25
+  b6:	5a 95       	dec	r21
+  b8:	a9 f7       	brne	.-22     	; 0xa4 <__udivmodhi4_loop>
+  ba:	80 95       	com	r24
+  bc:	90 95       	com	r25
+  be:	bc 01       	movw	r22, r24
+  c0:	cd 01       	movw	r24, r26
+  c2:	08 95       	ret
+[exit 0]
+
+$ avr-objdump -d avr_ops.elf | grep -c '^ *[0-9a-f]*:'; avr-size avr_ops.elf
+69
+   text	   data	    bss	    dec	    hex	filename
+    200	      0	      0	    200	     c8	avr_ops.elf
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -c avr_hello.c -o ah.o && avr-objdump -d ah.o | sed -n '/<main>:/,$p' | grep -v -E '^$|Loc'
+00000000 <main>:
+   0:	82 e0       	ldi	r24, 0x02	; 2
+   2:	80 93 c0 00 	sts	0x00C0, r24	; 0x8000c0 <__SREG__+0x800081>
+   6:	80 e1       	ldi	r24, 0x10	; 16
+   8:	90 e0       	ldi	r25, 0x00	; 0
+   a:	90 93 c5 00 	sts	0x00C5, r25	; 0x8000c5 <__SREG__+0x800086>
+   e:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__SREG__+0x800085>
+  12:	88 e0       	ldi	r24, 0x08	; 8
+  14:	80 93 c1 00 	sts	0x00C1, r24	; 0x8000c1 <__SREG__+0x800082>
+  18:	e0 e0       	ldi	r30, 0x00	; 0
+  1a:	f0 e0       	ldi	r31, 0x00	; 0
+0000001c <.L3>:
+  1c:	81 91       	ld	r24, Z+
+0000001e <.L2>:
+  1e:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__SREG__+0x800081>
+  22:	95 ff       	sbrs	r25, 5
+  24:	00 c0       	rjmp	.+0      	; 0x26 <.L2+0x8>
+  26:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__SREG__+0x800087>
+  2a:	80 e0       	ldi	r24, 0x00	; 0
+  2c:	e0 30       	cpi	r30, 0x00	; 0
+  2e:	f8 07       	cpc	r31, r24
+  30:	01 f4       	brne	.+0      	; 0x32 <.L4>
+00000032 <.L4>:
+  32:	00 c0       	rjmp	.+0      	; 0x34 <.L4+0x2>
+[exit 0]
+
+$ gcc --version | head -1; clang --version | head -1; avr-gcc --version | head -1; as --version | head -1
+gcc (GCC) 16.2.1 20261029 (Red Hat 16.2.1-3)
+clang version 23.1.5 (Fedora 23.1.5-2.fc45)
+avr-gcc (Fedora 15.3.0-1.fc45) 15.3.0
+GNU assembler version 2.47.20260726
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -fno-omit-frame-pointer -O2 -S -fno-asynchronous-unwind-tables ops.c -o - | sed -n '/^times10:/,/ret/p'
+times10:
+	leal	(%rdi,%rdi,4), %eax
+	addl	%eax, %eax
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -g -c ops.c -o og.o && objdump -d -S --no-show-raw-insn og.o | sed -n '/<times10>:/,/^$/p'
+0000000000000000 <times10>:
+// ops.c
+// Three small functions, to watch the optimizer at work.
+int times10(int x) {
+   0:	push   %rbp
+   1:	mov    %rsp,%rbp
+   4:	mov    %edi,-0x4(%rbp)
+    return x * 10;
+   7:	mov    -0x4(%rbp),%edx
+   a:	mov    %edx,%eax
+   c:	shl    $0x2,%eax
+   f:	add    %edx,%eax
+  11:	add    %eax,%eax
+}
+  13:	pop    %rbp
+  14:	ret
+
+[exit 0]

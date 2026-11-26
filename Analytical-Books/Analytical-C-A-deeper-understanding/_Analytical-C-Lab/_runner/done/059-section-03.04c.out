@@ -1,0 +1,30 @@
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -masm=intel hello.c -o hello_intel.s
+[exit 0]
+^I.file^I"hello.c"$
+^I.intel_syntax noprefix$
+^I.text$
+^I.section^I.rodata$
+.LC0:$
+^I.string^I"hello, world"$
+^I.text$
+^I.globl^I"main"$
+^I.type^I"main", @function$
+"main":$
+.LFB0:$
+^I.cfi_startproc$
+^Ipush^Irbp$
+^I.cfi_def_cfa_offset 16$
+^I.cfi_offset 6, -16$
+^Imov^Irbp, rsp$
+^I.cfi_def_cfa_register 6$
+^Imov^Iedi, OFFSET FLAT:.LC0$
+^Icall^I"puts"$
+^Imov^Ieax, 0$
+^Ipop^Irbp$
+^I.cfi_def_cfa 7, 8$
+^Iret$
+^I.cfi_endproc$
+.LFE0:$
+^I.size^I"main", .-"main"$
+^I.ident^I"GCC: (GNU) 16.2.1 20261029 (Red Hat 16.2.1-3)"$
+^I.section^I.note.GNU-stack,"",@progbits$

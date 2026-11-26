@@ -1,0 +1,59 @@
+
+$ gcc -std=c23 -O0 -fdump-tree-lower -fdump-rtl-final -S hello.c && ls
+hello.c
+hello.c.011t.lower
+hello.c.370r.final
+hello.s
+ops.c
+[exit 0]
+
+$ grep -c '' hello.c.*r.final; grep -n -E 'insn|call_insn' hello.c.*r.final | head -20
+53
+17:;;    total ref usage 120{107d,13u,0e} in 8{7 regular + 1 call} insns.
+20:(insn/f 18 3 19 2 (set (mem:DI (pre_dec:DI (reg/f:DI 7 sp)) [0  S8 A8])
+23:(insn/f 19 18 20 2 (set (reg/f:DI 6 bp)
+28:(insn 5 2 6 2 (set (reg:DI 5 di)
+31:(call_insn 6 5 7 2 (set (reg:SI 0 ax)
+38:(insn 7 6 15 2 (set (reg:SI 0 ax [orig:98 _3 ] [98])
+41:(insn 15 7 21 2 (use (reg/i:SI 0 ax)) "hello.c":8:1 -1
+44:(insn/f 22 21 23 2 (set (reg/f:DI 6 bp)
+49:(jump_insn 23 22 24 2 (simple_return) "hello.c":8:1 1521 {simple_return_internal}
+[exit 0]
+
+$ gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables ops.c -o - | grep -c ''
+55
+[exit 0]
+
+$ gcc -std=c23 -O2 -fdump-passes -c ops.c -o /dev/null 2>&1 | grep -c -E 'ON|OFF'; gcc -std=c23 -O2 -fdump-passes -c ops.c -o /dev/null 2>&1 | grep -c 'ON'
+394
+281
+[exit 0]
+
+$ gcc -std=c23 -O0 -fdump-passes -c ops.c -o /dev/null 2>&1 | grep -c 'ON'
+141
+[exit 0]
+
+$ printf 'unsigned d3(unsigned x){return x/3;}\nunsigned d7(unsigned x){return x/7;}\nint s10(int x){return x/10;}\n' > div.c; gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables div.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size|align|long|string)|^[0-4]:'
+d3:
+	movl	%edi, %eax
+	movl	$2863311531, %edx
+	imulq	%rdx, %rax
+	shrq	$33, %rax
+	ret
+d7:
+	movl	%edi, %eax
+	imulq	$613566757, %rax, %rax
+	shrq	$32, %rax
+	subl	%eax, %edi
+	shrl	%edi
+	addl	%edi, %eax
+	shrl	$2, %eax
+	ret
+s10:
+	movslq	%edi, %rax
+	sarl	$31, %edi
+	imulq	$1717986919, %rax, %rax
+	sarq	$34, %rax
+	subl	%edi, %eax
+	ret
+[exit 0]

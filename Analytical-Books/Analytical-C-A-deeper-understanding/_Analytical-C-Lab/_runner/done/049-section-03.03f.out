@@ -1,0 +1,61 @@
+   Alternatively, by defining the macro \c __DELAY_ROUND_DOWN__, or
+   \c __DELAY_ROUND_CLOSEST__, before including this header file, the
+   algorithm can be made to round down, or round to closest integer,
+   respectively.
+
+   \note The implementation of _delay_ms() based on
+   \c __builtin_avr_delay_cycles() is not backward compatible with older
+   implementations.  In order to get functionality backward compatible
+   with previous versions, the macro \c __DELAY_BACKWARD_COMPATIBLE__
+   must be defined before including this header file.
+ */
+static __ATTR_ALWAYS_INLINE__ void _delay_ms(double __ms);
+
+void
+_delay_ms(double __ms)
+{
+	double __tmp ;
+#if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) \
+  && !defined(__DELAY_BACKWARD_COMPATIBLE__)
+	uint32_t __ticks_dc;
+	extern void __builtin_avr_delay_cycles(uint32_t);
+==
+44:#    define __ATTR_ALWAYS_INLINE__ __inline__ __attribute__((__always_inline__))
+125:   _delay_ms() provides a decreased resolution functionality. In this
+126:   mode _delay_ms() will work with a resolution of 1/10&nbsp;ms, providing
+145:   \note The implementation of _delay_ms() based on
+151:static __ATTR_ALWAYS_INLINE__ void _delay_ms(double __ms);
+154:_delay_ms(double __ms)
+210:   _delay_us() will automatically call _delay_ms() instead.  The user
+228:   \note The implementation of _delay_us() based on
+234:static __ATTR_ALWAYS_INLINE__ void _delay_us(double __us);
+237:_delay_us(double __us)
+268:		_delay_ms(__us / 1000.0);
+==
+#define _IONBF 2		/* No buffering.  */
+
+
+/* Default buffer size.  */
+#define BUFSIZ 8192
+
+
+/* The value returned by fgetc and similar functions to indicate the
+   end of the file.  */
+#define EOF (-1)
+
+
+/* The possibilities for the third argument to `fseek'.
+
+
+/* Standard streams.  */
+extern FILE *stdin;		/* Standard input stream.  */
+extern FILE *stdout;		/* Standard output stream.  */
+extern FILE *stderr;		/* Standard error output stream.  */
+/* C89/C99 say they're macros.  Make them happy.  */
+#define stdin stdin
+#define stdout stdout
+#define stderr stderr
+
+==
+502:extern int fputs (const char *__restrict __s, FILE *__restrict __stream)
+509:extern int puts (const char *__s);

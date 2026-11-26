@@ -1,0 +1,41 @@
+int times10 (int x)
+{
+  int D.2345;
+
+  D.2345 = x * 10;
+  return D.2345;
+}
+
+
+unsigned int div10 (unsigned int x)
+{
+  unsigned int D.2347;
+
+  D.2347 = x / 10;
+  return D.2347;
+}
+
+
+int sum_to (int n)
+{
+  int D.2349;
+  int s;
+
+  s = 0;
+  {
+    int i;
+
+    i = 1;
+    goto <D.2343>;
+    <D.2342>:
+    s = s + i;
+    i = i + 1;
+    <D.2343>:
+    if (i <= n) goto <D.2342>; else goto <D.2340>;
+    <D.2340>:
+  }
+  D.2349 = s;
+  return D.2349;
+}
+
+

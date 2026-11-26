@@ -1,0 +1,18 @@
+
+$ grep -m1 'model name' /proc/cpuinfo
+model name	: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 divcost.c -o divcost && ./divcost && ./divcost
+divide by a variable 10: 3.12 ns per step
+divide by the constant 10: 1.52 ns per step
+results: 55555555 55555555
+divide by a variable 10: 2.98 ns per step
+divide by the constant 10: 1.46 ns per step
+results: 55555555 55555555
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S divcost.c -o - | grep -E 'divl|imulq'
+	divl	%ebp
+	imulq	%rcx, %rdx
+[exit 0]

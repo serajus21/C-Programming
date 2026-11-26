@@ -1,0 +1,225 @@
+
+$ gcc -std=c23 -nostdinc -dM -E - </dev/null | wc -l; gcc -std=c23 -dM -E - </dev/null | wc -l
+402
+408
+[exit 0]
+
+$ gcc -std=c23 -E - </dev/null | head -8
+# 0 "<stdin>"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3
+# 0 "<command-line>" 2
+# 1 "<stdin>"
+[exit 0]
+
+$ grep -n stdc-predef /usr/include/features.h
+518:#include <stdc-predef.h>
+[exit 0]
+
+$ grep -n '{' hello.i
+134:typedef struct { int __val[2]; } __fsid_t;
+204:{
+207:  {
+218:{
+226:{
+267:{
+570:int main(void) {
+[exit 0]
+
+$ diff <(grep -v '^# ' hello.i | grep -v '^$') <(gcc -std=c23 -E -P hello.c | grep -v '^$')
+171,176c171,173
+< extern int fscanf (FILE *__restrict __stream, const char *__restrict __format, ...) __asm__ ("" "__isoc23_fscanf")
+<                                 __attribute__ ((__nonnull__ (1)));
+< extern int scanf (const char *__restrict __format, ...) __asm__ ("" "__isoc23_scanf")
+<                               ;
+< extern int sscanf (const char *__restrict __s, const char *__restrict __format, ...) __asm__ ("" "__isoc23_sscanf") __attribute__ ((__nothrow__ , __leaf__))
+<                       ;
+---
+> extern int fscanf (FILE *__restrict __stream, const char *__restrict __format, ...) __asm__ ("" "__isoc23_fscanf") __attribute__ ((__nonnull__ (1)));
+> extern int scanf (const char *__restrict __format, ...) __asm__ ("" "__isoc23_scanf") ;
+> extern int sscanf (const char *__restrict __s, const char *__restrict __format, ...) __asm__ ("" "__isoc23_sscanf") __attribute__ ((__nothrow__ , __leaf__));
+[exit 1]
+
+$ gcc -std=c23 -E -P hello.c | grep -c '^$'
+2
+[exit 0]
+
+$ cd exp && cat def.h a.c b.c decl.h e2.c d2.c
+int counter = 0;
+#include "def.h"
+int main(void) { return counter; }
+#include "def.h"
+int other(void) { return counter + 1; }
+extern int counter;
+#include "decl.h"
+#include "decl.h"
+int counter = 3;
+int main(void) { return counter; }
+#include "def.h"
+#include "def.h"
+int main(void) { return counter; }
+[exit 0]
+
+$ cd exp && gcc -std=c23 -Wall -Wextra -pedantic d2.c -o d2
+In file included from d2.c:2:
+def.h:1:5: error: redefinition of ‘counter’
+    1 | int counter = 0;
+      |     ^~~~~~~
+In file included from d2.c:1:
+def.h:1:5: note: previous definition of ‘counter’ with type ‘int’
+    1 | int counter = 0;
+      |     ^~~~~~~
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S root.c -o - | grep -E -A3 '^\.LC[0-9]:|section'
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.LC1:
+	.string	"%f\n"
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+--
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC0:
+	.long	1719614413
+	.long	1073127582
+	.ident	"GCC: (GNU) 16.2.1 20261029 (Red Hat 16.2.1-3)"
+	.section	.note.GNU-stack,"",@progbits
+[exit 0]
+
+$ grep -n -E 'idea behind|code bloat|F_CPU not defined|define F_CPU|ifndef F_CPU' /usr/avr/include/util/delay.h
+55:    #define F_CPU 1000000UL  // 1 MHz
+56:    //#define F_CPU 14.7456e6
+68:    rather than a number of cycles to wait for.  The idea behind is
+80:    will experience severe code bloat by the floating-point library
+89:#ifndef F_CPU
+91:# warning "F_CPU not defined for <util/delay.h>"
+107:# define F_CPU 1000000UL
+[exit 0]
+
+$ sed -n 70,100p /usr/avr/include/util/delay.h
+    compiler optimization so floating-point expressions can be used
+    to calculate the number of delay cycles needed based on the CPU
+    frequency passed by the macro F_CPU.
+
+    \note In order for these functions to work as intended, compiler
+    optimizations <em>must</em> be enabled, and the delay time
+    <em>must</em> be an expression that is a known constant at
+    compile-time.  If these requirements are not met, the resulting
+    delay will be much longer (and basically unpredictable), and
+    applications that otherwise do not use floating-point calculations
+    will experience severe code bloat by the floating-point library
+    routines linked into the application.
+
+    The functions available allow the specification of microsecond, and
+    millisecond delays directly, using the application-supplied macro
+    F_CPU as the CPU clock frequency (in Hertz).
+*/
+
+
+#ifndef F_CPU
+/* prevent compiler error by supplying a default */
+# warning "F_CPU not defined for <util/delay.h>"
+/** \ingroup util_delay
+    \def F_CPU
+    \brief CPU frequency in Hz
+
+    The macro F_CPU specifies the CPU frequency to be considered by
+    the delay macros.  This macro is normally supplied by the
+    environment (e.g. from within a project header, or the project's
+    Makefile).  The value 1 MHz here is only provided as a "vanilla"
+    fallback if no such user-provided definition could be found.
+[exit 0]
+
+$ gcc -std=c23 -Os -E hello.c | wc -l; gcc -std=c23 -O2 -E hello.c | wc -l
+573
+601
+[exit 0]
+
+$ sed 4d pragma.c > nopragma.c; cat -n nopragma.c; gcc -std=c23 -Wall -Wextra -pedantic nopragma.c -o nopragma
+     1	// pragma.c
+     2	// Which directives survive -E?
+     3	#define GREETING "hello"
+     4	
+     5	int main(void) {
+     6	    int unused;
+     7	    return 0;
+     8	}
+nopragma.c: In function ‘main’:
+nopragma.c:6:9: warning: unused variable ‘unused’ [-Wunused-variable]
+    6 |     int unused;
+      |         ^~~~~~
+[exit 0]
+
+$ ls /usr/avr/include/avr/io*.h | wc -l; ls /usr/local/include | wc -l
+367
+0
+[exit 0]
+
+$ rpm -q --requires gcc | grep -i glibc
+glibc-devel >= 2.2.90-12
+libc.so.6(GLIBC_2.11)(64bit)
+libc.so.6(GLIBC_2.14)(64bit)
+libc.so.6(GLIBC_2.15)(64bit)
+libc.so.6(GLIBC_2.17)(64bit)
+libc.so.6(GLIBC_2.2.5)(64bit)
+libc.so.6(GLIBC_2.25)(64bit)
+libc.so.6(GLIBC_2.3)(64bit)
+libc.so.6(GLIBC_2.3.2)(64bit)
+libc.so.6(GLIBC_2.3.3)(64bit)
+libc.so.6(GLIBC_2.3.4)(64bit)
+libc.so.6(GLIBC_2.32)(64bit)
+libc.so.6(GLIBC_2.33)(64bit)
+libc.so.6(GLIBC_2.34)(64bit)
+libc.so.6(GLIBC_2.35)(64bit)
+libc.so.6(GLIBC_2.36)(64bit)
+libc.so.6(GLIBC_2.38)(64bit)
+libm.so.6(GLIBC_2.2.5)(64bit)
+[exit 0]
+
+$ gcc -std=c23 -E -dD '-DSQUARE2(x)=((x)*(x))' macros.c | grep -n -E '^# 0|^# 1 "macros.c"|SQUARE2' | head
+1:# 0 "macros.c"
+2:# 0 "<built-in>"
+4:# 0 "<built-in>"
+6:# 0 "<built-in>"
+8:# 0 "<built-in>"
+10:# 0 "<built-in>"
+12:# 0 "<built-in>"
+14:# 0 "<built-in>"
+16:# 0 "<built-in>"
+18:# 0 "<built-in>"
+grep: write error: Broken pipe
+macros.c:16: fatal error: when writing output to : Broken pipe
+compilation terminated.
+[exit 0]
+
+$ gcc -std=c23 -E -dD hello.c | grep -n '^# ' | head -5; gcc -std=c23 -E -dD hello.c | grep -c '^#define'
+1:# 0 "hello.c"
+2:# 0 "<built-in>"
+4:# 0 "<built-in>"
+6:# 0 "<built-in>"
+8:# 0 "<built-in>"
+grep: write error: Broken pipe
+hello.c:9: fatal error: when writing output to : Broken pipe
+compilation terminated.
+692
+[exit 0]
+
+$ gcc -std=c23 -E hello.c | grep -n -B1 -A1 '__isoc23_scanf' | head -8
+439-                                __attribute__ ((__nonnull__ (1)));
+440:extern int scanf (const char *__restrict __format, ...) __asm__ ("" "__isoc23_scanf")
+441-                              ;
+[exit 0]
+
+$ nm -D /lib64/libc.so.6 | grep -E ' strlen(@|$)'; nm -D /lib64/libc.so.6 | grep -c ' [Ww] '; nm -D /lib64/libc.so.6 | grep -c ' i '
+0000000000105690 i strlen@@GLIBC_2.2.5
+693
+65
+[exit 0]
+
+$ ldd --version | head -1
+ldd (GNU libc) 2.44
+[exit 0]

@@ -1,0 +1,42 @@
+
+$ rpm --eval '%{optflags}'
+-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer
+[exit 0]
+
+$ cat one_int.c; gcc -std=c23 -Wall -Wextra -pedantic -S -fno-asynchronous-unwind-tables one_int.c -o - | grep -E 'eax|call'
+#include <stdio.h>
+int main(void) {
+    int n = 7;
+    printf("%d\\n", n);
+    return 0;
+}
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
+	movl	$0, %eax
+	call	printf
+	movl	$0, %eax
+[exit 0]
+
+$ cp ../../03.03/root.c . && gcc -std=c23 -Wall -Wextra -pedantic -S -fno-asynchronous-unwind-tables root.c -o - | grep -E 'eax|call'
+	call	sqrt
+	movl	$1, %eax
+	call	printf
+	movl	$0, %eax
+[exit 0]
+
+$ diff <(gcc -std=c23 -Wall -Wextra -pedantic -O2 -S -fno-asynchronous-unwind-tables ops.c -o -) <(gcc -std=c23 -Wall -Wextra -pedantic -O2 -fno-omit-frame-pointer -S -fno-asynchronous-unwind-tables ops.c -o -) && echo identical
+identical
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O3 -S -fno-asynchronous-unwind-tables ops.c -o - | sed -n '/^sum_to:/,/\.size/p' | grep -c -v -E '^\s*\.(size|p2align)'
+57
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -S -fno-asynchronous-unwind-tables ops.c -o o2.s && gcc -std=c23 -Wall -Wextra -pedantic -O2 -c ops.c -o o2.o && objdump -d o2.o | sed -n '/<div10>:/,/ret/p'
+0000000000000010 <div10>:
+  10:	89 f8                	mov    %edi,%eax
+  12:	ba cd cc cc cc       	mov    $0xcccccccd,%edx
+  17:	48 0f af c2          	imul   %rdx,%rax
+  1b:	48 c1 e8 23          	shr    $0x23,%rax
+  1f:	c3                   	ret
+[exit 0]

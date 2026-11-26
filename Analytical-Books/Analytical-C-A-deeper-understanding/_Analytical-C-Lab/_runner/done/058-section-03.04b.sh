@@ -1,0 +1,16 @@
+F="$PWD/../_build/sections/03.04/fedora"; cd "$F" || exit 1
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+O="-std=c23 -Wall -Wextra -pedantic"
+run "gcc $O -S -masm=intel hello.c -o hello_intel.s; grep -n -A12 '^main:' hello_intel.s"
+run "gcc $O -O2 -c hello.c -o h2.o && objdump -d h2.o | sed -n '/<main>:/,/ret/p'"
+run "gcc $O -Os -c hello.c -o hs.o && objdump -d hs.o | sed -n '/<main>:/,/ret/p'"
+run "gcc $O -O2 -S hello.c -o - | grep -n -E 'section|^main:'"
+run "gcc $O -O0 -c ops.c -o o0.o && objdump -d o0.o | sed -n '/<div10>:/,/ret/p'"
+run "gcc $O -Os -c ops.c -o os.o && objdump -d os.o | sed -n '/<div10>:/,/ret/p'"
+run "objdump -d --no-show-raw-insn o0.o | grep -c '^ *[0-9a-f]*:'; objdump -d --no-show-raw-insn os.o | grep -c '^ *[0-9a-f]*:'"
+run "avr-objdump -d avr_ops.elf | sed -n '/<__udivmodhi4>:/,/ret/p' | grep -v -E '^\$|Loc'"
+run "avr-objdump -d avr_ops.elf | grep -c '^ *[0-9a-f]*:'; avr-size avr_ops.elf"
+run "avr-gcc -mmcu=atmega328p -std=c11 -Os -c avr_hello.c -o ah.o && avr-objdump -d ah.o | sed -n '/<main>:/,\$p' | grep -v -E '^\$|Loc'"
+run "gcc --version | head -1; clang --version | head -1; avr-gcc --version | head -1; as --version | head -1"
+run "gcc $O -fno-omit-frame-pointer -O2 -S -fno-asynchronous-unwind-tables ops.c -o - | sed -n '/^times10:/,/ret/p'"
+run "gcc $O -O0 -g -c ops.c -o og.o && objdump -d -S --no-show-raw-insn og.o | sed -n '/<times10>:/,/^\$/p'"

@@ -1,0 +1,15 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 cosx.c -o cosx0
+/usr/bin/ld.bfd: /tmp/cc2NYhYX.o: in function `main':
+cosx.c:(.text+0x1b): undefined reference to `cos'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 cosx.c -o cosx2 && ./cosx2
+1.000000
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O0 -c cosb.c -o cosb.o && nm cosb.o
+0000000000000000 T main
+                 U printf
+[exit 0]

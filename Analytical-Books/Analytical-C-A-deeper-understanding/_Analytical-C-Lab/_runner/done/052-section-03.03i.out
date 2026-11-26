@@ -1,0 +1,68 @@
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -S avr_blink.c -o - | sed -n '/^main:/,/size/p'
+main:
+/* prologue: function */
+/* frame size = 0 */
+/* stack size = 0 */
+.L__stack_usage = 0
+	sbi 0x4,5
+	ldi r25,lo8(32)
+.L2:
+	in r24,0x5
+	eor r24,r25
+	out 0x5,r24
+	ldi r18,lo8(1599999)
+	ldi r19,hi8(1599999)
+	ldi r24,hlo8(1599999)
+1:	subi r18,1
+	sbci r19,0
+	sbci r24,0
+	brne 1b
+	rjmp .
+	nop
+	rjmp .L2
+	.size	main, .-main
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -E -P avr_blink.c | grep -n -A16 '^_delay_ms'
+63:_delay_ms(double __ms)
+64-{
+65- double __tmp ;
+66- uint32_t __ticks_dc;
+67- extern void __builtin_avr_delay_cycles(uint32_t);
+68- __tmp = ((16000000UL) / 1e3) * __ms;
+69-  __ticks_dc = (uint32_t)(__builtin_ceil(__builtin_fabs(__tmp)));
+70- __builtin_avr_delay_cycles(__ticks_dc);
+71-}
+72-static __inline__ __attribute__((__always_inline__)) void _delay_us(double __us);
+73-void
+74-_delay_us(double __us)
+75-{
+76- double __tmp ;
+77- uint32_t __ticks_dc;
+78- extern void __builtin_avr_delay_cycles(uint32_t);
+79- __tmp = ((16000000UL) / 1e6) * __us;
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -E -P avr_blink.c | wc -l
+89
+
+$ gcc -std=c23 -E -P hello.c | wc -l ; gcc -std=c23 -O2 -E -P hello.c | wc -l
+223
+238
+
+    fallback if no such user-provided definition could be found.
+
+    In terms of the delay functions, the CPU frequency can be given as
+    a floating-point constant (e.g. 3.6864e6 for 3.6864 MHz).
+    However, the macros in <util/setbaud.h> require it to be an
+    integer value.
+ */
+# define F_CPU 1000000UL
+#endif
+
+#ifndef __OPTIMIZE__
+# warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+#endif
+
+/**
+   \ingroup util_delay

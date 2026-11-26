@@ -1,0 +1,274 @@
+
+$ cat -n semi.c
+     1	// semi.c
+     2	// hello.c with one semicolon missing.
+     3	#include <stdio.h>
+     4	
+     5	int main(void) {
+     6	    printf("hello, world\n")
+     7	    return 0;
+     8	}
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic semi.c -o semi
+semi.c: In function ‘main’:
+semi.c:6:29: error: expected ‘;’ before ‘return’
+    6 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+    7 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ gcc -std=c23 -E semi.c -o semi.i; grep -n 'hello, world' semi.i; gcc -std=c23 -Wall -Wextra -pedantic -c semi.i -o semi.o
+571:    printf("hello, world\n")
+semi.c: In function ‘main’:
+semi.c:6:29: error: expected ‘;’ before ‘return’
+    6 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+    7 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ gcc -std=c23 -E -P semi.c -o flat.i; grep -n 'hello, world' flat.i; gcc -std=c23 -Wall -Wextra -pedantic -c flat.i -o flat.o
+221:    printf("hello, world\n")
+flat.i: In function ‘main’:
+flat.i:221:29: error: expected ‘;’ before ‘return’
+  221 |     printf("hello, world\n")
+      |                             ^
+      |                             ;
+  222 |     return 0;
+      |     ~~~~~~                   
+[exit 1]
+
+$ gcc -std=c23 -v -E - </dev/null 2>&1 | sed -n '/search starts here/,/End of search/p'
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/gcc/x86_64-redhat-linux/16/include
+ /usr/local/include
+ /usr/include
+End of search list.
+[exit 0]
+
+$ gcc -std=c23 -I. -v -E - </dev/null 2>&1 | sed -n '/search starts here/,/End of search/p'
+#include "..." search starts here:
+#include <...> search starts here:
+ .
+ /usr/lib/gcc/x86_64-redhat-linux/16/include
+ /usr/local/include
+ /usr/include
+End of search list.
+[exit 0]
+
+$ cat /usr/include/stdc-predef.h | grep -v '^ *$' | grep -v '^/\*\|^ *\*\|^   ' | head -30
+#ifndef	_STDC_PREDEF_H
+#define	_STDC_PREDEF_H	1
+#ifdef __GCC_IEC_559
+# if __GCC_IEC_559 > 0
+#  define __STDC_IEC_559__		1
+#  define __STDC_IEC_60559_BFP__ 	201404L
+# endif
+#else
+# define __STDC_IEC_559__		1
+# define __STDC_IEC_60559_BFP__ 	201404L
+#endif
+#ifdef __GCC_IEC_559_COMPLEX
+# if __GCC_IEC_559_COMPLEX > 0
+#  define __STDC_IEC_559_COMPLEX__	1
+#  define __STDC_IEC_60559_COMPLEX__	201404L
+# endif
+#else
+# define __STDC_IEC_559_COMPLEX__	1
+# define __STDC_IEC_60559_COMPLEX__	201404L
+#endif
+#define __STDC_ISO_10646__		201706L
+#endif
+[exit 0]
+
+$ grep -n -E '^# *define' /usr/include/stdc-predef.h
+19:#define	_STDC_PREDEF_H	1
+38:#  define __STDC_IEC_559__		1
+39:#  define __STDC_IEC_60559_BFP__ 	201404L
+42:# define __STDC_IEC_559__		1
+43:# define __STDC_IEC_60559_BFP__ 	201404L
+48:#  define __STDC_IEC_559_COMPLEX__	1
+49:#  define __STDC_IEC_60559_COMPLEX__	201404L
+52:# define __STDC_IEC_559_COMPLEX__	1
+53:# define __STDC_IEC_60559_COMPLEX__	201404L
+62:#define __STDC_ISO_10646__		201706L
+[exit 0]
+
+$ gcc -std=c23 -ffreestanding -E -P ../hello.c | wc -l; gcc -std=c23 -ffreestanding -E ../hello.c | grep -c stdc-predef
+223
+1
+[exit 0]
+
+$ grep -n -B2 -A2 'bits/stdio.h' /usr/include/stdio.h
+950-
+951-/* Slow-path routines used by the optimized inline functions in
+952:   bits/stdio.h.  */
+953-extern int __uflow (FILE *);
+954-extern int __overflow (FILE *, int);
+--
+960-
+961-/* The following headers provide asm redirections.  These redirections must
+962:   appear before the first usage of these functions, e.g. in bits/stdio.h.  */
+963-#if defined __LDBL_COMPAT || __LDOUBLE_REDIRECTS_TO_FLOAT128_ABI == 1
+964-# include <bits/stdio-ldbl.h>
+--
+968-   several optimizing inline functions and macros.  */
+969-#ifdef __USE_EXTERN_INLINES
+970:# include <bits/stdio.h>
+971-#endif
+972-#if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
+[exit 0]
+
+$ grep -n -B3 -A1 'define __USE_EXTERN_INLINES' /usr/include/features.h
+553-#if __GNUC_PREREQ (2, 7) && defined __OPTIMIZE__ \
+554-    && !defined __OPTIMIZE_SIZE__ && !defined __NO_INLINE__ \
+555-    && defined __extern_inline && !(defined __clang__ && defined _LIBC)
+556:# define __USE_EXTERN_INLINES	1
+557-#endif
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 -c ../hello.c -o h2.o && nm h2.o; gcc -std=c23 -Wall -Wextra -pedantic -O2 -c ../root.c -o r2.o && nm r2.o
+0000000000000000 T main
+                 U puts
+0000000000000000 r .LC0
+0000000000000000 T main
+                 U printf
+[exit 0]
+
+$ gcc -H -fsyntax-only -std=c23 ../hello.c 2>&1 | grep '^\.' | wc -l; gcc -H -fsyntax-only -std=c23 ../hello.c 2>&1 | grep '^\.' | sed 's/^\.* //' | sort -u | wc -l; gcc -H -fsyntax-only -std=c23 ../hello.c 2>&1 | grep -c stdc-predef
+31
+24
+0
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic a.c b.c -o ab
+/usr/bin/ld.bfd: /tmp/ccvvJLkr.o:(.bss+0x0): multiple definition of `counter'; /tmp/cc61UZvo.o:(.bss+0x0): first defined here
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ wc -l ten.c; gcc -std=c23 -E ten.c | wc -l; gcc -std=c23 -E -P ten.c | wc -l
+11 ten.c
+2594
+986
+[exit 0]
+
+$ printf '#include <stdio.h>\n#include <stdio.h>\n#include <stdio.h>\nint main(void) { return 0; }\n' > three.c; gcc -std=c23 -E three.c | wc -l; gcc -std=c23 -E ../hello.c | wc -l
+569
+573
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -c avr_led.c -o avr_led.o && avr-nm avr_led.o
+00000004 t .L2
+00000000 T main
+0000003e a __SP_H__
+0000003d a __SP_L__
+0000003f a __SREG__
+00000000 a __tmp_reg__
+00000001 a __zero_reg__
+[exit 0]
+
+$ sed -n 120,182p /usr/avr/include/avr/sfr_defs.h
+#elif !defined(_SFR_ASM_COMPAT)
+#define _SFR_ASM_COMPAT 0
+#endif
+
+#ifndef __ASSEMBLER__
+/* These only work in C programs.  */
+#include <inttypes.h>
+
+#define _MMIO_BYTE(mem_addr) (*(volatile uint8_t *)(mem_addr))
+#define _MMIO_WORD(mem_addr) (*(volatile uint16_t *)(mem_addr))
+#define _MMIO_DWORD(mem_addr) (*(volatile uint32_t *)(mem_addr))
+#endif
+
+#if _SFR_ASM_COMPAT
+
+#ifndef __SFR_OFFSET
+/* Define as 0 before including this file for compatibility with old asm
+   sources that don't subtract __SFR_OFFSET from symbolic I/O addresses.  */
+#  if __AVR_ARCH__ >= 100
+#    define __SFR_OFFSET 0x00
+#  else
+#    define __SFR_OFFSET 0x20
+#  endif
+#endif
+
+#if (__SFR_OFFSET != 0) && (__SFR_OFFSET != 0x20)
+#error "__SFR_OFFSET must be 0 or 0x20"
+#endif
+
+#define _SFR_MEM8(mem_addr) (mem_addr)
+#define _SFR_MEM16(mem_addr) (mem_addr)
+#define _SFR_MEM32(mem_addr) (mem_addr)
+#define _SFR_IO8(io_addr) ((io_addr) + __SFR_OFFSET)
+#define _SFR_IO16(io_addr) ((io_addr) + __SFR_OFFSET)
+
+#define _SFR_IO_ADDR(sfr) ((sfr) - __SFR_OFFSET)
+#define _SFR_MEM_ADDR(sfr) (sfr)
+#define _SFR_IO_REG_P(sfr) ((sfr) < 0x40 + __SFR_OFFSET)
+
+#if (__SFR_OFFSET == 0x20)
+/* No need to use ?: operator, so works in assembler too.  */
+#define _SFR_ADDR(sfr) _SFR_MEM_ADDR(sfr)
+#elif !defined(__ASSEMBLER__)
+#define _SFR_ADDR(sfr) (_SFR_IO_REG_P(sfr) ? (_SFR_IO_ADDR(sfr) + 0x20) : _SFR_MEM_ADDR(sfr))
+#endif
+
+#else  /* !_SFR_ASM_COMPAT */
+
+#ifndef __SFR_OFFSET
+#  if __AVR_ARCH__ >= 100
+#    define __SFR_OFFSET 0x00
+#  else
+#    define __SFR_OFFSET 0x20
+#  endif
+#endif
+
+#define _SFR_MEM8(mem_addr) _MMIO_BYTE(mem_addr)
+#define _SFR_MEM16(mem_addr) _MMIO_WORD(mem_addr)
+#define _SFR_MEM32(mem_addr) _MMIO_DWORD(mem_addr)
+#define _SFR_IO8(io_addr) _MMIO_BYTE((io_addr) + __SFR_OFFSET)
+#define _SFR_IO16(io_addr) _MMIO_WORD((io_addr) + __SFR_OFFSET)
+
+#define _SFR_MEM_ADDR(sfr) ((uint16_t) &(sfr))
+[exit 0]
+
+$ sed -n 140,152p /usr/avr/include/avr/portpins.h
+#endif
+#if defined(PB4) && !defined(PORTB4)
+#  define PORTB4 PB4
+#elif defined(PORTB4) && !defined(PB4)
+#  define PB4 PORTB4
+#endif
+#if defined(PB5) && !defined(PORTB5)
+#  define PORTB5 PB5
+#elif defined(PORTB5) && !defined(PB5)
+#  define PB5 PORTB5
+#endif
+#if defined(PB6) && !defined(PORTB6)
+#  define PORTB6 PB6
+[exit 0]
+
+$ grep -n -E 'static __inline__|^_delay_ms|^_delay_us|__builtin_avr_delay_cycles' /usr/avr/include/util/delay.h | head
+130:   If the avr-gcc toolchain has \c __builtin_avr_delay_cycles()
+146:   \c __builtin_avr_delay_cycles() is not backward compatible with older
+154:_delay_ms(double __ms)
+160:	extern void __builtin_avr_delay_cycles(uint32_t);
+174:	__builtin_avr_delay_cycles(__ticks_dc);
+213:   If the avr-gcc toolchain has __builtin_avr_delay_cycles()
+229:   \c __builtin_avr_delay_cycles() is not backward compatible with older
+237:_delay_us(double __us)
+243:	extern void __builtin_avr_delay_cycles(uint32_t);
+257:	__builtin_avr_delay_cycles(__ticks_dc);
+[exit 0]
+
+$ grep -n -E 'define (DDRB|PORTB|PINB) ' /usr/avr/include/avr/iom328p.h
+54:#define PINB _SFR_IO8(0x03)
+64:#define DDRB _SFR_IO8(0x04)
+74:#define PORTB _SFR_IO8(0x05)
+[exit 0]

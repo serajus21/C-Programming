@@ -1,0 +1,95 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3) (executed once)
+
+starting the processing of deferred insns
+ending the processing of deferred insns
+df_analyze called
+;;   ======================================================
+;;   -- basic block 2 from 15 to 19 -- after reload
+;;   ======================================================
+
+;;	  0--> b  0: i  15 {sp=sp-0x8;clobber flags;clobber [scratch];}:hsw_decodern,hsw_p0156
+;;	  0--> b  0: i   5 di=`*.LC0'                              :hsw_decodern,hsw_p0156
+;;	  1--> b  0: i   6 ax=call [`puts']                        :hsw_decoder0
+;;	  1--> b  0: i  25 {ax=0;clobber flags;}                   :hsw_decodern,hsw_p0156
+;;	  1--> b  0: i  18 {sp=sp+0x8;clobber flags;clobber [scratch];}:hsw_decodern,hsw_p0156
+;;	  1--> b  0: i  12 use ax                                  :nothing
+;;	  2--> b  0: i  19 simple_return                           :hsw_decoder0
+;;	Ready list (final):  
+;;   total time = 2
+;;   new head = 15
+;;   new tail = 19
+
+
+
+starting the processing of deferred insns
+ending the processing of deferred insns
+
+
+main
+
+Dataflow summary:
+;;  fully invalidated by EH 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 8 [st] 9 [st(1)] 10 [st(2)] 11 [st(3)] 12 [st(4)] 13 [st(5)] 14 [st(6)] 15 [st(7)] 17 [flags] 18 [fpsr] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 28 [mm0] 29 [mm1] 30 [mm2] 31 [mm3] 32 [mm4] 33 [mm5] 34 [mm6] 35 [mm7] 36 [r8] 37 [r9] 38 [r10] 39 [r11] 44 [xmm8] 45 [xmm9] 46 [xmm10] 47 [xmm11] 48 [xmm12] 49 [xmm13] 50 [xmm14] 51 [xmm15] 52 [xmm16] 53 [xmm17] 54 [xmm18] 55 [xmm19] 56 [xmm20] 57 [xmm21] 58 [xmm22] 59 [xmm23] 60 [xmm24] 61 [xmm25] 62 [xmm26] 63 [xmm27] 64 [xmm28] 65 [xmm29] 66 [xmm30] 67 [xmm31] 68 [k0] 69 [k1] 70 [k2] 71 [k3] 72 [k4] 73 [k5] 74 [k6] 75 [k7] 76 [r16] 77 [r17] 78 [r18] 79 [r19] 80 [r20] 81 [r21] 82 [r22] 83 [r23] 84 [r24] 85 [r25] 86 [r26] 87 [r27] 88 [r28] 89 [r29] 90 [r30] 91 [r31]
+;;  hardware regs used 	 7 [sp]
+;;  regular block artificial uses 	 7 [sp]
+;;  eh block artificial uses 	 7 [sp] 16 [argp]
+;;  entry block defs 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 7 [sp] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 36 [r8] 37 [r9]
+;;  exit block uses 	 0 [ax] 7 [sp]
+;;  regs ever live 	 0 [ax] 5 [di] 7 [sp] 17 [flags]
+;;  ref usage 	r0={3d,2u} r1={2d} r2={2d} r4={2d} r5={3d,1u} r7={3d,7u} r8={1d} r9={1d} r10={1d} r11={1d} r12={1d} r13={1d} r14={1d} r15={1d} r17={4d} r18={1d} r20={2d} r21={2d} r22={2d} r23={2d} r24={2d} r25={2d} r26={2d} r27={2d} r28={1d} r29={1d} r30={1d} r31={1d} r32={1d} r33={1d} r34={1d} r35={1d} r36={2d} r37={2d} r38={1d} r39={1d} r44={1d} r45={1d} r46={1d} r47={1d} r48={1d} r49={1d} r50={1d} r51={1d} r52={1d} r53={1d} r54={1d} r55={1d} r56={1d} r57={1d} r58={1d} r59={1d} r60={1d} r61={1d} r62={1d} r63={1d} r64={1d} r65={1d} r66={1d} r67={1d} r68={1d} r69={1d} r70={1d} r71={1d} r72={1d} r73={1d} r74={1d} r75={1d} r76={1d} r77={1d} r78={1d} r79={1d} r80={1d} r81={1d} r82={1d} r83={1d} r84={1d} r85={1d} r86={1d} r87={1d} r88={1d} r89={1d} r90={1d} r91={1d} 
+;;    total ref usage 116{106d,10u,0e} in 7{6 regular + 1 call} insns.
+(note 1 0 3 NOTE_INSN_DELETED)
+(note 3 1 2 2 [bb 2] NOTE_INSN_BASIC_BLOCK)
+(note 2 3 15 2 NOTE_INSN_FUNCTION_BEG)
+(insn/f:TI 15 2 16 2 (parallel [
+            (set (reg/f:DI 7 sp)
+                (plus:DI (reg/f:DI 7 sp)
+                    (const_int -8 [0xfffffffffffffff8])))
+            (clobber (reg:CC 17 flags))
+            (clobber (mem:BLK (scratch) [0  A8]))
+        ]) "hello.c":5:16 1908 {pro_epilogue_adjust_stack_add_di}
+     (expr_list:REG_UNUSED (reg:CC 17 flags)
+        (expr_list:REG_CFA_ADJUST_CFA (set (reg/f:DI 7 sp)
+                (plus:DI (reg/f:DI 7 sp)
+                    (const_int -8 [0xfffffffffffffff8])))
+            (nil))))
+(note 16 15 5 2 NOTE_INSN_PROLOGUE_END)
+(insn 5 16 6 2 (set (reg:DI 5 di)
+        (symbol_ref/f:DI ("*.LC0") [flags 0x2]  <var_decl 0x7f7bc07bbab0 *.LC0>)) "hello.c":6:5 99 {*movdi_internal}
+     (nil))
+(call_insn:TI 6 5 25 2 (set (reg:SI 0 ax)
+        (call (mem:QI (symbol_ref:DI ("puts") [flags 0x41]  <function_decl 0x7f7bc0709200 __builtin_puts>) [0 __builtin_puts S1 A8])
+            (const_int 0 [0]))) "hello.c":6:5 1508 {*call_value}
+     (expr_list:REG_DEAD (reg:DI 5 di)
+        (expr_list:REG_UNUSED (reg:SI 0 ax)
+            (expr_list:REG_CALL_DECL (symbol_ref:DI ("puts") [flags 0x41]  <function_decl 0x7f7bc0709200 __builtin_puts>)
+                (nil))))
+    (expr_list:DI (use (reg:DI 5 di))
+        (nil)))
+(insn 25 6 26 2 (parallel [
+            (set (reg:DI 0 ax)
+                (const_int 0 [0]))
+            (clobber (reg:CC 17 flags))
+        ]) "hello.c":8:1 89 {*movdi_xor}
+     (expr_list:REG_UNUSED (reg:CC 17 flags)
+        (nil)))
+(note 26 25 18 2 NOTE_INSN_EPILOGUE_BEG)
+(insn/f 18 26 12 2 (parallel [
+            (set (reg/f:DI 7 sp)
+                (plus:DI (reg/f:DI 7 sp)
+                    (const_int 8 [0x8])))
+            (clobber (reg:CC 17 flags))
+            (clobber (mem:BLK (scratch) [0  A8]))
+        ]) "hello.c":8:1 1908 {pro_epilogue_adjust_stack_add_di}
+     (expr_list:REG_UNUSED (reg:CC 17 flags)
+        (expr_list:REG_CFA_ADJUST_CFA (set (reg/f:DI 7 sp)
+                (plus:DI (reg/f:DI 7 sp)
+                    (const_int 8 [0x8])))
+            (nil))))
+(insn 12 18 19 2 (use (reg/i:SI 0 ax)) "hello.c":8:1 -1
+     (nil))
+(jump_insn:TI 19 12 22 2 (simple_return) "hello.c":8:1 1521 {simple_return_internal}
+     (nil)
+ -> simple_return)
+(barrier 22 19 14)
+(note 14 22 0 NOTE_INSN_DELETED)

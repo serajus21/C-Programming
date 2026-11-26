@@ -1,0 +1,12 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3) (executed once)
+
+int main ()
+{
+  <bb 2> [local count: 1073741824]:
+  __builtin_puts (&"hello, world"[0]);
+  return 0;
+
+}
+
+

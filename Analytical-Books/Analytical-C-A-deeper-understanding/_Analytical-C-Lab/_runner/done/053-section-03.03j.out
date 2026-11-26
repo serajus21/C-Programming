@@ -1,0 +1,66 @@
+== one vs three
+567
+569
+1c1
+< # 0 "one.c"
+---
+> # 0 "three.c"
+6c6
+< # 1 "one.c"
+---
+> # 1 "three.c"
+564c564
+< # 2 "one.c" 2
+---
+> # 2 "three.c" 2
+566c566,568
+< # 2 "one.c"
+---
+> 
+> 
+> # 4 "three.c"
+== stdio head
+19:#ifndef _STDIO_H
+20:#define _STDIO_H	1
+21:#define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
+22:#include <bits/libc-header-start.h>
+23:__BEGIN_DECLS
+18:   <https://www.gnu.org/licenses/>.  */
+19:
+20:/*
+21: *	ISO C99 Standard: 7.19 Input/output	<stdio.h>
+22: */
+23:
+24:#ifndef _STDIO_H
+25:#define _STDIO_H	1
+26:
+27:#define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
+28:#include <bits/libc-header-start.h>
+29:
+== avr -Os lines 60-63
+}
+static __inline__ __attribute__((__always_inline__)) void _delay_ms(double __ms);
+void
+_delay_ms(double __ms)
+== sfr 168-173
+#ifndef __SFR_OFFSET
+#  if __AVR_ARCH__ >= 100
+#    define __SFR_OFFSET 0x00
+#  else
+#    define __SFR_OFFSET 0x20
+#  endif
+== stdio 150-159
+150:
+151:
+152:/* Standard streams.  */
+153:extern FILE *stdin;		/* Standard input stream.  */
+154:extern FILE *stdout;		/* Standard output stream.  */
+155:extern FILE *stderr;		/* Standard error output stream.  */
+156:/* C89/C99 say they're macros.  Make them happy.  */
+157:#define stdin stdin
+158:#define stdout stdout
+159:#define stderr stderr
+== -dD
+963:#define LIMIT 10
+964:#define SQUARE(x) x * x
+965:#define SQUARE_OK(x) ((x) * (x))

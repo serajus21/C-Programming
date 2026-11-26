@@ -1,0 +1,46 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3) (executed once)
+
+
+;; Generating RTL for gimple basic block 2
+
+
+try_optimize_cfg iteration 1
+
+Merging block 3 into block 2...
+Merged blocks 2 and 3.
+Merged 2 and 3 without moving.
+Removing jump 8.
+Merging block 4 into block 2...
+Merged blocks 2 and 4.
+Merged 2 and 4 without moving.
+
+
+try_optimize_cfg iteration 2
+
+
+
+;;
+;; Full RTL generated for this function:
+;;
+(note 1 0 3 NOTE_INSN_DELETED)
+(note 3 1 2 2 [bb 2] NOTE_INSN_BASIC_BLOCK)
+(note 2 3 5 2 NOTE_INSN_FUNCTION_BEG)
+(insn 5 2 6 2 (set (reg:DI 5 di)
+        (symbol_ref/f:DI ("*.LC0") [flags 0x2]  <var_decl 0x7f7bc07bbab0 *.LC0>)) "hello.c":6:5 -1
+     (nil))
+(call_insn 6 5 7 2 (set (reg:SI 0 ax)
+        (call (mem:QI (symbol_ref:DI ("puts") [flags 0x41]  <function_decl 0x7f7bc0709200 __builtin_puts>) [0 __builtin_puts S1 A8])
+            (const_int 0 [0]))) "hello.c":6:5 -1
+     (expr_list:REG_CALL_DECL (symbol_ref:DI ("puts") [flags 0x41]  <function_decl 0x7f7bc0709200 __builtin_puts>)
+        (nil))
+    (expr_list:DI (use (reg:DI 5 di))
+        (nil)))
+(insn 7 6 11 2 (set (reg:SI 98 [ <retval> ])
+        (const_int 0 [0])) "hello.c":8:1 -1
+     (nil))
+(insn 11 7 12 2 (set (reg/i:SI 0 ax)
+        (reg:SI 98 [ <retval> ])) "hello.c":8:1 -1
+     (nil))
+(insn 12 11 0 2 (use (reg/i:SI 0 ax)) "hello.c":8:1 -1
+     (nil))

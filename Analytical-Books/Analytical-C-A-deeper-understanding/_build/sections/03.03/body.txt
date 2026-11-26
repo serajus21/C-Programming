@@ -1,0 +1,2 @@
+    printf("these lines came from body.txt\n");
+    printf("the compiler never knew they were elsewhere\n");

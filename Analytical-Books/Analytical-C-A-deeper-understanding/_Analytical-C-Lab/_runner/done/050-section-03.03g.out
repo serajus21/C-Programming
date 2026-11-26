@@ -1,0 +1,34 @@
+22:   include it implicitly at the start of every compilation.  It must
+24:   <features.h> because the implicit include comes before any feature
+26:   explicitly includes a system header.  GCC knows the name of this
+27:   header in order to preinclude it.  */
+==
+# 0 "hello.c"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "hello.c"
+
+
+# 1 "/usr/include/stdio.h" 1 3
+# 28 "/usr/include/stdio.h" 3
+hello.c:9: fatal error: when writing output to : Broken pipe
+compilation terminated.
+==
+# 0 "<stdin>"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "<stdin>"
+int x;
+==
+# 0 "hello.c"
+# 0 "<built-in>"
+# 0 "<command-line>"
+# 1 "/usr/include/stdc-predef.h" 1 3
+# 0 "<command-line>" 2
+# 1 "hello.c"
+
+
+#include <stdio.h>
+# 3 "hello.c"
+# 1 "/usr/include/stdio.h" 1 3
+# 28 "/usr/include/stdio.h" 3

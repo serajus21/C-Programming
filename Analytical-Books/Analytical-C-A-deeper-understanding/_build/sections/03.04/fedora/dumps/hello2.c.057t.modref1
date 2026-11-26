@@ -1,0 +1,32 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3) (executed once)
+
+
+
+modref analyzing 'main/4' (ipa=0)
+Always executed bbbs (assuming return or EH): 2
+ - Analyzing call:__builtin_puts (&"hello, world"[0]);
+ - Function availability <= AVAIL_INTERPOSABLE.
+      Builtin with no fnspec: __builtin_puts
+ - modref done with result: tracked.
+  loads:
+      Base 0: alias set 0
+        Ref 0: alias set 0
+          access: Base in global memory
+  stores:
+      Base 0: alias set 0
+        Ref 0: alias set 0
+          access: Base in global memory
+  Side effects
+  Nondeterministic
+  Global memory read
+  Global memory written
+int main ()
+{
+  <bb 2> [local count: 1073741824]:
+  __builtin_puts (&"hello, world"[0]);
+  return 0;
+
+}
+
+

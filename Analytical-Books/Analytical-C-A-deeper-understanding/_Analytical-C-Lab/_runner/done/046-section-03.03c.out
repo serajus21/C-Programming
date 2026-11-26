@@ -1,0 +1,47 @@
+== 204
+# 13 "/usr/include/bits/types/__mbstate_t.h" 3
+typedef struct
+{
+  int __count;
+== 218
+
+typedef struct _G_fpos_t
+{
+  __off_t __pos;
+== 226
+# 10 "/usr/include/bits/types/__fpos64_t.h" 3
+typedef struct _G_fpos64_t
+{
+  __off64_t __pos;
+== 267
+
+struct _IO_FILE
+{
+  int _flags;
+== O2
+# 1 "/usr/include/bits/stdio.h" 1 3
+# 38 "/usr/include/bits/stdio.h" 3
+extern __inline __attribute__ ((__gnu_inline__)) int
+vprintf (const char *__restrict __fmt, __gnuc_va_list __arg)
+{
+  return vfprintf (stdout, __fmt, __arg);
+}
+
+
+
+extern __inline __attribute__ ((__gnu_inline__)) int
+getchar (void)
+{
+  return getc (stdin);
+}
+# 81 "/usr/include/bits/stdio.h" 3
+extern __inline __attribute__ ((__gnu_inline__)) int
+putchar (int __c)
+{
+  return putc (__c, stdout);
+}
+# 971 "/usr/include/stdio.h" 2 3
+
+
+
+

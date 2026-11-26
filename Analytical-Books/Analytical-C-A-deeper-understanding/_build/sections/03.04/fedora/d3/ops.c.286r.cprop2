@@ -1,0 +1,244 @@
+
+;; Function times10 (times10, funcdef_no=0, decl_uid=2330, cgraph_uid=1, symbol_order=0)
+
+starting the processing of deferred insns
+ending the processing of deferred insns
+df_analyze called
+starting the processing of deferred insns
+ending the processing of deferred insns
+
+
+times10
+
+Dataflow summary:
+;;  fully invalidated by EH 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 8 [st] 9 [st(1)] 10 [st(2)] 11 [st(3)] 12 [st(4)] 13 [st(5)] 14 [st(6)] 15 [st(7)] 17 [flags] 18 [fpsr] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 28 [mm0] 29 [mm1] 30 [mm2] 31 [mm3] 32 [mm4] 33 [mm5] 34 [mm6] 35 [mm7] 36 [r8] 37 [r9] 38 [r10] 39 [r11] 44 [xmm8] 45 [xmm9] 46 [xmm10] 47 [xmm11] 48 [xmm12] 49 [xmm13] 50 [xmm14] 51 [xmm15] 52 [xmm16] 53 [xmm17] 54 [xmm18] 55 [xmm19] 56 [xmm20] 57 [xmm21] 58 [xmm22] 59 [xmm23] 60 [xmm24] 61 [xmm25] 62 [xmm26] 63 [xmm27] 64 [xmm28] 65 [xmm29] 66 [xmm30] 67 [xmm31] 68 [k0] 69 [k1] 70 [k2] 71 [k3] 72 [k4] 73 [k5] 74 [k6] 75 [k7] 76 [r16] 77 [r17] 78 [r18] 79 [r19] 80 [r20] 81 [r21] 82 [r22] 83 [r23] 84 [r24] 85 [r25] 86 [r26] 87 [r27] 88 [r28] 89 [r29] 90 [r30] 91 [r31]
+;;  hardware regs used 	 7 [sp] 16 [argp] 19 [frame]
+;;  regular block artificial uses 	 6 [bp] 7 [sp] 16 [argp] 19 [frame]
+;;  eh block artificial uses 	 6 [bp] 7 [sp] 16 [argp] 19 [frame]
+;;  entry block defs 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 6 [bp] 7 [sp] 16 [argp] 19 [frame] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 36 [r8] 37 [r9]
+;;  exit block uses 	 0 [ax] 6 [bp] 7 [sp] 19 [frame]
+;;  regs ever live 	 0 [ax] 5 [di] 17 [flags]
+;;  ref usage 	r0={2d,2u} r1={1d} r2={1d} r4={1d} r5={1d,1u} r6={1d,2u} r7={1d,2u} r16={1d,1u} r17={3d} r19={1d,2u} r20={1d} r21={1d} r22={1d} r23={1d} r24={1d} r25={1d} r26={1d} r27={1d} r36={1d} r37={1d} r99={1d,2u,1e} r102={1d,1u} r103={1d,1u} r104={1d,1u} 
+;;    total ref usage 43{27d,15u,1e} in 6{6 regular + 0 call} insns.
+(note 4 0 2 2 [bb 2] NOTE_INSN_BASIC_BLOCK)
+(insn 2 4 3 2 (set (reg/v:SI 99 [ x ])
+        (reg:SI 5 di [ x ])) "ops.c":3:20 100 {*movsi_internal}
+     (expr_list:REG_DEAD (reg:SI 5 di [ x ])
+        (nil)))
+(note 3 2 7 2 NOTE_INSN_FUNCTION_BEG)
+(insn 7 3 8 2 (parallel [
+            (set (reg:SI 102)
+                (ashift:SI (reg/v:SI 99 [ x ])
+                    (const_int 2 [0x2])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":4:14 1121 {*ashlsi3_1}
+     (expr_list:REG_DEAD (reg:SI 101 [ x ])
+        (expr_list:REG_UNUSED (reg:CC 17 flags)
+            (nil))))
+(insn 8 7 9 2 (parallel [
+            (set (reg:SI 103 [ _2 ])
+                (plus:SI (reg:SI 102)
+                    (reg/v:SI 99 [ x ])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":4:14 287 {*addsi_1}
+     (expr_list:REG_DEAD (reg:SI 102)
+        (expr_list:REG_DEAD (reg/v:SI 99 [ x ])
+            (expr_list:REG_UNUSED (reg:CC 17 flags)
+                (expr_list:REG_EQUAL (mult:SI (reg/v:SI 99 [ x ])
+                        (const_int 5 [0x5]))
+                    (nil))))))
+(insn 9 8 15 2 (parallel [
+            (set (reg:SI 104)
+                (ashift:SI (reg:SI 103 [ _2 ])
+                    (const_int 1 [0x1])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":4:14 1121 {*ashlsi3_1}
+     (expr_list:REG_DEAD (reg:SI 103 [ _2 ])
+        (expr_list:REG_UNUSED (reg:CC 17 flags)
+            (nil))))
+(insn 15 9 16 2 (set (reg/i:SI 0 ax)
+        (reg:SI 104)) "ops.c":5:1 100 {*movsi_internal}
+     (expr_list:REG_DEAD (reg:SI 98 [ <retval> ])
+        (nil)))
+(insn 16 15 0 2 (use (reg/i:SI 0 ax)) "ops.c":5:1 -1
+     (nil))
+
+;; Function div10 (div10, funcdef_no=1, decl_uid=2333, cgraph_uid=2, symbol_order=1)
+
+starting the processing of deferred insns
+ending the processing of deferred insns
+df_analyze called
+starting the processing of deferred insns
+ending the processing of deferred insns
+
+
+div10
+
+Dataflow summary:
+;;  fully invalidated by EH 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 8 [st] 9 [st(1)] 10 [st(2)] 11 [st(3)] 12 [st(4)] 13 [st(5)] 14 [st(6)] 15 [st(7)] 17 [flags] 18 [fpsr] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 28 [mm0] 29 [mm1] 30 [mm2] 31 [mm3] 32 [mm4] 33 [mm5] 34 [mm6] 35 [mm7] 36 [r8] 37 [r9] 38 [r10] 39 [r11] 44 [xmm8] 45 [xmm9] 46 [xmm10] 47 [xmm11] 48 [xmm12] 49 [xmm13] 50 [xmm14] 51 [xmm15] 52 [xmm16] 53 [xmm17] 54 [xmm18] 55 [xmm19] 56 [xmm20] 57 [xmm21] 58 [xmm22] 59 [xmm23] 60 [xmm24] 61 [xmm25] 62 [xmm26] 63 [xmm27] 64 [xmm28] 65 [xmm29] 66 [xmm30] 67 [xmm31] 68 [k0] 69 [k1] 70 [k2] 71 [k3] 72 [k4] 73 [k5] 74 [k6] 75 [k7] 76 [r16] 77 [r17] 78 [r18] 79 [r19] 80 [r20] 81 [r21] 82 [r22] 83 [r23] 84 [r24] 85 [r25] 86 [r26] 87 [r27] 88 [r28] 89 [r29] 90 [r30] 91 [r31]
+;;  hardware regs used 	 7 [sp] 16 [argp] 19 [frame]
+;;  regular block artificial uses 	 6 [bp] 7 [sp] 16 [argp] 19 [frame]
+;;  eh block artificial uses 	 6 [bp] 7 [sp] 16 [argp] 19 [frame]
+;;  entry block defs 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 6 [bp] 7 [sp] 16 [argp] 19 [frame] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 36 [r8] 37 [r9]
+;;  exit block uses 	 0 [ax] 6 [bp] 7 [sp] 19 [frame]
+;;  regs ever live 	 0 [ax] 5 [di] 17 [flags]
+;;  ref usage 	r0={2d,2u} r1={1d} r2={1d} r4={1d} r5={1d,1u} r6={1d,2u} r7={1d,2u} r16={1d,1u} r17={3d} r19={1d,2u} r20={1d} r21={1d} r22={1d} r23={1d} r24={1d} r25={1d} r26={1d} r27={1d} r36={1d} r37={1d} r99={1d,1u} r100={1d,1u} r101={1d,1u,1e} r102={1d,1u} r103={1d,1u} r104={1d,1u} 
+;;    total ref usage 46{29d,16u,1e} in 8{8 regular + 0 call} insns.
+(note 4 0 2 2 [bb 2] NOTE_INSN_BASIC_BLOCK)
+(insn 2 4 3 2 (set (reg/v:SI 99 [ x ])
+        (reg:SI 5 di [ x ])) "ops.c":7:28 100 {*movsi_internal}
+     (expr_list:REG_DEAD (reg:SI 5 di [ x ])
+        (nil)))
+(note 3 2 6 2 NOTE_INSN_FUNCTION_BEG)
+(insn 6 3 7 2 (set (reg:DI 101 [ x ])
+        (zero_extend:DI (reg/v:SI 99 [ x ]))) "ops.c":8:14 179 {*zero_extendsidi2}
+     (expr_list:REG_DEAD (reg/v:SI 99 [ x ])
+        (nil)))
+(insn 7 6 8 2 (set (reg:DI 103)
+        (const_int 3435973837 [0xcccccccd])) "ops.c":8:14 99 {*movdi_internal}
+     (nil))
+(insn 8 7 9 2 (parallel [
+            (set (reg:DI 102)
+                (mult:DI (reg:DI 101 [ x ])
+                    (reg:DI 103)))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":8:14 623 {*muldi3_1}
+     (expr_list:REG_EQUAL (mult:DI (reg:DI 101 [ x ])
+            (const_int 3435973837 [0xcccccccd]))
+        (expr_list:REG_DEAD (reg:DI 103)
+            (expr_list:REG_DEAD (reg:DI 101 [ x ])
+                (expr_list:REG_UNUSED (reg:CC 17 flags)
+                    (nil))))))
+(insn 9 8 10 2 (parallel [
+            (set (reg:DI 104)
+                (lshiftrt:DI (reg:DI 102)
+                    (const_int 32 [0x20])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":8:14 1215 {*lshrdi3_1}
+     (expr_list:REG_DEAD (reg:DI 102)
+        (expr_list:REG_UNUSED (reg:CC 17 flags)
+            (nil))))
+(insn 10 9 15 2 (parallel [
+            (set (reg:SI 100 [ _2 ])
+                (lshiftrt:SI (subreg:SI (reg:DI 104) 0)
+                    (const_int 3 [0x3])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":8:14 1213 {*lshrsi3_1}
+     (expr_list:REG_DEAD (reg:DI 104)
+        (expr_list:REG_UNUSED (reg:CC 17 flags)
+            (nil))))
+(insn 15 10 16 2 (set (reg/i:SI 0 ax)
+        (reg:SI 100 [ _2 ])) "ops.c":9:1 100 {*movsi_internal}
+     (expr_list:REG_DEAD (reg:SI 98 [ <retval> ])
+        (nil)))
+(insn 16 15 0 2 (use (reg/i:SI 0 ax)) "ops.c":9:1 -1
+     (nil))
+
+;; Function sum_to (sum_to, funcdef_no=2, decl_uid=2336, cgraph_uid=3, symbol_order=2)
+
+starting the processing of deferred insns
+ending the processing of deferred insns
+df_analyze called
+Found 0 implicit sets
+SET hash table (11 buckets, 2 entries)
+Index 0 (hash value 3)
+  (reg/v:SI 102 [ <retval> ]) := (const_int 0 [0])
+Index 1 (hash value 0)
+  (reg/v:SI 99 [ i ]) := (const_int 1 [0x1])
+
+CPROP of sum_to, 7 basic blocks, 256 bytes needed, 0 local const props, 0 local copy props, 0 global const props, 0 global copy props
+
+starting the processing of deferred insns
+ending the processing of deferred insns
+
+
+sum_to
+
+Dataflow summary:
+;;  fully invalidated by EH 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 8 [st] 9 [st(1)] 10 [st(2)] 11 [st(3)] 12 [st(4)] 13 [st(5)] 14 [st(6)] 15 [st(7)] 17 [flags] 18 [fpsr] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 28 [mm0] 29 [mm1] 30 [mm2] 31 [mm3] 32 [mm4] 33 [mm5] 34 [mm6] 35 [mm7] 36 [r8] 37 [r9] 38 [r10] 39 [r11] 44 [xmm8] 45 [xmm9] 46 [xmm10] 47 [xmm11] 48 [xmm12] 49 [xmm13] 50 [xmm14] 51 [xmm15] 52 [xmm16] 53 [xmm17] 54 [xmm18] 55 [xmm19] 56 [xmm20] 57 [xmm21] 58 [xmm22] 59 [xmm23] 60 [xmm24] 61 [xmm25] 62 [xmm26] 63 [xmm27] 64 [xmm28] 65 [xmm29] 66 [xmm30] 67 [xmm31] 68 [k0] 69 [k1] 70 [k2] 71 [k3] 72 [k4] 73 [k5] 74 [k6] 75 [k7] 76 [r16] 77 [r17] 78 [r18] 79 [r19] 80 [r20] 81 [r21] 82 [r22] 83 [r23] 84 [r24] 85 [r25] 86 [r26] 87 [r27] 88 [r28] 89 [r29] 90 [r30] 91 [r31]
+;;  hardware regs used 	 7 [sp] 16 [argp] 19 [frame]
+;;  regular block artificial uses 	 6 [bp] 7 [sp] 16 [argp] 19 [frame]
+;;  eh block artificial uses 	 6 [bp] 7 [sp] 16 [argp] 19 [frame]
+;;  entry block defs 	 0 [ax] 1 [dx] 2 [cx] 4 [si] 5 [di] 6 [bp] 7 [sp] 16 [argp] 19 [frame] 20 [xmm0] 21 [xmm1] 22 [xmm2] 23 [xmm3] 24 [xmm4] 25 [xmm5] 26 [xmm6] 27 [xmm7] 36 [r8] 37 [r9]
+;;  exit block uses 	 0 [ax] 6 [bp] 7 [sp] 19 [frame]
+;;  regs ever live 	 0 [ax] 5 [di] 17 [flags]
+;;  ref usage 	r0={2d,2u} r1={1d} r2={1d} r4={1d} r5={1d,1u} r6={1d,6u} r7={1d,6u} r16={1d,5u} r17={5d,2u} r19={1d,6u} r20={1d} r21={1d} r22={1d} r23={1d} r24={1d} r25={1d} r26={1d} r27={1d} r36={1d} r37={1d} r99={2d,3u} r101={1d,1u} r102={3d,2u} r103={1d,2u} 
+;;    total ref usage 68{32d,36u,0e} in 13{13 regular + 0 call} insns.
+(note 7 0 2 2 [bb 2] NOTE_INSN_BASIC_BLOCK)
+(insn 2 7 3 2 (set (reg/v:SI 103 [ n ])
+        (reg:SI 5 di [ n ])) "ops.c":11:19 100 {*movsi_internal}
+     (expr_list:REG_DEAD (reg:SI 5 di [ n ])
+        (nil)))
+(note 3 2 9 2 NOTE_INSN_FUNCTION_BEG)
+(insn 9 3 10 2 (set (reg:CCNO 17 flags)
+        (compare:CCNO (reg/v:SI 103 [ n ])
+            (const_int 0 [0]))) "ops.c":13:23 discrim 2 11 {*cmpsi_ccno_1}
+     (nil))
+(jump_insn 10 9 11 2 (set (pc)
+        (if_then_else (le (reg:CCNO 17 flags)
+                (const_int 0 [0]))
+            (label_ref:DI 31)
+            (pc))) "ops.c":13:23 discrim 2 1490 {*jcc}
+     (expr_list:REG_DEAD (reg:CCNO 17 flags)
+        (int_list:REG_BR_PROB 118111601 (nil)))
+ -> 31)
+(note 11 10 12 3 [bb 3] NOTE_INSN_BASIC_BLOCK)
+(insn 12 11 4 3 (parallel [
+            (set (reg:SI 101 [ _8 ])
+                (plus:SI (reg/v:SI 103 [ n ])
+                    (const_int 1 [0x1])))
+            (clobber (reg:CC 17 flags))
+        ]) 287 {*addsi_1}
+     (expr_list:REG_DEAD (reg/v:SI 103 [ n ])
+        (expr_list:REG_UNUSED (reg:CC 17 flags)
+            (nil))))
+(insn 4 12 5 3 (set (reg/v:SI 99 [ i ])
+        (const_int 1 [0x1])) "ops.c":13:14 100 {*movsi_internal}
+     (nil))
+(insn 5 4 16 3 (set (reg/v:SI 102 [ <retval> ])
+        (const_int 0 [0])) "ops.c":12:9 100 {*movsi_internal}
+     (nil))
+(code_label 16 5 13 4 6 (nil) [1 uses])
+(note 13 16 14 4 [bb 4] NOTE_INSN_BASIC_BLOCK)
+(insn 14 13 15 4 (parallel [
+            (set (reg/v:SI 102 [ <retval> ])
+                (plus:SI (reg/v:SI 102 [ <retval> ])
+                    (reg/v:SI 99 [ i ])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":14:11 287 {*addsi_1}
+     (expr_list:REG_UNUSED (reg:CC 17 flags)
+        (nil)))
+(insn 15 14 17 4 (parallel [
+            (set (reg/v:SI 99 [ i ])
+                (plus:SI (reg/v:SI 99 [ i ])
+                    (const_int 1 [0x1])))
+            (clobber (reg:CC 17 flags))
+        ]) "ops.c":13:29 discrim 1 287 {*addsi_1}
+     (expr_list:REG_UNUSED (reg:CC 17 flags)
+        (nil)))
+(insn 17 15 18 4 (set (reg:CCZ 17 flags)
+        (compare:CCZ (reg/v:SI 99 [ i ])
+            (reg:SI 101 [ _8 ]))) "ops.c":13:23 discrim 2 15 {*cmpsi_1}
+     (nil))
+(jump_insn 18 17 31 4 (set (pc)
+        (if_then_else (ne (reg:CCZ 17 flags)
+                (const_int 0 [0]))
+            (label_ref 16)
+            (pc))) "ops.c":13:23 discrim 2 1490 {*jcc}
+     (expr_list:REG_DEAD (reg:CCZ 17 flags)
+        (int_list:REG_BR_PROB 955630225 (nil)))
+ -> 16)
+      ; pc falls through to BB 6
+(code_label 31 18 30 5 7 (nil) [1 uses])
+(note 30 31 6 5 [bb 5] NOTE_INSN_BASIC_BLOCK)
+(insn 6 30 23 5 (set (reg/v:SI 102 [ <retval> ])
+        (const_int 0 [0])) "ops.c":12:9 100 {*movsi_internal}
+     (nil))
+(code_label 23 6 26 6 4 (nil) [0 uses])
+(note 26 23 24 6 [bb 6] NOTE_INSN_BASIC_BLOCK)
+(insn 24 26 25 6 (set (reg/i:SI 0 ax)
+        (reg/v:SI 102 [ <retval> ])) "ops.c":17:1 100 {*movsi_internal}
+     (expr_list:REG_DEAD (reg/v:SI 102 [ <retval> ])
+        (nil)))
+(insn 25 24 0 6 (use (reg/i:SI 0 ax)) "ops.c":17:1 -1
+     (nil))

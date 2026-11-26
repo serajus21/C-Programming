@@ -1,0 +1,175 @@
+
+$ for L in O0 O1 O2 O3 Os Og; do gcc -std=c23 -Wall -Wextra -pedantic -$L -c ops.c -o z_$L.o; echo "-- $L"; size -A z_$L.o | grep -E '^\.(text|rodata|eh_frame|note)'; done
+-- O0
+.text                  97      0
+.note.GNU-stack         0      0
+.note.gnu.property     48      0
+.eh_frame             120      0
+-- O1
+.text                  67      0
+.note.GNU-stack         0      0
+.note.gnu.property     48      0
+.eh_frame              88      0
+-- O2
+.text                 101      0
+.note.GNU-stack         0      0
+.note.gnu.property     48      0
+.eh_frame              88      0
+-- O3
+.text                 206      0
+.rodata.cst16          16      0
+.note.GNU-stack         0      0
+.note.gnu.property     48      0
+.eh_frame              88      0
+-- Os
+.text                  36      0
+.note.GNU-stack         0      0
+.note.gnu.property     48      0
+.eh_frame              88      0
+-- Og
+.text                  60      0
+.note.GNU-stack         0      0
+.note.gnu.property     48      0
+.eh_frame              88      0
+[exit 0]
+
+$ for L in O0 O1 O2 O3 Os Og; do gcc -std=c23 -Wall -Wextra -pedantic -$L -c ops.c -o y_$L.o && gcc -std=c23 -Wall -Wextra -pedantic test_ops.c y_$L.o -o ytest_$L && echo "$L $(./ytest_$L)"; done
+O0 17e8766f16198655
+O1 17e8766f16198655
+O2 17e8766f16198655
+O3 17e8766f16198655
+Os 17e8766f16198655
+Og 17e8766f16198655
+[exit 0]
+
+$ printf 'movl $0x4004b0,%%edi\nmovq $0x4004b0,%%rdi\nmovabsq $0x4004b0,%%rdi\nmovb $0,%%sil\n' | as -o enc.o - && objdump -d enc.o | tail -4
+   5:	48 c7 c7 b0 04 40 00 	mov    $0x4004b0,%rdi
+   c:	48 bf b0 04 40 00 00 	movabs $0x4004b0,%rdi
+  13:	00 00 00 
+  16:	40 b6 00             	mov    $0x0,%sil
+[exit 0]
+
+$ avr-objdump -r avr_ops.o | head -12
+
+avr_ops.o:     file format elf32-avr
+
+RELOCATION RECORDS FOR [.text]:
+OFFSET   TYPE              VALUE
+00000004 R_AVR_CALL        __udivmodhi4
+
+
+RELOCATION RECORDS FOR [.text.startup]:
+OFFSET   TYPE              VALUE
+00000008 R_AVR_CALL        __udivmodhi4
+0000000e R_AVR_13_PCREL    .L3
+[exit 0]
+
+$ grep -o -w -m1 avx512f /proc/cpuinfo
+avx512f
+[exit 0]
+
+$ cd d3 && gcc -std=c23 -O2 -fdump-rtl-all -S ops.c && grep -l 'const_int 35' ops.c.*r.* | head -1
+ops.c.309r.combine
+[exit 0]
+
+$ gcc -O2 -Q --help=target | grep unroll; cd d3 && grep -i 'unrolled' ops.c.*r.loop2_unroll; sed -n '/Function sum_to/,/^}/p' ops.c.*t.optimized | head -40
+  -munroll-only-small-loops   		[enabled]
+    byte_loop libcall loop rep_4byte rep_8byte rep_byte unrolled_loop
+;; Unrolled loop 1 times, counting # of iterations in runtime, 8 insns
+sed: can't read ops.c.*t.optimized: No such file or directory
+[exit 0]
+
+$ cat /usr/lib/rpm/redhat/redhat-hardened-cc1
+*cc1_options:
++ %{!r:%{!fpie:%{!fPIE:%{!fpic:%{!fPIC:%{!fno-pic:-fPIE}}}}}}
+
+*cpp_options:
++ %{!r:%{!fpie:%{!fPIE:%{!fpic:%{!fPIC:%{!fno-pic:-fPIE}}}}}}
+[exit 0]
+
+$ readelf -n hello_pie | grep -i -A1 'x86 feature'
+      Properties: x86 feature: IBT, SHSTK
+	x86 ISA needed: x86-64-baseline
+	x86 feature used: x86
+	x86 ISA used: x86-64-baseline
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -O2 avr_ops.c -o avr_ops2.elf && avr-objdump -d avr_ops2.elf | grep -E 'call|<main>'
+  74:	0e 94 4c 00 	call	0x98	; 0x98 <main>
+  86:	0e 94 54 00 	call	0xa8	; 0xa8 <__umulhisi3>
+00000098 <main>:
+  a0:	0e 94 63 00 	call	0xc6	; 0xc6 <__divmodhi4>
+  ce:	07 d0       	rcall	.+14     	; 0xde <__divmodhi4_neg1>
+  d2:	09 d0       	rcall	.+18     	; 0xe6 <__divmodhi4_neg2>
+  d4:	0e 94 77 00 	call	0xee	; 0xee <__udivmodhi4>
+  da:	05 d0       	rcall	.+10     	; 0xe6 <__divmodhi4_neg2>
+[exit 0]
+
+$ gcc -std=c23 -fPIE -pie hello.c -o hello_pie2 && objdump -d hello_pie2 | sed -n '/<main>:/,/ret/p'
+0000000000001139 <main>:
+    1139:	55                   	push   %rbp
+    113a:	48 89 e5             	mov    %rsp,%rbp
+    113d:	48 8d 05 a0 f4 ff ff 	lea    -0xb60(%rip),%rax        # 5e4 <_IO_stdin_used+0x4>
+    1144:	48 89 c7             	mov    %rax,%rdi
+    1147:	e8 e4 fe ff ff       	call   1030 <puts@plt>
+    114c:	b8 00 00 00 00       	mov    $0x0,%eax
+    1151:	5d                   	pop    %rbp
+    1152:	c3                   	ret
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Wall -Wextra -pedantic -Os -S avr_hello.c -o avr_hello.s && grep -c '' avr_hello.s
+44
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Os -S -fno-asynchronous-unwind-tables hello.c -o - | sed -n '/^main:/,/ret/p'
+main:
+	pushq	%rax
+	movl	$.LC0, %edi
+	call	puts
+	xorl	%eax, %eax
+	popq	%rdx
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -fno-asynchronous-unwind-tables one_int.c -o - | grep -E 'eax|call'
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
+	movl	$0, %eax
+	call	printf
+	movl	$0, %eax
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 shift34.c -o shift34 && ./shift34
+shift 34: 143165576 mismatches, first at 2863311539
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -fsanitize=undefined -O0 -c ops.c -o ub.o && printf '#include <stdio.h>\nint sum_to(int);\nint main(void){ printf("%%d\\n", sum_to(70000)); return 0; }\n' > ub_main.c && gcc -std=c23 -Wall -Wextra -pedantic -fsanitize=undefined ub_main.c ub.o -o ub && ./ub
+/usr/bin/ld.bfd: cannot find /usr/lib64/libubsan.so.1.0.0: No such file or directory
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -S -fverbose-asm call.c -o - | sed -n '/^main:/,/ret/p'
+main:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp	#,
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp	#,
+# call.c:6:     int n = 7;
+	movl	$7, -4(%rbp)	#, n
+# call.c:7:     double x = 2.5;
+	movsd	.LC0(%rip), %xmm0	#, tmp100
+	movsd	%xmm0, -16(%rbp)	# tmp100, x
+# call.c:8:     printf("%d %f\n", n, x);
+	movq	-16(%rbp), %rdx	# x, tmp101
+	movl	-4(%rbp), %eax	# n, tmp102
+	movq	%rdx, %xmm0	# tmp101,
+	movl	%eax, %esi	# tmp102,
+	movl	$.LC1, %edi	#,
+	movl	$1, %eax	#,
+	call	printf	#
+# call.c:9:     return 0;
+[exit 0]

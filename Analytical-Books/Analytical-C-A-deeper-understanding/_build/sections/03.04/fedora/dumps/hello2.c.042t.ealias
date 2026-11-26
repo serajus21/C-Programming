@@ -1,0 +1,20 @@
+
+;; Function main (main, funcdef_no=3, decl_uid=2668, cgraph_uid=4, symbol_order=3)
+
+
+Collapsing static cycles and doing variable substitution
+Building predecessor graph
+Detecting pointer and location equivalences
+Rewriting constraints and unifying variables
+Uniting pointer but not location equivalent variables
+Finding indirect cycles
+Solving graph
+int main ()
+{
+  <bb 2> :
+  __builtin_puts (&"hello, world"[0]);
+  return 0;
+
+}
+
+

@@ -100,7 +100,7 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §02.02 -> §04.05, §10.05: the Ariane 5 conversion (also promised by §01.03).
 - §02.03 -> §02.04: the four kinds of behavior; why undefined behavior exists (overrun.c's 1234 explained); unspecified orders that need not be documented or consistent. KEPT (§02.04).
 - §02.03 -> §09.01, §09.03, §09.05: side effects in expressions; order of evaluation (f() + g()); constant folding.
-- §02.03 -> §03.04: gcc -S, objdump -d and optimization levels.
+- §02.03 -> §03.04: gcc -S, objdump -d and optimization levels. KEPT (§03.04).
 - §02.03 -> §31.01: buffering and the input/output dynamics of interactive devices (prompts before input).
 - §02.03 -> §36.04: volatile proved in the assembly, and what volatile does not promise.
 - §02.03 -> Chapter 37, §37.02: interrupts setting flags; how Arduino's delay() works (volatile reads of a hardware timer).
@@ -133,8 +133,8 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §02.06 -> §36.05: writing a minimal startup; what init() adds (timers, sei()); Optiboot only mentioned in §02.06. §37.02: millis() and delay() without init().
 - §02.06 -> §38.03: FreeRTOS tasks; app_main as another framework that owns main. §39.03: inline assembly (the syscall asm of bare.c).
 - §03.01 -> §03.02: the phases of translation (comments replaced by a space in phase 3); preprocessing tokens becoming tokens; -c, -E and -S.
-- §03.01 -> §03.03: the -E output of hello.c (573 lines on the reader's Fedora); header (declarations) against library (definitions).
-- §03.01 -> §03.04: the seven instructions of main (non-PIE on Fedora: mov $0x4004b0,%edi; call puts), and why Ubuntu's PIE build differs (endbr64, lea ...(%rip), 30 bytes).
+- §03.01 -> §03.03: the -E output of hello.c (573 lines on the reader's Fedora); header (declarations) against library (definitions). KEPT (§03.03).
+- §03.01 -> §03.04: the seven instructions of main (non-PIE on Fedora: mov $0x4004b0,%edi; call puts), and why Ubuntu's PIE build differs (endbr64, lea ...(%rip), 30 bytes). KEPT (§03.04).
 - §03.01 -> §03.05: the symbol table recording the source file's name; the string "hello, world" (13 bytes, newline removed for puts) in .rodata.
 - §03.01 -> §03.06: the address of main (0x401136) chosen by the linker; libc.so.6 and the U symbols; the name a.out still promised (§00.02).
 - §03.01 -> §03.07: the exit status was treated in §03.01 (least significant byte, $?, && and ||, 126/127/128+N); §03.07 should refer to it, not repeat it.
@@ -145,12 +145,38 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §03.01 -> §27.02: page alignment and padding in the executable (about 6 KB of zero bytes in hello).
 - §03.01 -> §31.01: buffering (line-buffered terminal, fully buffered file/pipe). §32.04/§34.03: detecting a failed write with fflush/fclose; SIGPIPE on a closed pipe.
 - §03.01 -> §34.02: assert turning names into text. §39.02: printf replaced by puts when the result is unused; inlining of a static function (avr_hello.c).
-- §03.02 -> §03.03: line markers (# 5 "splice.c") in -E output; the header search list printed by gcc -v; #pragma lines kept by -E.
+- §03.02 -> §03.03: line markers (# 5 "splice.c") in -E output; the header search list printed by gcc -v; #pragma lines kept by -E. KEPT (§03.03).
 - §03.02 -> §03.06: crt1.o/crtbegin.o (non-PIE, Fedora) against Scrt1.o/crtbeginS.o (PIE, Ubuntu); the link command built by hand.
 - §03.02 -> §05.06: C23 digit separator ' (also part of the preprocessing-number rule). §08.01/§08.03: character codes; universal character names.
 - §03.02 -> §21.01/§21.08: separate compilation, relinking after a change. §22.04: line continuation in long macros. §22.06: #pragma.
 - §03.02 -> §36.01: the avrdude command for uploading a .hex file. §39.02: link-time optimization (-flto; collect2's -plugin/lto-wrapper).
 - §03.02 (rework) -> §03.05: R_X86_64_PLT32 and its -0x4 addend; the relocation as a hole with a note. §03.07: the dynamic loader filling the puts hole (at start or at first call, lazy binding).
-- §03.02 (rework) -> §03.04/§39.05: what the compiler does between parsing and code, starting from -fdump-tree-original; where printf becomes puts (GCC's "lower" pass).
+- §03.02 (rework) -> §03.04/§39.05: what the compiler does between parsing and code, starting from -fdump-tree-original; where printf becomes puts (GCC's "lower" pass). KEPT for §03.04 (§03.04); §39.05 part open.
 - §03.02 (rework) -> §22.04: the ## operator (replacing a/**/b pasting). §22.05: #if 0 and preprocessing tokens in skipped text. §24.06/§10.05: "A"[0] and the cast to unsigned char.
 - §03.02 (rework) -> §21.04: the linker's search. §39.03: inline assembly as a source of assembler errors. §11.03: a+++++b (the Rationale's comparison for 0x123E+1).
+- §03.03 -> §03.04: the instruction that sets al before a call to a variadic function (printf with %f in root.c). KEPT (§03.04).
+- §03.03 -> §03.05: the local labels (t) and absolute symbols (a: __SP_H__, __SREG__, __tmp_reg__) in avr-nm output; .rodata.cst8 and .rodata.str1.1 sections.
+- §03.03 -> §03.06/§03.07: the linker resolving puts to libc.so.6 and the dynamic loader filling the final address; nm values as addresses relative to the load address.
+- §03.03 -> §07.03: decoding 0x3FF6A09E667F3BCD as √2 (the .LC0 constant of root.c).
+- §03.03 -> §10.06: the math library, -lm, link order, errno and -fno-math-errno; why libm stayed separate when libpthread/libdl/librt merged into libc (glibc 2.34).
+- §03.03 -> §18.04: implicit int for sqrt: argument in xmm0, result read from eax (the damage shown).
+- §03.03 -> §19.02: System V calling convention (rdi, rsi, xmm0, al for variadic calls).
+- §03.03 -> §21.02: include guards (stdio.h lines 24–25; three #include <stdio.h> add no text; -H opened vs included; stdc-predef.h skipped by its guard); #pragma once; repetition rules for struct/typedef/macro within one file.
+- §03.03 -> §21.04/§21.06: weak (W) and indirect (i) symbols (sqrt, strlen); versioned names (printf@@GLIBC_2.2.5); one-definition rule (multiple definition of counter).
+- §03.03 -> §21.05: archives (ar t/x on libc.a; Experiment 03.03-6 libgreet.a).
+- §03.03 -> §22.02: the search in full (quoted form, -I, -idirafter, -nostdinc, Ubuntu's x86_64-linux-gnu directory); #embed; the nesting limit.
+- §03.03 -> §22.04: function-like macro traps (SQUARE_OK(i++) double evaluation); inline functions as the alternative.
+- §03.03 -> §22.05: conditional compilation (__USE_EXTERN_INLINES, __OPTIMIZE__/__OPTIMIZE_SIZE__, _SFR_ASM_COMPAT selecting _SFR_IO8, <assert.h> and NDEBUG with §34.02).
+- §03.03 -> §22.06: <built-in>/<command-line>, -D, -dM/-dD, #warning/#error (F_CPU fallback), pragmas and _Pragma, GCC poison/system_header.
+- §03.03 -> §31.01: struct _IO_FILE behind FILE. §34.04: -g3 keeping macro definitions for the debugger. §34.06: the stack protector (__stack_chk_fail).
+- §03.03 -> §36.03/§36.04: memory-mapped registers (PORTB at data 0x25, the 0x20 offset, sbi's reach), volatile. §06.06: constexpr as a typed constant.
+- §03.03 -> §36.06: digitalWrite as a library function, against PORTB as a macro.
+- §03.04 -> §03.05: sections (.text, .rodata, .eh_frame, .note.gnu.property, .comment), the symbol table (.file, .LC0 local labels), relocations R_X86_64_32 and R_AVR_13_PCREL/R_AVR_CALL; why size counts .eh_frame.
+- §03.04 -> §03.06/§03.07: puts@plt and the PLT; PIE loading at a random address; CET enforcement at run time.
+- §03.04 -> §19.02: the System V convention in full (argument registers, callee-saved registers, stack alignment, red zone, al for variadic calls). §19.03: the avr-gcc convention (r25:r24, r1 zero register).
+- §03.04 -> §39.05: GCC's passes in depth (GENERIC, GIMPLE, lower/folding, SSA and PHI, expand, pseudo-registers, vregs, combine, ira/reload, pro_and_epilogue, final; loop2_unroll).
+- §03.04 -> §39.02: optimization levels and their trade-offs; unrolling, vectorization, inlining; Clang's closed form for sums.
+- §03.04 -> §10.02: hardware multiply and divide; why division is slow; long division in base 2 (__udivmodhi4); Granlund–Montgomery multiplication by inverse.
+- §03.04 -> §10.01: signed division rounding toward zero (the s10 sequence). §07.03: decoding 0x4004000000000000 as 2.5.
+- §03.04 -> §31.03: what printf does with al and the register save area. §34.04: -fsanitize=undefined (Fedora needs libubsan installed). §34.06: ASLR and CET.
+- §03.04 -> §37.04: the UART at register level (UDRE0, UDR0 at 0xC6). §36.04: volatile accesses as the observable behavior of avr_hello's loop.
