@@ -1,0 +1,161 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic cube.c -o cube
+/usr/bin/ld.bfd: /tmp/ccfPYyEG.o: in function `main':
+cube.c:(.text+0x4f): undefined reference to `cbrt'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -lm cube.c -o cube1 && ./cube1 && ./cube1 2
+3
+1.25992
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic cube.c -o cube2 -lm && ./cube2 && cmp cube1 cube2 && echo identical
+3
+identical
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Wl,--as-needed -lm cube.c -o cube3
+/usr/bin/ld.bfd: /tmp/ccABgZSx.o: in function `main':
+cube.c:(.text+0x4f): undefined reference to `cbrt'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic cube.c -o cube4 -Wl,--as-needed -lm && ./cube4
+3
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static -lm cube.c -o cube5
+/usr/bin/ld.bfd: /tmp/cc4wEgQq.o: in function `main':
+cube.c:(.text+0x4f): undefined reference to `cbrt'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static cube.c -o cube6 -lm && ./cube6 8
+2
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic cube.c -o cube7 -lm -Wl,-y,cbrt; gcc -std=c23 -Wall -Wextra -pedantic -lm cube.c -o cube8 -Wl,-y,cbrt
+/usr/bin/ld.bfd: /tmp/ccf5RKTp.o: reference to cbrt
+/usr/bin/ld.bfd: /lib64/libm.so.6: definition of cbrt
+/usr/bin/ld.bfd: /lib64/libm.so.6: definition of cbrt
+/usr/bin/ld.bfd: /tmp/cce9DWIq.o: reference to cbrt
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static cube.c -o cube9 -lm -Wl,--trace | grep -E 'libm|cube'
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libm.a
+/usr/lib64/libm-2.44.a
+/usr/lib64/libmvec.a
+/usr/lib64/libm-2.44.a
+/usr/lib64/libmvec.a
+[exit 0]
+
+$ readelf -d cube1 | grep NEEDED; readelf -d cube | grep NEEDED
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+readelf: Error: 'cube': No such file
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic cube.c -c && nm cube.o
+                 U cbrt
+0000000000000000 T main
+                 U printf
+                 U strtod
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.c -o hello && gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hello_static && ls -l hello hello_static && file hello hello_static
+-rwxr-xr-x. 1 serajus21 serajus21   12624 Nov 26 23:32 hello
+-rwxr-xr-x. 1 serajus21 serajus21 3372480 Nov 26 23:32 hello_static
+hello:        ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=ddb234d9f741fd5bee907a9e3fca18f11cccdc7a, for GNU/Linux 3.2.0, not stripped
+hello_static: ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), statically linked, BuildID[sha1]=0aaf895360f73177788cf77133aa0b2b4d971ba4, for GNU/Linux 3.2.0, with debug_info, not stripped, too many notes (256)
+[exit 0]
+
+$ ldd hello; ldd cube1; ldd hello_static
+	linux-vdso.so.1 (0x00007fce61a36000)
+	libc.so.6 => /lib64/libc.so.6 (0x00007fce6181c000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fce61a38000)
+	linux-vdso.so.1 (0x00007fe73d6b9000)
+	libm.so.6 => /lib64/libm.so.6 (0x00007fe73d581000)
+	libc.so.6 => /lib64/libc.so.6 (0x00007fe73d383000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fe73d6bb000)
+	not a dynamic executable
+[exit 1]
+
+$ nm hello | wc -l; nm hello_static | wc -l; size hello hello_static
+29
+1987
+   text	   data	    bss	    dec	    hex	filename
+   1068	    532	      4	   1604	    644	hello
+ 677012	  22696	  22752	 722460	  b061c	hello_static
+[exit 0]
+
+$ readelf -l hello_static | grep -E 'INTERP|There are|Entry'; readelf -d hello_static
+Entry point 0x429800
+There are 10 program headers, starting at offset 64
+
+There is no dynamic section in this file.
+[exit 0]
+
+$ nm hello_static | grep -w -E 'puts|_IO_puts|main|_start|__libc_start_main'
+000000000042d210 T _IO_puts
+000000000042813e t _IO_puts.cold
+000000000042c480 T __libc_start_main
+0000000000429935 T main
+000000000042d210 W puts
+0000000000429800 T _start
+[exit 0]
+
+$ ./hello_static; readelf -l hello | grep -A1 INTERP
+hello, world
+  INTERP         0x000000000000033c 0x000000000040033c 0x000000000040033c
+                 0x000000000000001c 0x000000000000001c  R      0x1
+[exit 0]
+
+$ man ldd 2>/dev/null | col -b | grep -n -i -B2 -A6 'security'
+32-     cial; see vdso(7) and ld.so(8).)
+33-
+34:   Security
+35-     Be aware that in some circumstances (e.g., where the program specifies  an
+36-     ELF  interpreter other than ld-linux.so), some versions of ldd may attempt
+37-     to obtain the dependency information by attempting to directly execute the
+38-     program, which may lead to the execution of whatever code	is  defined  in
+39-     the program's ELF interpreter, and perhaps to execution of the program it‐
+40-     self.   (Before  glibc  2.27, the upstream ldd implementation did this for
+[exit 0]
+
+$ rpm -q glibc-static; ls -l /usr/lib64/libc.a /usr/lib64/libm.a 2>&1; cat /usr/lib64/libm.a 2>/dev/null | head -c 300 | strings | head
+glibc-static-2.44-2.fc45.x86_64
+-rw-r--r--. 1 root root 32015484 Sep 29 06:00 /usr/lib64/libc.a
+-rw-r--r--. 1 root root      102 Sep 29 06:00 /usr/lib64/libm.a
+/* GNU ld script
+OUTPUT_FORMAT(elf64-x86-64)
+GROUP ( /usr/lib64/libm-2.44.a /usr/lib64/libmvec.a )
+[exit 0]
+
+$ nm -A /usr/lib64/libm.a 2>/dev/null | grep -w 'T cbrt'; nm -D /lib64/libm.so.6 | grep -w cbrt
+00000000000dc190 W cbrt@@GLIBC_2.2.5
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.c && ls && file a.out && ./a.out
+a.out
+hello.c
+a.out: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=ddb234d9f741fd5bee907a9e3fca18f11cccdc7a, for GNU/Linux 3.2.0, not stripped
+hello, world
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic greet.c -o greet; gcc -std=c23 -Wall -Wextra -pedantic -c greet.c greet_def.c && gcc greet.o greet_def.o -o greet -Wl,-y,greet && ./greet && objdump -d greet | grep -A1 'call.*<greet>' && nm greet | grep -w greet
+/usr/bin/ld.bfd: /tmp/cctyQ2jM.o: in function `main':
+greet.c:(.text+0x5): undefined reference to `greet'
+collect2: error: ld returned 1 exit status
+/usr/bin/ld.bfd: greet.o: reference to greet
+/usr/bin/ld.bfd: greet_def.o: definition of greet
+hello from greet
+  40113a:	e8 07 00 00 00       	call   401146 <greet>
+  40113f:	b8 00 00 00 00       	mov    $0x0,%eax
+0000000000401146 T greet
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c greet.c && objdump -dr greet.o | grep -A1 call
+   4:	e8 00 00 00 00       	call   9 <main+0x9>
+			5: R_X86_64_PLT32	greet-0x4
+[exit 0]

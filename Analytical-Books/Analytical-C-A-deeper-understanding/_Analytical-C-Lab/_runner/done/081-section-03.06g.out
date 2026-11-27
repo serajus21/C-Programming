@@ -1,0 +1,65 @@
+
+$ ld -o h2 /usr/lib64/crt1.o hello.o -lc; readelf -l h2 | grep interpreter; ./h2
+      [Requesting program interpreter: /lib/ld64.so.1]
+bash: line 1: ./h2: cannot execute: required file not found
+[exit 127]
+
+$ ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o h3 /usr/lib64/crt1.o hello.o -lc && ./h3 && ls -l h3 && nm h3 | grep -c .
+hello, world
+-rwxr-xr-x. 1 serajus21 serajus21 11184 Nov 26 23:36 h3
+15
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -nostartfiles nostart.c -o nostart && ./nostart; echo status $?; nm nostart | grep -E ' (T|U) '
+hello, world
+status 0
+                 U exit@GLIBC_2.2.5
+0000000000401030 T main
+                 U puts@GLIBC_2.2.5
+0000000000401045 T _start
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -nostartfiles hello.c -o hello_ns
+/usr/bin/ld.bfd: warning: cannot find entry symbol _start; defaulting to 0000000000401020
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,--trace | grep -c 'libc.a('; gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,--trace | grep 'libc.a(' | head -8
+0
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,-y,puts -Wl,-y,_IO_puts
+/usr/bin/ld.bfd: /tmp/cc56kQTZ.o: reference to puts
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(ioputs.o): definition of _IO_puts
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(ioputs.o): definition of puts
+[exit 0]
+
+$ nm cube1 | grep -E ' U '; nm cube.o 2>/dev/null | grep printf
+                 U cbrt@GLIBC_2.2.5
+                 U __libc_start_main@GLIBC_2.34
+                 U printf@GLIBC_2.2.5
+                 U strtod@GLIBC_2.2.5
+                 U printf
+[exit 0]
+
+$ objdump -d cube1 | grep -E 'call.*(printf|cbrt|strtod)'
+  40117e:	e8 ad fe ff ff       	call   401030 <strtod@plt>
+  4011a4:	e8 a7 fe ff ff       	call   401050 <cbrt@plt>
+  4011bd:	e8 7e fe ff ff       	call   401040 <printf@plt>
+[exit 0]
+
+$ objdump -d hello_static | sed -n '/<main>:/,/^$/p'
+0000000000429935 <main>:
+  429935:	55                   	push   %rbp
+  429936:	48 89 e5             	mov    %rsp,%rbp
+  429939:	bf d8 04 40 00       	mov    $0x4004d8,%edi
+  42993e:	e8 cd 38 00 00       	call   42d210 <_IO_puts>
+  429943:	b8 00 00 00 00       	mov    $0x0,%eax
+  429948:	5d                   	pop    %rbp
+  429949:	c3                   	ret
+  42994a:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  429951:	00 00 00 
+  429954:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  42995b:	00 00 00 
+  42995e:	66 90                	xchg   %ax,%ax
+
+[exit 0]

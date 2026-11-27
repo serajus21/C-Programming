@@ -1,0 +1,13 @@
+
+$ cat cst.c; gcc -std=c23 -Wall -Wextra -pedantic -O2 -c cst.c && readelf -S cst.o | grep -A1 rodata && readelf -r cst.o | grep -v '^$' && objdump -s -j .rodata.cst8 cst.o | tail -1
+double scale(double x) { return x * 2.5; }
+  [ 5] .rodata.cst8      PROGBITS         0000000000000000  00000050
+       0000000000000008  0000000000000008  AM       0     0     8
+Relocation section '.rela.text' at offset 0x178 contains 1 entry:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000004  000300000002 R_X86_64_PC32     0000000000000000 .LC0 - 4
+Relocation section '.rela.eh_frame' at offset 0x190 contains 1 entry:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000020  000200000002 R_X86_64_PC32     0000000000000000 .text + 0
+ 0000 00000000 00000440                    .......@        
+[exit 0]

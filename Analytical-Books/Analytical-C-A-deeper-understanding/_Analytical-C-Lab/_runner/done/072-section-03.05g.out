@@ -1,0 +1,312 @@
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -S avr_blink.c -o - | sed -n '/^main:/,/size/p'
+main:
+/* prologue: function */
+/* frame size = 0 */
+[exit 0]
+
+$ avr-objdump -dr avr_blink.o | sed -n '/<main>:/,$p'
+00000000 <main>:
+   0:	25 9a       	sbi	0x04, 5	; 4
+   2:	90 e2       	ldi	r25, 0x20	; 32
+
+00000004 <.L2>:
+   4:	85 b1       	in	r24, 0x05	; 5
+   6:	89 27       	eor	r24, r25
+   8:	85 b9       	out	0x05, r24	; 5
+   a:	2f ef       	ldi	r18, 0xFF	; 255
+   c:	39 e6       	ldi	r19, 0x69	; 105
+   e:	88 e1       	ldi	r24, 0x18	; 24
+
+00000010 <.L1^B1>:
+  10:	21 50       	subi	r18, 0x01	; 1
+  12:	30 40       	sbci	r19, 0x00	; 0
+  14:	80 40       	sbci	r24, 0x00	; 0
+  16:	01 f4       	brne	.+0      	; 0x18 <.L1^B1+0x8>
+			16: R_AVR_7_PCREL	.L1^B1
+  18:	00 c0       	rjmp	.+0      	; 0x1a <L0^A>
+			18: R_AVR_13_PCREL	L0^A
+
+0000001a <L0^A>:
+  1a:	00 00       	nop
+  1c:	00 c0       	rjmp	.+0      	; 0x1e <L0^A+0x4>
+			1c: R_AVR_13_PCREL	.L2
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os avr_hello.c -o avr_hello.elf && avr-objdump -d avr_hello.elf | sed -n '/<__do_copy_data>:/,/<__bad_interrupt>/p'
+00000074 <__do_copy_data>:
+  74:	11 e0       	ldi	r17, 0x01	; 1
+
+00000076 <.Loc.1>:
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+
+00000078 <.Loc.2>:
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+
+0000007a <.Loc.3>:
+  7a:	ee ec       	ldi	r30, 0xCE	; 206
+
+0000007c <.Loc.4>:
+  7c:	f0 e0       	ldi	r31, 0x00	; 0
+
+0000007e <.Loc.5>:
+  7e:	02 c0       	rjmp	.+4      	; 0x84 <.L__do_copy_data_start>
+
+00000080 <.L__do_copy_data_loop>:
+  80:	05 90       	lpm	r0, Z+
+
+00000082 <.Loc.7>:
+  82:	0d 92       	st	X+, r0
+
+00000084 <.L__do_copy_data_start>:
+  84:	a0 31       	cpi	r26, 0x10	; 16
+
+00000086 <.Loc.9>:
+  86:	b1 07       	cpc	r27, r17
+
+00000088 <.Loc.10>:
+  88:	d9 f7       	brne	.-10     	; 0x80 <.L__do_copy_data_loop>
+
+0000008a <L0^A>:
+  8a:	0e 94 4b 00 	call	0x96	; 0x96 <main>
+  8e:	0c 94 65 00 	jmp	0xca	; 0xca <_exit>
+
+00000092 <__bad_interrupt>:
+[exit 0]
+
+$ avr-objdump -s -j .data avr_hello.elf
+
+avr_hello.elf:     file format elf32-avr
+
+Contents of section .data:
+ 800100 68656c6c 6f2c2077 6f726c64 0d0a0000  hello, world....
+[exit 0]
+
+$ avr-size avr_hello.elf; avr-objdump -h avr_hello.elf | grep -A1 -E ' \.(text|data|bss) '
+   text	   data	    bss	    dec	    hex	filename
+    206	     16	      0	    222	     de	avr_hello.elf
+  0 .data         00000010  00800100  000000ce  00000142  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000000ce  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+[exit 0]
+
+$ avr-ld --verbose -m avr5 | sed -n '/\.data  *:/,/} *>data/p'
+  .rel.data      :
+    {
+      *(.rel.data)
+      *(.rel.data.*)
+      *(.rel.gnu.linkonce.d*)
+    }
+  .rela.data     :
+    {
+      *(.rela.data)
+      *(.rela.data.*)
+      *(.rela.gnu.linkonce.d*)
+    }
+  .rel.ctors     : { *(.rel.ctors)	}
+  .rela.ctors    : { *(.rela.ctors)	}
+  .rel.dtors     : { *(.rel.dtors)	}
+  .rela.dtors    : { *(.rela.dtors)	}
+  .rel.got       : { *(.rel.got)		}
+  .rela.got      : { *(.rela.got)		}
+  .rel.bss       : { *(.rel.bss)		}
+  .rela.bss      : { *(.rela.bss)		}
+  .rel.plt       : { *(.rel.plt)		}
+  .rela.plt      : { *(.rela.plt)		}
+  /* Internal text space or external memory.  */
+  .text   :
+  {
+    *(.vectors)
+    KEEP(*(.vectors))
+    /* For data that needs to reside in the lower 64k of progmem.
+       For data accessed with ELPM use .progmemx.* instead
+       so that no lower 64k .progmem addresses are wasted.  */
+    __progmem_start = . ;
+    *(.progmem)
+    *(.progmem.*)
+    __progmem_end = . ;
+    ASSERT (__progmem_start == __progmem_end || __progmem_end <= 0x10000,
+	    ".progmem section exceeds 0x10000");
+    . = ALIGN(2);
+    __trampolines_start = . ;
+    /* The jump trampolines for the 16-bit limited relocs will reside here.  */
+    *(.trampolines)
+    *(.trampolines*)
+    __trampolines_end = . ;
+    . = ALIGN(2);
+    /* For code that needs to reside in the lower 128k progmem.  */
+    *(.lowtext)
+    *(.lowtext*)
+     __ctors_start = . ;
+     *(.ctors)
+     __ctors_end = . ;
+     __dtors_start = . ;
+     *(.dtors)
+     __dtors_end = . ;
+    KEEP(SORT(*)(.ctors))
+    KEEP(SORT(*)(.dtors))
+    /* From this point on, we do not bother about whether the insns are
+       below or above the 16 bits boundary.  */
+    *(.init0)  /* Start here after reset.  */
+    KEEP (*(.init0))
+    *(.init1)
+    KEEP (*(.init1))
+    *(.init2)  /* Clear __zero_reg__, set up stack pointer.  */
+    KEEP (*(.init2))
+    *(.init3)
+    KEEP (*(.init3))
+    *(.init4)  /* Initialize data and BSS.  */
+    KEEP (*(.init4))
+    *(.init5)
+    KEEP (*(.init5))
+    *(.init6)  /* C++ constructors.  */
+    KEEP (*(.init6))
+    *(.init7)
+    KEEP (*(.init7))
+    *(.init8)
+    KEEP (*(.init8))
+    *(.init9)  /* Call main().  */
+    KEEP (*(.init9))
+    *(.text)
+    . = ALIGN(2);
+    *(.text.*)
+    . = ALIGN(2);
+    *(.fini9)  /* _exit() starts here.  */
+    KEEP (*(.fini9))
+    *(.fini8)
+    KEEP (*(.fini8))
+    *(.fini7)
+    KEEP (*(.fini7))
+    *(.fini6)  /* C++ destructors.  */
+    KEEP (*(.fini6))
+    *(.fini5)
+    KEEP (*(.fini5))
+    *(.fini4)
+    KEEP (*(.fini4))
+    *(.fini3)
+    KEEP (*(.fini3))
+    *(.fini2)
+    KEEP (*(.fini2))
+    *(.fini1)
+    KEEP (*(.fini1))
+    *(.fini0)  /* Infinite loop after program termination.  */
+    KEEP (*(.fini0))
+    /* For code that needs not to reside in the lower progmem.  */
+    *(.hightext)
+    *(.hightext*)
+    *(.progmemx)
+    *(.progmemx.*)
+    . = ALIGN(2);
+    /* For tablejump instruction arrays.  We do not relax
+       JMP / CALL instructions within these sections.  */
+    *(.jumptables)
+    *(.jumptables*)
+    _etext = . ;
+  }  > text
+  .data          :
+  {
+     PROVIDE (__data_start = .) ;
+    *(.data)
+     *(.data*)
+    *(.gnu.linkonce.d*)
+    *(.rodata)  /* We need to include .rodata here if gcc is used */
+    *(.rodata*) /* with -fdata-sections.  */
+    *(.gnu.linkonce.r*)
+    . = ALIGN(2);
+     _edata = . ;
+     PROVIDE (__data_end = .) ;
+  }  > data AT> text
+  .bss  ADDR(.data) + SIZEOF (.data)   : AT (ADDR (.bss))
+  {
+     PROVIDE (__bss_start = .) ;
+    *(.bss)
+     *(.bss*)
+     *(COMMON)
+     PROVIDE (__bss_end = .) ;
+  }  > data
+   __data_load_start = LOADADDR(.data);
+   __data_load_end = __data_load_start + SIZEOF(.data);
+  /* Global data not cleared after reset.  */
+  .noinit  ADDR(.bss) + SIZEOF (.bss)  :  AT (ADDR (.noinit))
+  {
+     PROVIDE (__noinit_start = .) ;
+    *(.noinit .noinit.* .gnu.linkonce.n.*)
+     PROVIDE (__noinit_end = .) ;
+     _end = . ;
+     PROVIDE (__heap_start = .) ;
+  }  > data
+__flmap_init_label = DEFINED(__flmap_noinit_start) ? __flmap_noinit_start : 0 ;
+__flmap = DEFINED(__flmap) ? __flmap : 0 ;
+  .eeprom  :
+  {
+    /* See .data above...  */
+    KEEP(*(.eeprom*))
+     __eeprom_end = . ;
+  }  > eeprom
+  .fuse  :
+  {
+    KEEP(*(.fuse))
+    KEEP(*(.lfuse))
+    KEEP(*(.hfuse))
+    KEEP(*(.efuse))
+  }  > fuse
+  .lock  :
+  {
+    KEEP(*(.lock*))
+  }  > lock
+  .signature  :
+  {
+    KEEP(*(.signature*))
+  }  > signature
+  /* Stabs debugging sections.  */
+  .stab          0 : { *(.stab) }
+  .stabstr       0 : { *(.stabstr) }
+  .stab.excl     0 : { *(.stab.excl) }
+  .stab.exclstr  0 : { *(.stab.exclstr) }
+  .stab.index    0 : { *(.stab.index) }
+  .stab.indexstr 0 : { *(.stab.indexstr) }
+  .comment 0 (INFO) : { *(.comment); LINKER_VERSION; }
+  .gnu.build.attributes : { *(.gnu.build.attributes .gnu.build.attributes.*) }
+  .note.gnu.build-id   : { *(.note.gnu.build-id) }
+  /* DWARF debug sections.
+     Symbols in the DWARF debugging sections are relative to the beginning
+     of the section so we begin them at 0.  */
+  /* DWARF 1.  */
+  .debug          0 : { *(.debug) }
+  .line           0 : { *(.line) }
+  /* GNU DWARF 1 extensions.  */
+  .debug_srcinfo  0 : { *(.debug_srcinfo) }
+  .debug_sfnames  0 : { *(.debug_sfnames) }
+  /* DWARF 1.1 and DWARF 2.  */
+  .debug_aranges  0 : { *(.debug_aranges) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  /* DWARF 2.  */
+  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+  .debug_abbrev   0 : { *(.debug_abbrev) }
+  .debug_line     0 : { *(.debug_line .debug_line.* .debug_line_end) }
+  .debug_frame    0 : { *(.debug_frame) }
+  .debug_str      0 : { *(.debug_str) }
+  .debug_loc      0 : { *(.debug_loc) }
+  .debug_macinfo  0 : { *(.debug_macinfo) }
+  /* SGI/MIPS DWARF 2 extensions.  */
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames  0 : { *(.debug_varnames) }
+  /* DWARF 3.  */
+  .debug_pubtypes 0 : { *(.debug_pubtypes) }
+  .debug_ranges   0 : { *(.debug_ranges) }
+  /* DWARF 5.  */
+  .debug_addr     0 : { *(.debug_addr) }
+  .debug_line_str 0 : { *(.debug_line_str) }
+  .debug_loclists 0 : { *(.debug_loclists) }
+  .debug_macro    0 : { *(.debug_macro) }
+  .debug_names    0 : { *(.debug_names) }
+  .debug_rnglists 0 : { *(.debug_rnglists) }
+  .debug_str_offsets 0 : { *(.debug_str_offsets) }
+  .debug_sup      0 : { *(.debug_sup) }
+}
+
+==================================================
+[exit 0]

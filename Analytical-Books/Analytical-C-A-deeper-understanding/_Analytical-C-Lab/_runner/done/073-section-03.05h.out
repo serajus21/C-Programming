@@ -1,0 +1,36 @@
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -S avr_blink.c -o - | grep -v '^/\*' | sed -n '/^main:/,/\.size/p'
+main:
+.L__stack_usage = 0
+	sbi 0x4,5
+	ldi r25,lo8(32)
+.L2:
+	in r24,0x5
+	eor r24,r25
+	out 0x5,r24
+	ldi r18,lo8(1599999)
+	ldi r19,hi8(1599999)
+	ldi r24,hlo8(1599999)
+1:	subi r18,1
+	sbci r19,0
+	sbci r24,0
+	brne 1b
+	rjmp .
+	nop
+	rjmp .L2
+	.size	main, .-main
+[exit 0]
+
+$ printf 'here:\n\trjmp .\n\trjmp here\n' | avr-as -mmcu=atmega328p -o dot.o && avr-objdump -dr dot.o | tail -6 && avr-nm -a dot.o | cat -A
+   0:	00 c0       	rjmp	.+0      	; 0x2 <L0^A>
+			0: R_AVR_13_PCREL	L0^A
+
+00000002 <L0^A>:
+   2:	00 c0       	rjmp	.+0      	; 0x4 <L0^A+0x2>
+			2: R_AVR_13_PCREL	here
+00000000 b .bss$
+00000000 d .data$
+00000000 t here$
+00000002 t L0^A$
+00000000 t .text$
+[exit 0]

@@ -1,0 +1,74 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.o -o hmove -Wl,-Ttext-segment=0x800000 && ./hmove && nm hmove | grep -w -E 'main|_start' && objdump -d hmove | sed -n '/<main>:/,/^$/p'
+hello, world
+0000000000801136 T main
+0000000000801040 T _start
+0000000000801136 <main>:
+  801136:	55                   	push   %rbp
+  801137:	48 89 e5             	mov    %rsp,%rbp
+  80113a:	bf b0 04 80 00       	mov    $0x8004b0,%edi
+  80113f:	e8 ec fe ff ff       	call   801030 <puts@plt>
+  801144:	b8 00 00 00 00       	mov    $0x0,%eax
+  801149:	5d                   	pop    %rbp
+  80114a:	c3                   	ret
+
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.o -o hnosep -Wl,-z,noseparate-code && nm hnosep | grep -w main && readelf -l hnosep | grep -c LOAD
+00000000004005a6 T main
+2
+[exit 0]
+
+$ objdump -d --disassemble=_start hello | grep -v '^$'
+hello:     file format elf64-x86-64
+Disassembly of section .init:
+Disassembly of section .plt:
+Disassembly of section .text:
+0000000000401040 <_start>:
+  401040:	f3 0f 1e fa          	endbr64
+  401044:	31 ed                	xor    %ebp,%ebp
+  401046:	49 89 d1             	mov    %rdx,%r9
+  401049:	5e                   	pop    %rsi
+  40104a:	48 89 e2             	mov    %rsp,%rdx
+  40104d:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+  401051:	50                   	push   %rax
+  401052:	54                   	push   %rsp
+  401053:	45 31 c0             	xor    %r8d,%r8d
+  401056:	31 c9                	xor    %ecx,%ecx
+  401058:	48 c7 c7 36 11 40 00 	mov    $0x401136,%rdi
+  40105f:	ff 15 73 1f 00 00    	call   *0x1f73(%rip)        # 402fd8 <__libc_start_main@GLIBC_2.34>
+  401065:	f4                   	hlt
+Disassembly of section .fini:
+[exit 0]
+
+$ objdump -d -j .init hello | grep -v '^$'
+hello:     file format elf64-x86-64
+Disassembly of section .init:
+0000000000401000 <_init>:
+  401000:	f3 0f 1e fa          	endbr64
+  401004:	48 83 ec 08          	sub    $0x8,%rsp
+  401008:	48 8b 05 d1 1f 00 00 	mov    0x1fd1(%rip),%rax        # 402fe0 <__gmon_start__>
+  40100f:	48 85 c0             	test   %rax,%rax
+  401012:	74 02                	je     401016 <_init+0x16>
+  401014:	ff d0                	call   *%rax
+  401016:	48 83 c4 08          	add    $0x8,%rsp
+  40101a:	c3                   	ret
+[exit 0]
+
+$ readelf -l hello | sed -n '/Section to Segment/,$p'
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .note.gnu.build-id .interp .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt .rodata .eh_frame_hdr .eh_frame .note.gnu.property .note.ABI-tag 
+   03     .init .plt .text .fini 
+   04     .init_array .fini_array .dynamic .got .got.plt .data .bss 
+   05     .dynamic 
+   06     .note.gnu.build-id 
+   07     .note.gnu.property 
+   08     .note.ABI-tag 
+   09     .note.gnu.property 
+   10     .eh_frame_hdr 
+   11     
+   12     .init_array .fini_array .dynamic .got 
+[exit 0]

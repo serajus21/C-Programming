@@ -6,9 +6,9 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 ## Made in Chapter 00
 - §00.01 -> §16.03: the 0.05 loop from the opening, with exact stored values.
 - §00.01 -> §07.08: the Patriot (Dhahran, 1991) 24-bit fixed-point timing error, worked through arithmetically.
-- §00.01 -> §04.01: binary and hexadecimal notation (0b1010, 0x2F) explained fully.
+- §00.01 -> §04.01: binary and hexadecimal notation (0b1010, 0x2F) explained fully. KEPT (§04.01: 0b1010 = 10, 0x2F = 47, both printed by same.c).
 - §00.01 -> §02.05: the editions C99, C11, C17, C23 and how they are named. KEPT (§02.05).
-- §00.02 -> Chapter 03 (§03.06 or §03.07): why the default output name is a.out (historical reasons).
+- §00.02 -> Chapter 03 (§03.06 or §03.07): why the default output name is a.out (historical reasons). KEPT (§03.06).
 - §00.02 -> Chapter 03: the order cc1 -> as -> collect2/ld, and why it must be this order. KEPT (§03.02).
 - §00.02 -> §02.06: hosted vs freestanding environments. KEPT (§02.06).
 - §00.02 -> Chapter 05 (§05.03): why int is 2 bytes on the Uno.
@@ -29,7 +29,7 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §01.02 -> §02.03, §39.02: what the as-if rule lets a compiler do with functions that have no side effects (TOC bullet added to §39.02). KEPT for §02.03 (§02.03); §39.02 part still open.
 - §01.02 -> §35.01: single-event latch-up, and current-sensing power cycling.
 - §01.02 -> §36.03: the pin circuitry the ATmega328P datasheet actually draws.
-- §01.03 -> §04.01, §04.02, §04.03: binary notation; unsigned arithmetic defined modulo 2^n; two's complement.
+- §01.03 -> §04.01, §04.02, §04.03: binary notation; unsigned arithmetic defined modulo 2^n; two's complement. §04.01 part KEPT (binary notation, place values, conversions); §04.02 and §04.03 parts open.
 - §01.03 -> §04.05, §10.05: the Ariane 5 lesson (an out-of-range conversion to a 16-bit integer).
 - §01.03 -> §13.01, §13.02: bitwise operators and shifts, as used in adder8.c.
 - §01.03 -> §20.01: file-scope variables (the flags in adder8.c).
@@ -42,24 +42,24 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §01.04 -> §38.01/§38.02: why one x86 instruction (addb) is not one indivisible action when two cores share a variable.
 - §01.04 -> §13.05, §35.03: error detection; EDAC and memory scrubbing (with write-back).
 - §01.04 -> §01.05: the program counter (14 bits on the ATmega328P, word-addressed flash). KEPT (§01.05).
-- §01.05 -> §04.01: hexadecimal notation (0x39 = 0011 1001).
+- §01.05 -> §04.01: hexadecimal notation (0x39 = 0011 1001). KEPT (§04.01: Figure 04.01-1 and the grouping argument).
 - §01.05 -> §29.03: enum (tiny.c).
 - §01.05 -> §13.02, §13.03: >> and masking with & 0x1F, as field extraction.
 - §01.05 -> Chapter 24: pointers, %p, converting a function address to a byte pointer; registers through which pointers reach memory (AVR X, Y, Z; x86-64 base + index).
 - §01.05 -> §23.03, §34.06: code injection by buffer overflow, and writing C that avoids it.
 - §01.05 -> §27.02: pages, per-page permissions, what a segmentation fault really is.
-- §01.05 -> §03.07, §36.05, §16.06: reset vector -> start-up code -> main; Arduino's main calling setup().
+- §01.05 -> §03.07, §36.05, §16.06: reset vector -> start-up code -> main; Arduino's main calling setup(). §03.07 part KEPT (§03.07: reset vector to main, measured).
 - §01.05 -> §14.02, §15.02, §16.09, §16.06: if/while/for as tests and conditional jumps; for (;;) as a backward jump.
 - §01.05 -> §02.03, §39.02: the as-if rule; why a + b became a constant. KEPT for §02.03 (§02.03); §39.02 part still open.
 - §01.05 -> §36.04: volatile (Hands-on A).
-- §01.05 -> §03.05, §21.03: relocation.
+- §01.05 -> §03.05, §21.03: relocation. KEPT for §03.05 (§03.05); §21.03 part still open.
 - §01.05 -> §08.01: character codes (13 = carriage return).
 - §01.05 -> §39.01: x86-64 variable-length decoding; Xtensa register windows.
 - §01.05 -> Chapter 36 (§36.01): avrdude and uploading.
 - §01.05 -> §01.06: the bits of 86 0F (KEPT, §01.06); programs written in one machine's instructions tied to it (KEPT, §01.06).
 - §01.06 -> §06.03: byte order (endianness), little-endian storage.
 - §01.06 -> §21.06: position-independent code.
-- §01.06 -> §03.05, §03.06, §21.03: object files, relocations, the linker filling them in.
+- §01.06 -> §03.05, §03.06, §21.03: object files, relocations, the linker filling them in. KEPT for §03.05 (§03.05: object files and relocations); §03.06 and §21.03 parts still open. §03.06 part KEPT (§03.06).
 - §01.06 -> §36.03: DDRB/PINB, and toggling a pin by writing 1 to PIN.
 - §01.06 -> §36.05: start-up code and the vector table that -nostartfiles leaves out.
 - §01.06 -> §10.02: how hardware multiplies.
@@ -126,7 +126,7 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §02.05 -> Chapter 38: C11 memory model, atomics and threads.
 - §02.05 -> §39.04: sketches are C++; extern "C" and name mangling; __cplusplus.
 - §02.05 -> book-wide rule: AVR listings keep to C11 unless marked; the edition that introduced a feature is named at its first appearance; C23-only listings say so and show the older form.
-- §02.06 -> §03.06: the startup files (Scrt1.o, crti.o, crtbeginS.o, crtendS.o, crtn.o). §03.07: loading and running in detail (execve, ld.so, _start -> __libc_start_main -> main; the AVR journey to main; main returning on a microcontroller) without repeating §02.06's overview.
+- §02.06 -> §03.06: the startup files (Scrt1.o, crti.o, crtbeginS.o, crtendS.o, crtn.o). §03.07: loading and running in detail (execve, ld.so, _start -> __libc_start_main -> main; the AVR journey to main; main returning on a microcontroller) without repeating §02.06's overview. §03.06 part KEPT (§03.06); §03.07 part still open. §03.07 part KEPT (§03.07).
 - §02.06 -> §19.02: stack alignment at _start. §20.02: static storage zeroed. §21.05: archive extraction (a sketch's own main). §21.06: ld.so. §21.07: frameworks that own main (Arduino).
 - §02.06 -> §25.07: argc/argv layout. §27.02: segmentation faults. §27.03/§27.04: memory map, .data copy and linker scripts. §32.05: printf down to system calls. §33.02: SIGSEGV.
 - §02.06 -> §31.06: connecting printf to the UART on the AVR (the mechanism behind steps.c). §37.04: the UART at register level.
@@ -135,10 +135,10 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §03.01 -> §03.02: the phases of translation (comments replaced by a space in phase 3); preprocessing tokens becoming tokens; -c, -E and -S.
 - §03.01 -> §03.03: the -E output of hello.c (573 lines on the reader's Fedora); header (declarations) against library (definitions). KEPT (§03.03).
 - §03.01 -> §03.04: the seven instructions of main (non-PIE on Fedora: mov $0x4004b0,%edi; call puts), and why Ubuntu's PIE build differs (endbr64, lea ...(%rip), 30 bytes). KEPT (§03.04).
-- §03.01 -> §03.05: the symbol table recording the source file's name; the string "hello, world" (13 bytes, newline removed for puts) in .rodata.
-- §03.01 -> §03.06: the address of main (0x401136) chosen by the linker; libc.so.6 and the U symbols; the name a.out still promised (§00.02).
-- §03.01 -> §03.07: the exit status was treated in §03.01 (least significant byte, $?, && and ||, 126/127/128+N); §03.07 should refer to it, not repeat it.
-- §03.01 -> §03.08: reading the messages of noinclude.c, glued.c and indent.c.
+- §03.01 -> §03.05: the symbol table recording the source file's name; the string "hello, world" (13 bytes, newline removed for puts) in .rodata. KEPT (§03.05).
+- §03.01 -> §03.06: the address of main (0x401136) chosen by the linker; libc.so.6 and the U symbols; the name a.out still promised (§00.02). KEPT (§03.06).
+- §03.01 -> §03.07: the exit status was treated in §03.01 (least significant byte, $?, && and ||, 126/127/128+N); §03.07 should refer to it, not repeat it. KEPT (§03.07 refers to §03.01 and adds only the steps inside the program).
+- §03.01 -> §03.08: reading the messages of noinclude.c, glued.c and indent.c. KEPT (§03.08).
 - §03.01 -> §11.03: x+++y read as x++ + y (maximal munch). §15.01: an if controls one statement; the book's braces rule from Chapter 15 on. §35.02: coding standards requiring braces.
 - §03.01 -> §18.04: implicit declaration and why a wrong guess fails at run time; prototypes. §21.02: include guards (GCC skips a guarded header without reopening it). §22.05: #if 0 for disabling code.
 - §03.01 -> §25.01/§25.02: why C ends strings with a null character; string literals in read-only memory; on the AVR literals cost SRAM (with §27.03).
@@ -146,17 +146,17 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §03.01 -> §31.01: buffering (line-buffered terminal, fully buffered file/pipe). §32.04/§34.03: detecting a failed write with fflush/fclose; SIGPIPE on a closed pipe.
 - §03.01 -> §34.02: assert turning names into text. §39.02: printf replaced by puts when the result is unused; inlining of a static function (avr_hello.c).
 - §03.02 -> §03.03: line markers (# 5 "splice.c") in -E output; the header search list printed by gcc -v; #pragma lines kept by -E. KEPT (§03.03).
-- §03.02 -> §03.06: crt1.o/crtbegin.o (non-PIE, Fedora) against Scrt1.o/crtbeginS.o (PIE, Ubuntu); the link command built by hand.
+- §03.02 -> §03.06: crt1.o/crtbegin.o (non-PIE, Fedora) against Scrt1.o/crtbeginS.o (PIE, Ubuntu); the link command built by hand. KEPT (§03.06).
 - §03.02 -> §05.06: C23 digit separator ' (also part of the preprocessing-number rule). §08.01/§08.03: character codes; universal character names.
 - §03.02 -> §21.01/§21.08: separate compilation, relinking after a change. §22.04: line continuation in long macros. §22.06: #pragma.
 - §03.02 -> §36.01: the avrdude command for uploading a .hex file. §39.02: link-time optimization (-flto; collect2's -plugin/lto-wrapper).
-- §03.02 (rework) -> §03.05: R_X86_64_PLT32 and its -0x4 addend; the relocation as a hole with a note. §03.07: the dynamic loader filling the puts hole (at start or at first call, lazy binding).
+- §03.02 (rework) -> §03.05: R_X86_64_PLT32 and its -0x4 addend; the relocation as a hole with a note. §03.07: the dynamic loader filling the puts hole (at start or at first call, lazy binding). KEPT for §03.05 (§03.05); the §03.07 part still open. §03.07 part KEPT (§03.07: lazy binding, LD_BIND_NOW).
 - §03.02 (rework) -> §03.04/§39.05: what the compiler does between parsing and code, starting from -fdump-tree-original; where printf becomes puts (GCC's "lower" pass). KEPT for §03.04 (§03.04); §39.05 part open.
 - §03.02 (rework) -> §22.04: the ## operator (replacing a/**/b pasting). §22.05: #if 0 and preprocessing tokens in skipped text. §24.06/§10.05: "A"[0] and the cast to unsigned char.
 - §03.02 (rework) -> §21.04: the linker's search. §39.03: inline assembly as a source of assembler errors. §11.03: a+++++b (the Rationale's comparison for 0x123E+1).
 - §03.03 -> §03.04: the instruction that sets al before a call to a variadic function (printf with %f in root.c). KEPT (§03.04).
-- §03.03 -> §03.05: the local labels (t) and absolute symbols (a: __SP_H__, __SREG__, __tmp_reg__) in avr-nm output; .rodata.cst8 and .rodata.str1.1 sections.
-- §03.03 -> §03.06/§03.07: the linker resolving puts to libc.so.6 and the dynamic loader filling the final address; nm values as addresses relative to the load address.
+- §03.03 -> §03.05: the local labels (t) and absolute symbols (a: __SP_H__, __SREG__, __tmp_reg__) in avr-nm output; .rodata.cst8 and .rodata.str1.1 sections. KEPT (§03.05; L0^A explained as the temporary symbol of rjmp .).
+- §03.03 -> §03.06/§03.07: the linker resolving puts to libc.so.6 and the dynamic loader filling the final address; nm values as addresses relative to the load address. §03.06 part KEPT (linker resolving puts to libc.so.6, §03.06); the dynamic loader's part still open for §03.07. Loader part KEPT (§03.07).
 - §03.03 -> §07.03: decoding 0x3FF6A09E667F3BCD as √2 (the .LC0 constant of root.c).
 - §03.03 -> §10.06: the math library, -lm, link order, errno and -fno-math-errno; why libm stayed separate when libpthread/libdl/librt merged into libc (glibc 2.34).
 - §03.03 -> §18.04: implicit int for sqrt: argument in xmm0, result read from eax (the damage shown).
@@ -171,8 +171,8 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §03.03 -> §31.01: struct _IO_FILE behind FILE. §34.04: -g3 keeping macro definitions for the debugger. §34.06: the stack protector (__stack_chk_fail).
 - §03.03 -> §36.03/§36.04: memory-mapped registers (PORTB at data 0x25, the 0x20 offset, sbi's reach), volatile. §06.06: constexpr as a typed constant.
 - §03.03 -> §36.06: digitalWrite as a library function, against PORTB as a macro.
-- §03.04 -> §03.05: sections (.text, .rodata, .eh_frame, .note.gnu.property, .comment), the symbol table (.file, .LC0 local labels), relocations R_X86_64_32 and R_AVR_13_PCREL/R_AVR_CALL; why size counts .eh_frame.
-- §03.04 -> §03.06/§03.07: puts@plt and the PLT; PIE loading at a random address; CET enforcement at run time.
+- §03.04 -> §03.05: sections (.text, .rodata, .eh_frame, .note.gnu.property, .comment), the symbol table (.file, .LC0 local labels), relocations R_X86_64_32 and R_AVR_13_PCREL/R_AVR_CALL; why size counts .eh_frame. KEPT (§03.05).
+- §03.04 -> §03.06/§03.07: puts@plt and the PLT; PIE loading at a random address; CET enforcement at run time. puts@plt and the PLT KEPT (§03.06); PIE loading and CET at run time still open for §03.07. PIE loading KEPT; CET at run time KEPT as measured (inactive on the reader's machine) (§03.07).
 - §03.04 -> §19.02: the System V convention in full (argument registers, callee-saved registers, stack alignment, red zone, al for variadic calls). §19.03: the avr-gcc convention (r25:r24, r1 zero register).
 - §03.04 -> §39.05: GCC's passes in depth (GENERIC, GIMPLE, lower/folding, SSA and PHI, expand, pseudo-registers, vregs, combine, ira/reload, pro_and_epilogue, final; loop2_unroll).
 - §03.04 -> §39.02: optimization levels and their trade-offs; unrolling, vectorization, inlining; Clang's closed form for sums.
@@ -180,3 +180,39 @@ Checked at every chapter proofreading; a section that keeps a promise ticks it.
 - §03.04 -> §10.01: signed division rounding toward zero (the s10 sequence). §07.03: decoding 0x4004000000000000 as 2.5.
 - §03.04 -> §31.03: what printf does with al and the register save area. §34.04: -fsanitize=undefined (Fedora needs libubsan installed). §34.06: ASLR and CET.
 - §03.04 -> §37.04: the UART at register level (UDRE0, UDR0 at 0xC6). §36.04: volatile accesses as the observable behavior of avr_hello's loop.
+- §03.05 -> §03.06: the linker giving addresses, filling the two holes of hello.o (worked in Self-check 7), resolving puts, adding _start from crt1.o and the other startup files (-lgcc, -lc, crtend.o, crtn.o in that order); program headers (13 in hello); LMA and VMA on the AVR; the .init0-.init9 sections placed by the default script. KEPT (§03.06).
+- §03.05 -> §21.03: relocations in full (what the linker does with each type); §21.04: global against local symbols, multiple definitions, COMMON symbols and -fcommon; §21.06: PIE and the dynamic section's FLAGS_1.
+- §03.05 -> §03.08: debugging information (-g), where local variables are described. KEPT (§03.08: DW_TAG_variable, DW_OP_fbreg -20).
+- §03.05 -> §27.01, §27.04: .bss against .data at run time (the million-byte arrays), const objects in read-only memory (the measured segfault).
+- §03.05 -> §36.05: the AVR startup sections (.init2 stack, .init4 __do_copy_data and __do_clear_bss, .init9 call main); §36.01: keeping strings in flash (the RAM cost of avr_hello's 16 bytes).
+- §03.05 -> §07.03: decode 0x4004000000000000 (2.5, seen in .rodata.cst8).
+- §03.06 -> §03.07: _start line by line and __libc_start_main; the kernel mapping the LOAD segments and the program interpreter; the loader filling GOT[1]/GOT[2], the resolver, lazy binding of puts (slot 0x403000 holding 0x401036 in the file) or binding at start; RELRO applied; linux-vdso.so.1; PIE loaded at a random address; the AVR journey from the reset vector through .init2/.init4/.init9 to main and _exit. KEPT (§03.07).
+- §03.06 -> §21.04: weak symbols (the AVR __vector_N, __gmon_start__, _ITM_* in crtbegin.o); §21.05: archives, the extraction chain, --start-group/GROUP; §21.06: SONAME, symbol versions, underlinking/--no-add-needed, readelf -d against ldd.
+- §03.06 -> §34.06: RELRO, -z now, separate-code. §39.02: the LTO plugin in the link command. §19.02: stack alignment at _start (the nostart.c caveat).
+- §03.06 -> §37.01: __bad_interrupt restarting the start code without a hardware reset; interrupt handlers replacing weak vectors.
+- §03.07 -> §03.08: -g and debugging information (gdb printed no source lines for hello and libc, but did for Fedora's loader). KEPT (§03.08).
+- §03.07 -> §27.01/§27.x: demand paging (pages read when first touched), the anonymous .bss pages, brk and the heap, /proc/PID/maps in depth.
+- §03.07 -> §34.06: full RELRO with -z now against LD_BIND_NOW; ASLR's purpose; AT_RANDOM and the stack protector; CET (shadow stack inactive on the reader's Fedora 45 as configured; re-test).
+- §03.07 -> §21.06: canonical PLT addresses for function pointers across modules; DT_RELR packed relative relocations; the loader relocating itself.
+- §03.07 -> Chapter 37: the watchdog restarting a device whose main returned; .fini8-.fini1 on the AVR.
+- §03.08 -> §39.02: debugging optimized code; -Og; warnings that depend on optimization levels.
+- §03.08 -> Chapter 37: volatile and interrupts (no warning for a missing volatile).
+- §03.08 -> §13/§19.02: order of evaluation of arguments (unspecified) and the value of sign(0); doubles in xmm registers versus %d.
+- §03.08 -> (converter): non-breaking hyphens in inline option names, and keeping terminal blocks with their output (deferred).
+
+## Made in Chapter 04
+- §04.01 -> §04.02: the odometer (rollover at powers of the base; Experiment 04.01-1's notes: 255/256, 65535/65536) as the start of unsigned arithmetic; "what happens when the odometer has only two wheels".
+- §04.01 -> §04.03: how a pattern of bits can mean −1 (od -t d1 printed the byte ff as -1); what a negative number is to the machine.
+- §04.01 -> §05.06: integer constants in full: the leading-zero trap, the rule deciding a constant's type (3735928559 is long on Fedora, 0xDEADBEEF is unsigned int), suffixes, C23 digit separators; zero is an octal constant. Chapter 05: unsigned long's range; unsigned is 16 bits on the AVR.
+- §04.01 -> §06.03: little-endian byte order (the constant 0xCCCCCCCD stored as cd cc cc cc).
+- §04.01 -> §07.02: positional notation to the right of the point; which fractions end in which bases (1/5 = 0.333..._16; 1/10 never ends in base 2; §00.01's 0.1).
+- §04.01 -> §08.01: character codes ('0' to '9' consecutive by the standard, letters not; ASCII/UTF-8 and EBCDIC).
+- §04.01 -> §10.02 and Chapter 13 (§13.02, §13.03): division by a power of two as a shift; how hardware divides (the AVR has no divide instruction); extracting bit fields with shifts and masks (the CCSDS header); why `PORTB = 1 << 5` is preferred to 0x20 or 0b00100000.
+- §04.01 -> §19.05: recursion (Thompson's printn, which prints the higher digits first by calling itself).
+- §04.01 -> §22.07: how <avr/io.h> builds PORTB (I/O address 0x05 + 0x20 = 0x25); _Generic.
+- §04.01 -> §25.05: writing itoa (how printf produces %d); strtol and bases up to 36.
+- §04.01 -> Chapter 27 (§27.02, §27.03): why x86-64 stack addresses begin 0x7ff (user space below 2^47); the ATmega328P memory map (flash 0x0000-0x7FFF, SRAM 0x100-0x8FF, EEPROM 0x000-0x3FF).
+- §04.01 -> §31.02: printf's conversions in depth (%o %x %X %b %B, the # flag, width and zero padding).
+- §04.01 -> §34.04: fill values such as 0xDEADBEEF when hunting memory bugs.
+- §04.01 -> §36.02, §36.03: reading the datasheet's hexadecimal addresses; DDRB and PORTB.
+

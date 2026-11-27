@@ -1,0 +1,8 @@
+
+$ nm hello | grep -w -E '_start|main'
+0000000000401136 T main
+0000000000401040 T _start
+[exit 0]
+
+$ gcc -std=c23 hello.c -o hello -### 2>&1 | grep -o -E '[^ ]*crt[a-z0-9]*\.o' | tr '\n' ' '
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o [exit 0]

@@ -1,0 +1,26 @@
+
+$ od -t o1 bytes.bin
+0000000 177 105 114 106 071 071 071 071 377 000
+0000012
+[exit 0]
+
+$ printf '%x\n' $((~0x39)); printf 'int main(void){return 0;}\n' > perm_new.c; stat -c '%a %A' perm_new.c; umask
+ffffffffffffffc6
+644 -rw-r--r--
+0022
+[exit 0]
+
+$ ls -lh /usr/bin/bash | awk '{print $5}'; free -h | head -2
+1.5M
+               total        used        free      shared  buff/cache   available
+Mem:           7.4Gi       3.7Gi       128Mi       1.5Gi       5.5Gi       3.8Gi
+[exit 0]
+
+$ cat zero.c
+#include <stdio.h>
+int main(void) {
+    printf("[%#x] [%#o] [%#b] [%#x] [%#B]\n", 0u, 0u, 0u, 255u, 5u);
+    printf("%s %s\n", _Generic(3735928559, int: "int", long: "long", unsigned: "unsigned", default: "other"),
+                      _Generic(0xDEADBEEF, int: "int", long: "long", unsigned: "unsigned", default: "other"));
+}
+[exit 0]

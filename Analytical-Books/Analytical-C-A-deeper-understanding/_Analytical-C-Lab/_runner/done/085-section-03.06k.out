@@ -1,0 +1,126 @@
+
+$ objdump -dr /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o | grep -v '^$' | sed -n '1,80p'
+/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o:     file format elf64-x86-64
+Disassembly of section .text:
+0000000000000000 <deregister_tm_clones>:
+   0:	b8 00 00 00 00       	mov    $0x0,%eax
+			1: R_X86_64_32	__TMC_END__
+   5:	48 3d 00 00 00 00    	cmp    $0x0,%rax
+			7: R_X86_64_32S	.tm_clone_table
+   b:	74 13                	je     20 <deregister_tm_clones+0x20>
+   d:	b8 00 00 00 00       	mov    $0x0,%eax
+			e: R_X86_64_32	_ITM_deregisterTMCloneTable
+  12:	48 85 c0             	test   %rax,%rax
+  15:	74 09                	je     20 <deregister_tm_clones+0x20>
+  17:	bf 00 00 00 00       	mov    $0x0,%edi
+			18: R_X86_64_32	.tm_clone_table
+  1c:	ff e0                	jmp    *%rax
+  1e:	66 90                	xchg   %ax,%ax
+  20:	c3                   	ret
+  21:	0f 1f 40 00          	nopl   0x0(%rax)
+  25:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+  2c:	00 00 00 00 
+0000000000000030 <register_tm_clones>:
+  30:	be 00 00 00 00       	mov    $0x0,%esi
+			31: R_X86_64_32	__TMC_END__
+  35:	48 81 ee 00 00 00 00 	sub    $0x0,%rsi
+			38: R_X86_64_32S	.tm_clone_table
+  3c:	48 89 f0             	mov    %rsi,%rax
+  3f:	48 c1 ee 3f          	shr    $0x3f,%rsi
+  43:	48 c1 f8 03          	sar    $0x3,%rax
+  47:	48 01 c6             	add    %rax,%rsi
+  4a:	48 d1 fe             	sar    $1,%rsi
+  4d:	74 11                	je     60 <register_tm_clones+0x30>
+  4f:	b8 00 00 00 00       	mov    $0x0,%eax
+			50: R_X86_64_32	_ITM_registerTMCloneTable
+  54:	48 85 c0             	test   %rax,%rax
+  57:	74 07                	je     60 <register_tm_clones+0x30>
+  59:	bf 00 00 00 00       	mov    $0x0,%edi
+			5a: R_X86_64_32	.tm_clone_table
+  5e:	ff e0                	jmp    *%rax
+  60:	c3                   	ret
+  61:	0f 1f 40 00          	nopl   0x0(%rax)
+  65:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+  6c:	00 00 00 00 
+0000000000000070 <__do_global_dtors_aux>:
+  70:	f3 0f 1e fa          	endbr64
+  74:	80 3d 00 00 00 00 00 	cmpb   $0x0,0x0(%rip)        # 7b <__do_global_dtors_aux+0xb>
+			76: R_X86_64_PC32	.bss-0x5
+  7b:	75 13                	jne    90 <__do_global_dtors_aux+0x20>
+  7d:	55                   	push   %rbp
+  7e:	48 89 e5             	mov    %rsp,%rbp
+  81:	e8 7a ff ff ff       	call   0 <deregister_tm_clones>
+  86:	c6 05 00 00 00 00 01 	movb   $0x1,0x0(%rip)        # 8d <__do_global_dtors_aux+0x1d>
+			88: R_X86_64_PC32	.bss-0x5
+  8d:	5d                   	pop    %rbp
+  8e:	c3                   	ret
+  8f:	90                   	nop
+  90:	c3                   	ret
+  91:	0f 1f 40 00          	nopl   0x0(%rax)
+  95:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+  9c:	00 00 00 00 
+00000000000000a0 <frame_dummy>:
+  a0:	f3 0f 1e fa          	endbr64
+  a4:	eb 8a                	jmp    30 <register_tm_clones>
+[exit 0]
+
+$ readelf -d /lib64/libc.so.6 | grep SONAME; readelf -d /lib64/libm.so.6 | grep SONAME
+ 0x000000000000000e (SONAME)             Library soname: [libc.so.6]
+ 0x000000000000000e (SONAME)             Library soname: [libm.so.6]
+[exit 0]
+
+$ cat /usr/lib/gcc/x86_64-redhat-linux/16/libatomic_asneeded.so /usr/lib/gcc/x86_64-redhat-linux/16/libatomic.so
+/* GNU ld script
+   Add DT_NEEDED entry for -latomic only if needed.  */
+OUTPUT_FORMAT(elf64-x86-64)
+INPUT ( AS_NEEDED ( -latomic ) )
+INPUT ( /usr/lib64/libatomic.so.1.2.0 )
+[exit 0]
+
+$ ld -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o hello_byhand4 /usr/lib64/crt1.o /usr/lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib64 hello.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib64/crtn.o && ./hello_byhand4 && ls -l hello_byhand4 && cmp hello hello_byhand4 | head -1
+hello, world
+-rwxr-xr-x. 1 serajus21 serajus21 12416 Nov 27 00:01 hello_byhand4
+hello hello_byhand4 differ: byte 41, line 1
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,-Map=hs.map && sed -n '/^Archive member included/,/^$/p' hs.map | grep -c '^[^ ].*libc\.a('
+0
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,-t,-t | grep -c 'libc\.a'
+438
+[exit 0]
+
+$ objdump -d -j .plt hello | sed -n '/puts@plt-0x10/,/^$/p'; readelf -x .got.plt hello
+0000000000401020 <puts@plt-0x10>:
+  401020:	ff 35 ca 1f 00 00    	push   0x1fca(%rip)        # 402ff0 <_GLOBAL_OFFSET_TABLE_+0x8>
+  401026:	ff 25 cc 1f 00 00    	jmp    *0x1fcc(%rip)        # 402ff8 <_GLOBAL_OFFSET_TABLE_+0x10>
+  40102c:	0f 1f 40 00          	nopl   0x0(%rax)
+
+
+Hex dump of section '.got.plt':
+ NOTE: This section has relocations against it, but these have NOT been applied to this dump.
+  0x00402fe8 082e4000 00000000 00000000 00000000 ..@.............
+  0x00402ff8 00000000 00000000 36104000 00000000 ........6.@.....
+
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Wl,--as-needed -lm cube.c -o cube3 -Wl,-y,cbrt
+/usr/bin/ld.bfd: /lib64/libm.so.6: definition of cbrt
+/usr/bin/ld.bfd: /tmp/ccUNeHlz.o: reference to cbrt
+/usr/bin/ld.bfd: /tmp/ccUNeHlz.o: in function `main':
+cube.c:(.text+0x4f): undefined reference to `cbrt'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static -lm cube.c -o cube5 -Wl,-y,cbrt
+/usr/bin/ld.bfd: /tmp/ccAGqYhb.o: reference to cbrt
+/usr/bin/ld.bfd: /tmp/ccAGqYhb.o: in function `main':
+cube.c:(.text+0x4f): undefined reference to `cbrt'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ objdump -dr /usr/lib64/crt1.o | grep -E 'GOTPCRELX'
+			1b: R_X86_64_REX_GOTPCRELX	main-0x4
+			21: R_X86_64_GOTPCRELX	__libc_start_main-0x4
+[exit 0]

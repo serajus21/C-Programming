@@ -1,0 +1,119 @@
+
+$ cat -n where.c
+     1	// where.c
+     2	// Print where main, a global, a local and puts are in memory.
+     3	#include <stdio.h>
+     4	#include <stdint.h>
+     5	#include <inttypes.h>
+     6	
+     7	int global = 1;
+     8	
+     9	int main(void) {
+    10	    int local = 2;
+    11	    printf("main   0x%" PRIxPTR "\n", (uintptr_t)main);
+    12	    printf("global %p\n", (void *)&global);
+    13	    printf("local  %p\n", (void *)&local);
+    14	    printf("puts   0x%" PRIxPTR "\n", (uintptr_t)puts);
+    15	    return local - 2;
+    16	}
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic where.c -o where && gcc -std=c23 -Wall -Wextra -pedantic -g where.c -o where_g && ls -l where where_g && readelf -S -W where_g | grep -E 'debug'
+-rwxr-xr-x. 1 serajus21 serajus21 12704 Nov 27 02:39 where
+-rwxr-xr-x. 1 serajus21 serajus21 14128 Nov 27 02:39 where_g
+  [29] .debug_aranges    PROGBITS        0000000000000000 002308 000030 00      0   0  1
+  [30] .debug_info       PROGBITS        0000000000000000 002338 0000f9 00      0   0  1
+  [31] .debug_abbrev     PROGBITS        0000000000000000 002431 0000b3 00      0   0  1
+  [32] .debug_line       PROGBITS        0000000000000000 0024e4 00006a 00      0   0  1
+  [33] .debug_str        PROGBITS        0000000000000000 00254e 0000d5 01  MS  0   0  1
+  [34] .debug_line_str   PROGBITS        0000000000000000 002623 0000a0 01  MS  0   0  1
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break main' -ex run -ex next -ex 'info locals' -ex 'p &local' -ex 'info line' ./where_g 2>&1 | grep -v -E 'debuginfod|^ *<|^This GDB|^Enable|^To make|thread'
+Breakpoint 1 at 0x40114e: file where.c, line 10.
+
+Breakpoint 1, main () at where.c:10
+10	    int local = 2;
+11	    printf("main   0x%" PRIxPTR "\n", (uintptr_t)main);
+local = 2
+$1 = (int *) 0x7fffffffe26c
+Line 11 of "where.c" starts at address 0x401155 <main+15> and ends at 0x40116c <main+38>.
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break main' -ex run -ex 'info locals' ./where 2>&1 | grep -v -E 'debuginfod|^ *<|^This GDB|^Enable|^To make|thread'
+
+Debuginfod has been disabled.
+Breakpoint 1 at 0x40114e
+
+Breakpoint 1, 0x000000000040114e in main ()
+No symbol table info available.
+[exit 0]
+
+$ readelf --debug-dump=info where_g | grep -B1 -A8 'DW_AT_name *: local'
+[exit 1]
+
+$ objdump -d where_g | sed -n '/<main>:/,/^$/p' | head -12
+0000000000401146 <main>:
+  401146:	55                   	push   %rbp
+  401147:	48 89 e5             	mov    %rsp,%rbp
+  40114a:	48 83 ec 10          	sub    $0x10,%rsp
+  40114e:	c7 45 fc 02 00 00 00 	movl   $0x2,-0x4(%rbp)
+  401155:	b8 46 11 40 00       	mov    $0x401146,%eax
+  40115a:	48 89 c6             	mov    %rax,%rsi
+  40115d:	bf f8 04 40 00       	mov    $0x4004f8,%edi
+  401162:	b8 00 00 00 00       	mov    $0x0,%eax
+  401167:	e8 d4 fe ff ff       	call   401040 <printf@plt>
+  40116c:	be 14 30 40 00       	mov    $0x403014,%esi
+  401171:	bf 06 05 40 00       	mov    $0x400506,%edi
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -g -O2 where.c -o where_g2 && gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break main' -ex run -ex 'info locals' ./where_g2 2>&1 | grep -v -E 'debuginfod|^ *<|^This GDB|^Enable|^To make|thread'
+Breakpoint 1 at 0x401050: file where.c, line 10.
+
+Breakpoint 1, main () at where.c:10
+10	    int local = 2;
+local = 0
+[exit 0]
+
+$ gcc -std=c23 -fanalyzer -c bugs.c 2>&1 | grep -E 'warning:'
+bugs.c:22:15: warning: use of uninitialized value ‘total’ [CWE-457] [-Wanalyzer-use-of-uninitialized-value]
+bugs.c:22:15: warning: use of uninitialized value ‘total’ [CWE-457] [-Wanalyzer-use-of-uninitialized-value]
+bugs.c:23:12: warning: use of uninitialized value ‘total’ [CWE-457] [-Wanalyzer-use-of-uninitialized-value]
+bugs.c:29:1: warning: use of uninitialized value ‘<return-value>’ [CWE-457] [-Wanalyzer-use-of-uninitialized-value]
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -Wshadow -Wconversion -c bugs.c 2>&1 | grep -c 'warning:'
+5
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -c bugs.c; echo gcc-exit $?; gcc -std=c23 -Wall -Wextra -Werror -c bugs.c 2>/dev/null; echo gcc-exit $?; gcc -std=c23 -c cascade.c 2>/dev/null; echo gcc-exit $?
+bugs.c: In function ‘is_zero’:
+bugs.c:6:9: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+    6 |     if (x = 0)                          // meant: x == 0
+      |         ^
+bugs.c: In function ‘count_below’:
+bugs.c:14:18: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+   14 |         if (a[i] < limit)               // int compared with unsigned
+      |                  ^
+bugs.c: In function ‘main’:
+bugs.c:44:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+   44 |     printf("%d\n", 3.5);                // wrong conversion for a double
+      |             ~^     ~~~
+      |              |     |
+      |              int   double
+      |             %f
+bugs.c: In function ‘sign’:
+bugs.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+   29 | }                                       // no return when x == 0
+      | ^
+bugs.c: In function ‘days’:
+bugs.c:34:15: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |     case 2: d = 28;                     // forgot break: falls through
+      |             ~~^~~~
+bugs.c:35:5: note: here
+   35 |     case 4: case 6: case 9: case 11: d = 30; break;
+      |     ^~~~
+gcc-exit 0
+gcc-exit 1
+gcc-exit 1
+[exit 0]

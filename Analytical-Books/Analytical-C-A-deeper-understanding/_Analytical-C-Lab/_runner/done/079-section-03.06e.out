@@ -1,0 +1,148 @@
+
+$ man gcc 2>/dev/null | col -b | grep -n -A22 '^ *-llibrary' | head -40
+15196:     -llibrary
+15197-     -l library
+15198-	 Search the library named library when linking.	 (The second
+15199-	 alternative with the library as a separate argument is only for POSIX
+15200-	 compliance and is not recommended.)
+15201-
+15202-	 The -l option is passed directly to the linker by GCC.	 Refer to your
+15203-	 linker documentation for exact details.  The general description below
+15204-	 applies to the GNU linker.
+15205-
+15206-	 The linker searches a standard list of directories for the library.
+15207-	 The directories searched include several standard system directories
+15208-	 plus any that you specify with -L.
+15209-
+15210-	 Static libraries are archives of object files, and have file names
+15211-	 like liblibrary.a.  Some targets also support shared libraries, which
+15212-	 typically have names like liblibrary.so.  If both static and shared
+15213-	 libraries are found, the linker gives preference to linking with the
+15214-	 shared library unless the -static option is used.
+15215-
+15216-	 It makes a difference where in the command you write this option; the
+15217-	 linker searches and processes libraries and object files in the order
+15218-	 they are specified.  Thus, foo.o -lz bar.o searches library z after
+[exit 0]
+
+$ man ld 2>/dev/null | col -b | grep -n -A40 '^ *-l namespec' | head -60
+401:     -l namespec
+402-     --library=namespec
+403-	 Add the archive or object file specified by namespec to the list of
+404-	 files to link.	 This option may be used any number of times.  If
+405-	 namespec is of the form :filename, ld will search the library path for
+406-	 a file called filename, otherwise it will search the library path for
+407-	 a file called libnamespec.a.
+408-
+409-	 On systems which support shared libraries, ld may also search for
+410-	 files other than libnamespec.a.  Specifically, on ELF and SunOS
+411-	 systems, ld will search a directory for a library called
+412-	 libnamespec.so before searching for one called libnamespec.a.	(By
+413-	 convention, a ".so" extension indicates a shared library.)  Note that
+414-	 this behavior does not apply to :filename, which always specifies a
+415-	 file called filename.
+416-
+417-	 The linker will search an archive only once, at the location where it
+418-	 is specified on the command line.  If the archive defines a symbol
+419-	 which was undefined in some object which appeared before the archive
+420-	 on the command line, the linker will include the appropriate file(s)
+421-	 from the archive.  However, an undefined symbol in an object appearing
+422-	 later on the command line will not cause the linker to search the
+423-	 archive again.
+424-
+425-	 See the -( option for a way to force the linker to search archives
+426-	 multiple times.
+427-
+428-	 You may list the same archive multiple times on the command line.
+429-
+430-	 This type of archive searching is standard for Unix linkers.  However,
+431-	 if you are using ld on AIX, note that it is different from the
+432-	 behaviour of the AIX linker.
+433-
+434-     -L searchdir
+435-     --library-path=searchdir
+436-	 Add path searchdir to the list of paths that ld will search for
+437-	 archive libraries and ld control scripts.  You may use this option any
+438-	 number of times.  The directories are searched in the order in which
+439-	 they are specified on the command line.  Directories specified on the
+440-	 command line are searched before the default directories.  All -L
+441-	 options apply to all -l options, regardless of the order in which the
+[exit 0]
+
+$ man ld 2>/dev/null | col -b | grep -n -A22 '^ *--as-needed' | head -26
+1362:     --as-needed
+1363-     --no-as-needed
+1364-	 This option affects ELF DT_NEEDED tags for dynamic libraries mentioned
+1365-	 on the command line after the --as-needed option.  Normally the linker
+1366-	 will add a DT_NEEDED tag for each dynamic library mentioned on the
+1367-	 command line, regardless of whether the library is actually needed or
+1368-	 not.  --as-needed causes a DT_NEEDED tag to only be emitted for a
+1369-	 library that at that point in the link satisfies a non-weak undefined
+1370-	 symbol reference from a regular object file or, if the library is not
+1371-	 found in the DT_NEEDED lists of other needed libraries, a non-weak
+1372-	 undefined symbol reference from another needed dynamic library.
+1373-	 Object files or libraries appearing on the command line after the
+1374-	 library in question do not affect whether the library is seen as
+1375-	 needed.  This is similar to the rules for extraction of object files
+1376-	 from archives.	 --no-as-needed restores the default behaviour.
+1377-
+1378-	 Note: On Linux based systems the --as-needed option also has an affect
+1379-	 on the behaviour of the --rpath and --rpath-link options.  See the
+1380-	 description of --rpath-link for more details.
+1381-
+1382-     --add-needed
+1383-     --no-add-needed
+1384-	 These two options have been deprecated because of the similarity of
+[exit 0]
+
+$ man ld 2>/dev/null | col -b | grep -n -B1 -A8 '^ *-y symbol' | head -12
+909-
+910:     -y symbol
+911-     --trace-symbol=symbol
+912-	 Print the name of each linked file in which symbol appears.  This
+913-	 option may be given any number of times.  On many systems it is
+914-	 necessary to prepend an underscore.
+915-
+916-	 This option is useful when you have an undefined symbol in your link
+917-	 but don't know where the reference is coming from.
+918-
+[exit 0]
+
+$ man 5 a.out 2>/dev/null | col -b | sed -n '1,30p'
+[exit 0]
+
+$ man ld 2>/dev/null | col -b | grep -n -B2 -A6 'a.out' | head -30
+22-     This version of ld uses the general purpose BFD libraries to operate on
+23-     object files. This allows ld to read, combine, and write object files in
+24:     many different formats---for example, COFF or "a.out".  Different formats
+25-     may be linked together to produce any available kind of object file.
+26-
+27-     Aside from its flexibility, the GNU linker is more helpful than other
+28-     linkers in providing diagnostic information.  Many linkers abandon
+29-     execution immediately upon encountering an error; whenever possible, ld
+30-     continues executing, allowing you to identify other errors (or, in some
+--
+518-     --print-map
+519-	 Print a link map to the standard output.  A link map provides
+520:	 information about the link, including the following:
+521-
+522-	 •   Where object files are mapped into memory.
+523-
+524-	 •   How common symbols are allocated.
+525-
+526-	 •   All archive members included in the link, with a mention of the
+--
+548-			[0x0000000c]		    foo = (foo + 0x8)
+549-
+550:	     See Expressions for more information about expressions in linker
+551-	     scripts.
+552-
+553-	 •   How GNU properties are merged.
+554-
+555-	     When the linker merges input .note.gnu.property sections into one
+556-	     output .note.gnu.property section, some properties are removed or
+--
+grep: write error: Broken pipe
+col: write failed: Broken pipe
+col: write error
+[exit 0]

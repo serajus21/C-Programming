@@ -1,0 +1,124 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic brace.c -o brace
+brace.c: In function ‘twice’:
+brace.c:12:1: warning: ISO C forbids nested functions [-Wpedantic]
+   12 | int main(void) {
+      | ^~~
+brace.c:12:5: warning: ‘main’ is normally a non-static function [-Wmain]
+   12 | int main(void) {
+      |     ^~~~
+brace.c:15:1: error: expected declaration or statement at end of input
+   15 | }
+      | ^
+brace.c:16: warning: control reaches end of non-void function [-Wreturn-type]
+brace.c: At top level:
+brace.c:12:5: warning: ‘main’ defined but not used [-Wunused-function]
+   12 | int main(void) {
+      |     ^~~~
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -O2 bugs.c -o bugs2 2>&1 | sed -n '/uninitialized/,+0p;/inlined/,+0p'; gcc -std=c23 -Wall -Wextra -pedantic -O2 -c bugs.c 2>&1 | grep -B3 -A6 'is used uninitialized'
+    inlined from ‘main’ at bugs.c:42:5:
+bugs.c:22:15: warning: ‘total’ is used uninitialized [-Wuninitialized]
+      | ^
+In function ‘sum’,
+    inlined from ‘main’ at bugs.c:42:5:
+bugs.c:22:15: warning: ‘total’ is used uninitialized [-Wuninitialized]
+   22 |         total += a[i];
+      |         ~~~~~~^~~~~~~
+bugs.c: In function ‘main’:
+bugs.c:20:9: note: ‘total’ was declared here
+   20 |     int total;                          // never set to 0
+      |         ^~~~~
+[exit 0]
+
+$ for o in -O0 -O1 -O2 -O3 -Og; do printf '%s: ' $o; gcc -std=c23 -Wall -Wextra $o -c bugs.c 2>&1 | grep -c 'warning:'; done
+-O0: 5
+-O1: 6
+-O2: 6
+-O3: 6
+-Og: 6
+[exit 0]
+
+$ gcc -std=c23 -Wall -O0 -c unin.c
+unin.c: In function ‘f’:
+unin.c:2:29: warning: ‘x’ is used uninitialized [-Wuninitialized]
+    2 | int f(void) { int x; return x; }
+      |                             ^
+unin.c:2:19: note: ‘x’ was declared here
+    2 | int f(void) { int x; return x; }
+      |                   ^
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -g -DSTAGE=4 phases.c -o p4g
+/usr/bin/ld.bfd: /tmp/ccW8uBdb.o: in function `main':
+/home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.08/fedora/phases.c:16:(.text+0x5): undefined reference to `undefined_elsewhere'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic pedantic.c -o ped && ./ped; gcc -std=c23 -pedantic pedantic.c -o ped2
+pedantic.c: In function ‘main’:
+pedantic.c:6:9: warning: ISO C forbids zero-size array ‘empty’ [-Wpedantic]
+    6 |     int empty[0];                                      // zero-length array
+      |         ^~~~~
+pedantic.c:7:15: warning: ISO C forbids braced-groups within expressions [-Wpedantic]
+    7 |     int max = ({ int a = 3, b = 4; a > b ? a : b; });  // statement expr.
+      |               ^
+0 4
+pedantic.c: In function ‘main’:
+pedantic.c:6:9: warning: ISO C forbids zero-size array ‘empty’ [-Wpedantic]
+    6 |     int empty[0];                                      // zero-length array
+      |         ^~~~~
+pedantic.c:7:15: warning: ISO C forbids braced-groups within expressions [-Wpedantic]
+    7 |     int max = ({ int a = 3, b = 4; a > b ? a : b; });  // statement expr.
+      |               ^
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic fixed.c -o fixed && ./fixed
+got 5
+3 1
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_warn.c -o avr_warn.elf; grep -n 'define F_CPU' /usr/avr/include/util/delay.h
+In file included from avr_warn.c:4:
+/usr/avr/include/util/delay.h:91:3: warning: #warning "F_CPU not defined for <util/delay.h>" [-Wcpp]
+   91 | # warning "F_CPU not defined for <util/delay.h>"
+      |   ^~~~~~~
+avr_warn.c: In function 'main':
+avr_warn.c:7:12: warning: unsigned conversion from 'int' to 'uint8_t' {aka 'unsigned char'} changes value from '256' to '0' [-Woverflow]
+    7 |     DDRB = 1 << 8;                      // PB8 does not exist (bits 0-7)
+      |            ^
+55:    #define F_CPU 1000000UL  // 1 MHz
+56:    //#define F_CPU 14.7456e6
+107:# define F_CPU 1000000UL
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break main' -ex run -ex 'info locals' -ex next -ex next -ex 'info locals' ./where_g2 2>&1 | grep -v -E 'debuginfod|^ *<|^This GDB|^Enable|^To make|thread'
+Breakpoint 1 at 0x401050: file where.c, line 10.
+
+Breakpoint 1, main () at where.c:10
+10	    int local = 2;
+local = 0
+11	    printf("main   0x%" PRIxPTR "\n", (uintptr_t)main);
+12	    printf("global %p\n", (void *)&global);
+local = 2
+[exit 0]
+
+$ man gcc 2>/dev/null | col -b | grep -n -B1 -A3 -E 'Because these warnings depend on optimization|only possible in optimizing compilation'
+6615-	 uninitialized as a whole.  They do not occur for variables or elements
+6616:	 declared "volatile".  Because these warnings depend on optimization,
+6617-	 the exact variables or elements for which there are warnings depend on
+6618-	 the precise optimization options and version of GCC used.
+6619-
+--
+6664-
+6665:	 These warnings are only possible in optimizing compilation, because
+6666-	 otherwise GCC does not keep track of the state of variables.  On the
+6667-	 other hand, -Wmaybe-uninitialized is known not to warn in many
+6668-	 situations (false negatives) due to optimizations taking advantage of
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -c bugs.c 2>&1 | grep -c warning; gcc -std=c23 -Wall -c bugs.c 2>&1 | grep -c warning
+5
+3
+[exit 0]

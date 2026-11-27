@@ -1,0 +1,21 @@
+F="$PWD/../_build/sections/03.06/fedora"; cd "$F" || exit 1
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+O="-std=c23 -Wall -Wextra -pedantic"
+G=/usr/lib/gcc/x86_64-redhat-linux/16
+run "ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o hello_byhand /usr/lib64/crt1.o /usr/lib64/crti.o $G/crtbegin.o hello.o -L$G -lc $G/crtend.o /usr/lib64/crtn.o && ./hello_byhand && ls -l hello hello_byhand && cmp hello hello_byhand | head -2"
+run "ld --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o hello_byhand2 /usr/lib64/crt1.o /usr/lib64/crti.o $G/crtbegin.o -L$G -L/usr/lib64 hello.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded $G/crtend.o /usr/lib64/crtn.o && cmp hello hello_byhand2 && echo identical"
+run "ld -o h1 hello.o; ld -o h2 /usr/lib64/crt1.o hello.o -lc; ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o h3 /usr/lib64/crt1.o hello.o -lc && ./h3; echo status \$?"
+run "objdump -d --no-show-raw-insn hello | sed -n '/<main>:/,/^\$/p'; objdump -d hello | sed -n '/<main>:/,/^\$/p'"
+run "objdump -d -j .plt hello"
+run "readelf -r hello"
+run "readelf -d hello"
+run "nm hello"
+run "nm -D hello; readelf --dyn-syms hello"
+run "nm -D /lib64/libc.so.6 | grep -E ' (puts|__libc_start_main)@'"
+run "readelf -s hello | grep -E 'puts|main|_start\$'"
+run "gcc $O hello.o -o hy -Wl,-y,puts -Wl,-y,main -Wl,-y,__libc_start_main -Wl,-y,_start"
+run "gcc $O hello.o -o ht -Wl,--trace"
+run "gcc $O hello.o -o hv -Wl,--verbose 2>&1 | grep -E 'succeeded|opened script'"
+run "readelf -l hello | sed -n '1,40p'"
+run "readelf -x .got.plt hello; readelf -S hello | grep -A1 -E 'got|plt'"
+run "objdump -s -j .rodata hello"

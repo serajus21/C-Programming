@@ -1,0 +1,310 @@
+
+$ ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o hello_byhand /usr/lib64/crt1.o /usr/lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o hello.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -lc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib64/crtn.o && ./hello_byhand && ls -l hello hello_byhand && cmp hello hello_byhand | head -2
+hello, world
+-rwxr-xr-x. 1 serajus21 serajus21 12624 Nov 26 23:31 hello
+-rwxr-xr-x. 1 serajus21 serajus21 12416 Nov 26 23:32 hello_byhand
+hello hello_byhand differ: byte 41, line 1
+[exit 0]
+
+$ ld --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o hello_byhand2 /usr/lib64/crt1.o /usr/lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib64 hello.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib64/crtn.o && cmp hello hello_byhand2 && echo identical
+identical
+[exit 0]
+
+$ ld -o h1 hello.o; ld -o h2 /usr/lib64/crt1.o hello.o -lc; ld -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o h3 /usr/lib64/crt1.o hello.o -lc && ./h3; echo status $?
+/usr/bin/ld.bfd: warning: cannot find entry symbol _start; defaulting to 0000000000401000
+/usr/bin/ld.bfd: hello.o: in function `main':
+hello.c:(.text+0xa): undefined reference to `puts'
+hello, world
+status 0
+[exit 0]
+
+$ objdump -d --no-show-raw-insn hello | sed -n '/<main>:/,/^$/p'; objdump -d hello | sed -n '/<main>:/,/^$/p'
+0000000000401136 <main>:
+  401136:	push   %rbp
+  401137:	mov    %rsp,%rbp
+  40113a:	mov    $0x4004b0,%edi
+  40113f:	call   401030 <puts@plt>
+  401144:	mov    $0x0,%eax
+  401149:	pop    %rbp
+  40114a:	ret
+
+0000000000401136 <main>:
+  401136:	55                   	push   %rbp
+  401137:	48 89 e5             	mov    %rsp,%rbp
+  40113a:	bf b0 04 40 00       	mov    $0x4004b0,%edi
+  40113f:	e8 ec fe ff ff       	call   401030 <puts@plt>
+  401144:	b8 00 00 00 00       	mov    $0x0,%eax
+  401149:	5d                   	pop    %rbp
+  40114a:	c3                   	ret
+
+[exit 0]
+
+$ objdump -d -j .plt hello
+
+hello:     file format elf64-x86-64
+
+
+Disassembly of section .plt:
+
+0000000000401020 <puts@plt-0x10>:
+  401020:	ff 35 ca 1f 00 00    	push   0x1fca(%rip)        # 402ff0 <_GLOBAL_OFFSET_TABLE_+0x8>
+  401026:	ff 25 cc 1f 00 00    	jmp    *0x1fcc(%rip)        # 402ff8 <_GLOBAL_OFFSET_TABLE_+0x10>
+  40102c:	0f 1f 40 00          	nopl   0x0(%rax)
+
+0000000000401030 <puts@plt>:
+  401030:	ff 25 ca 1f 00 00    	jmp    *0x1fca(%rip)        # 403000 <puts@GLIBC_2.2.5>
+  401036:	68 00 00 00 00       	push   $0x0
+  40103b:	e9 e0 ff ff ff       	jmp    401020 <_init+0x20>
+[exit 0]
+
+$ readelf -r hello
+
+Relocation section '.rela.dyn' at offset 0x458 contains 2 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000402fd8  000100000006 R_X86_64_GLOB_DAT 0000000000000000 __libc_start_main@GLIBC_2.34 + 0
+000000402fe0  000300000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0
+
+Relocation section '.rela.plt' at offset 0x488 contains 1 entry:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000403000  000200000007 R_X86_64_JUMP_SLO 0000000000000000 puts@GLIBC_2.2.5 + 0
+[exit 0]
+
+$ readelf -d hello
+
+Dynamic section at offset 0x1e08 contains 24 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x000000000000000c (INIT)               0x401000
+ 0x000000000000000d (FINI)               0x40114c
+ 0x0000000000000019 (INIT_ARRAY)         0x402df8
+ 0x000000000000001b (INIT_ARRAYSZ)       8 (bytes)
+ 0x000000000000001a (FINI_ARRAY)         0x402e00
+ 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)
+ 0x000000006ffffef5 (GNU_HASH)           0x400358
+ 0x0000000000000005 (STRTAB)             0x4003d8
+ 0x0000000000000006 (SYMTAB)             0x400378
+ 0x000000000000000a (STRSZ)              72 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000015 (DEBUG)              0x0
+ 0x0000000000000003 (PLTGOT)             0x402fe8
+ 0x0000000000000002 (PLTRELSZ)           24 (bytes)
+ 0x0000000000000014 (PLTREL)             RELA
+ 0x0000000000000017 (JMPREL)             0x400488
+ 0x0000000000000007 (RELA)               0x400458
+ 0x0000000000000008 (RELASZ)             48 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000006ffffffe (VERNEED)            0x400428
+ 0x000000006fffffff (VERNEEDNUM)         1
+ 0x000000006ffffff0 (VERSYM)             0x400420
+ 0x0000000000000000 (NULL)               0x0
+[exit 0]
+
+$ nm hello
+00000000004005e0 r __abi_tag
+000000000040300c B __bss_start
+000000000040300c b completed.0
+0000000000403008 D __data_start
+0000000000403008 W data_start
+0000000000401090 t deregister_tm_clones
+0000000000401070 T _dl_relocate_static_pie
+0000000000401080 T _dl_relocate_static_pie_ifunc
+0000000000401100 t __do_global_dtors_aux
+0000000000402e00 d __do_global_dtors_aux_fini_array_entry
+00000000004004a8 R __dso_handle
+0000000000402e08 d _DYNAMIC
+000000000040300c D _edata
+0000000000403010 B _end
+000000000040114c T _fini
+0000000000401130 t frame_dummy
+0000000000402df8 d __frame_dummy_init_array_entry
+0000000000400598 r __FRAME_END__
+0000000000402fe8 d _GLOBAL_OFFSET_TABLE_
+                 w __gmon_start__
+00000000004004c0 r __GNU_EH_FRAME_HDR
+0000000000401000 T _init
+00000000004004a0 R _IO_stdin_used
+                 U __libc_start_main@GLIBC_2.34
+0000000000401136 T main
+                 U puts@GLIBC_2.2.5
+00000000004010c0 t register_tm_clones
+0000000000401040 T _start
+0000000000403010 D __TMC_END__
+[exit 0]
+
+$ nm -D hello; readelf --dyn-syms hello
+                 w __gmon_start__
+                 U __libc_start_main@GLIBC_2.34
+                 U puts@GLIBC_2.2.5
+
+Symbol table '.dynsym' contains 4 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _[...]@GLIBC_2.34 (2)
+     2: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.2.5 (3)
+     3: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
+[exit 0]
+
+$ nm -D /lib64/libc.so.6 | grep -E ' (puts|__libc_start_main)@'
+000000000007d390 T __libc_start_main@@GLIBC_2.34
+000000000007d390 T __libc_start_main@GLIBC_2.2.5
+00000000000d9a60 T puts@@GLIBC_2.2.5
+[exit 0]
+
+$ readelf -s hello | grep -E 'puts|main|_start$'
+     2: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.2.5 (3)
+    19: 0000000000403008     0 NOTYPE  WEAK   DEFAULT   24 data_start
+    20: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.2.5
+    23: 0000000000403008     0 NOTYPE  GLOBAL DEFAULT   24 __data_start
+    29: 0000000000401040    38 FUNC    GLOBAL DEFAULT   17 _start
+    30: 000000000040300c     0 NOTYPE  GLOBAL DEFAULT   25 __bss_start
+    31: 0000000000401136    21 FUNC    GLOBAL DEFAULT   17 main
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.o -o hy -Wl,-y,puts -Wl,-y,main -Wl,-y,__libc_start_main -Wl,-y,_start
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o: definition of _start
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o: reference to main
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o: reference to __libc_start_main
+/usr/bin/ld.bfd: hello.o: definition of main
+/usr/bin/ld.bfd: hello.o: reference to puts
+/usr/bin/ld.bfd: /lib64/libc.so.6: definition of puts
+/usr/bin/ld.bfd: /lib64/libc.so.6: definition of __libc_start_main
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.o -o ht -Wl,--trace
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+hello.o
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so
+/lib64/libgcc_s.so.1
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a
+/usr/lib/gcc/x86_64-redhat-linux/16/libatomic_asneeded.so
+/usr/lib/gcc/x86_64-redhat-linux/16/libatomic.so
+/usr/lib64/libatomic.so.1.2.0
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.so
+/lib64/libc.so.6
+/usr/lib64/libc_nonshared.a
+/lib64/ld-linux-x86-64.so.2
+/usr/lib64/libc_nonshared.a
+/lib64/ld-linux-x86-64.so.2
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so
+/lib64/libgcc_s.so.1
+/usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a
+/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.o -o hv -Wl,--verbose 2>&1 | grep -E 'succeeded|opened script'
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o succeeded
+attempt to open hello.o succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so
+attempt to open /lib64/libgcc_s.so.1 succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libatomic_asneeded.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libatomic_asneeded.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libatomic_asneeded.so
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libatomic.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libatomic.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libatomic.so
+attempt to open /usr/lib64/libatomic.so.1.2.0 succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.so
+attempt to open /lib64/libc.so.6 succeeded
+attempt to open /usr/lib64/libc_nonshared.a succeeded
+attempt to open /lib64/ld-linux-x86-64.so.2 succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so succeeded
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so
+opened script file /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so
+attempt to open /lib64/libgcc_s.so.1 succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o succeeded
+attempt to open /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o succeeded
+[exit 0]
+
+$ readelf -l hello | sed -n '1,40p'
+
+Elf file type is EXEC (Executable file)
+Entry point 0x401040
+There are 13 program headers, starting at offset 64
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  PHDR           0x0000000000000040 0x0000000000400040 0x0000000000400040
+                 0x00000000000002d8 0x00000000000002d8  R      0x8
+  INTERP         0x000000000000033c 0x000000000040033c 0x000000000040033c
+                 0x000000000000001c 0x000000000000001c  R      0x1
+      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000
+                 0x0000000000000600 0x0000000000000600  R      0x1000
+  LOAD           0x0000000000001000 0x0000000000401000 0x0000000000401000
+                 0x0000000000000159 0x0000000000000159  R E    0x1000
+  LOAD           0x0000000000001df8 0x0000000000402df8 0x0000000000402df8
+                 0x0000000000000214 0x0000000000000218  RW     0x1000
+  DYNAMIC        0x0000000000001e08 0x0000000000402e08 0x0000000000402e08
+                 0x00000000000001d0 0x00000000000001d0  RW     0x8
+  NOTE           0x0000000000000318 0x0000000000400318 0x0000000000400318
+                 0x0000000000000024 0x0000000000000024  R      0x4
+  NOTE           0x00000000000005a0 0x00000000004005a0 0x00000000004005a0
+                 0x0000000000000040 0x0000000000000040  R      0x8
+  NOTE           0x00000000000005e0 0x00000000004005e0 0x00000000004005e0
+                 0x0000000000000020 0x0000000000000020  R      0x4
+  GNU_PROPERTY   0x00000000000005a0 0x00000000004005a0 0x00000000004005a0
+                 0x0000000000000040 0x0000000000000040  R      0x8
+  GNU_EH_FRAME   0x00000000000004c0 0x00000000004004c0 0x00000000004004c0
+                 0x0000000000000034 0x0000000000000034  R      0x4
+  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x0000000000000000 0x0000000000000000  RW     0x10
+  GNU_RELRO      0x0000000000001df8 0x0000000000402df8 0x0000000000402df8
+                 0x0000000000000208 0x0000000000000208  R      0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+[exit 0]
+
+$ readelf -x .got.plt hello; readelf -S hello | grep -A1 -E 'got|plt'
+
+Hex dump of section '.got.plt':
+ NOTE: This section has relocations against it, but these have NOT been applied to this dump.
+  0x00402fe8 082e4000 00000000 00000000 00000000 ..@.............
+  0x00402ff8 00000000 00000000 36104000 00000000 ........6.@.....
+
+  [ 9] .rela.plt         RELA             0000000000400488  00000488
+       0000000000000018  0000000000000018  AI       4    23     8
+--
+  [16] .plt              PROGBITS         0000000000401020  00001020
+       0000000000000020  0000000000000010  AX       0     0     16
+--
+  [22] .got              PROGBITS         0000000000402fd8  00001fd8
+       0000000000000010  0000000000000008  WA       0     0     8
+  [23] .got.plt          PROGBITS         0000000000402fe8  00001fe8
+       0000000000000020  0000000000000008  WA       0     0     8
+[exit 0]
+
+$ objdump -s -j .rodata hello
+
+hello:     file format elf64-x86-64
+
+Contents of section .rodata:
+ 4004a0 01000200 00000000 00000000 00000000  ................
+ 4004b0 68656c6c 6f2c2077 6f726c64 00        hello, world.   
+[exit 0]

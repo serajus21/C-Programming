@@ -1,0 +1,16 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,-t,-t | grep -c 'libc\.a('; gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,-t,-t | grep 'libc\.a(' | head -3
+0
+[exit 0]
+
+$ sed -n '1,8p' hs.map; awk '/^Archive member included/{f=1;next} /^Discarded|^There are no discarded|^Memory Configuration/{f=0} f' hs.map | grep -c '^[^ ].*libc\.a('
+Archive member included to satisfy reference by file (symbol)
+
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(libc-start.o)
+                              /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o (__libc_start_main)
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(libc-tls.o)
+                              /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(libc-start.o) (__libc_setup_tls)
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(__libc_assert_fail.o)
+                              /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a(libc-start.o) (__libc_assert_fail)
+1758
+[exit 0]

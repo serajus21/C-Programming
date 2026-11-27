@@ -1,0 +1,393 @@
+tar: avr_hello.c: time stamp 2026-11-26 23:32:20 is 68.289427611 s in the future
+tar: cube.c: time stamp 2026-11-26 23:32:20 is 68.289386445 s in the future
+tar: greet.c: time stamp 2026-11-26 23:32:20 is 68.289370279 s in the future
+tar: greet_def.c: time stamp 2026-11-26 23:32:20 is 68.289355664 s in the future
+tar: hello.c: time stamp 2026-11-26 23:32:20 is 68.289338456 s in the future
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c hello.c -o hello.o && gcc -std=c23 -Wall -Wextra -pedantic hello.c -o hello -v 2>&1 | grep collect2 | tr ' ' '\n' | cat -n
+     1	
+     2	/usr/libexec/gcc/x86_64-redhat-linux/16/collect2
+     3	-plugin
+     4	/usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so
+     5	-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper
+     6	-plugin-opt=-fresolution=/tmp/ccfI4Hkb.res
+     7	-plugin-opt=-pass-through=-lgcc
+     8	-plugin-opt=-pass-through=-lgcc_s_asneeded
+     9	-plugin-opt=-pass-through=-latomic_asneeded
+    10	-plugin-opt=-pass-through=-lc
+    11	-plugin-opt=-pass-through=-lgcc
+    12	-plugin-opt=-pass-through=-lgcc_s_asneeded
+    13	--build-id
+    14	--no-add-needed
+    15	--eh-frame-hdr
+    16	--hash-style=gnu
+    17	-m
+    18	elf_x86_64
+    19	-dynamic-linker
+    20	/lib64/ld-linux-x86-64.so.2
+    21	-o
+    22	hello
+    23	/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+    24	/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+    25	/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+    26	-L/usr/lib/gcc/x86_64-redhat-linux/16
+    27	-L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64
+    28	-L/lib/../lib64
+    29	-L/usr/lib/../lib64
+    30	-L/usr/lib/gcc/x86_64-redhat-linux/16/../../..
+    31	-L/lib
+    32	-L/usr/lib
+    33	/tmp/ccOw8T7C.o
+    34	-lgcc
+    35	-lgcc_s_asneeded
+    36	-latomic_asneeded
+    37	-lc
+    38	-lgcc
+    39	-lgcc_s_asneeded
+    40	/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+    41	/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+[exit 0]
+
+$ gcc -dumpspecs | grep -A2 -E '^\*(startfile|endfile|lib|libgcc|link_gcc_c_sequence):'
+*link_gcc_c_sequence:
+%{static|static-pie:--start-group} %G %{!nolibc:%{!fno-link-libatomic:-latomic_asneeded} %L}    %{static|static-pie:--end-group}%{!static:%{!static-pie:%G}}
+
+--
+*endfile:
+%{!mandroid|tno-android-ld:%{mdaz-ftz:crtfastmath.o%s;Ofast|ffast-math|funsafe-math-optimizations:%{!shared:%{!mno-daz-ftz:crtfastmath.o%s}}}    %{mpc32:crtprec32.o%s}    %{mpc64:crtprec64.o%s}    %{mpc80:crtprec80.o%s} %{!static:%{fvtable-verify=none:%s;      fvtable-verify=preinit:vtv_end_preinit.o%s;      fvtable-verify=std:vtv_end.o%s}}    %{static:crtend.o%s;      shared|static-pie|pie:crtendS.o%s;      :crtend.o%s} crtn.o%s %{fopenacc|fopenmp:crtoffloadend%O%s};:%{mdaz-ftz:crtfastmath.o%s;Ofast|ffast-math|funsafe-math-optimizations:%{!shared:%{!mno-daz-ftz:crtfastmath.o%s}}}    %{mpc32:crtprec32.o%s}    %{mpc64:crtprec64.o%s}    %{mpc80:crtprec80.o%s} %{shared: crtend_so%O%s;: crtend_android%O%s}}
+
+--
+*lib:
+%{!mandroid|tno-android-ld:%{pthread:-lpthread} %{shared:-lc}    %{!shared:%{profile:-lc_p}%{!profile:-lc}};:%{shared:-lc}    %{!shared:%{profile:-lc_p}%{!profile:-lc}} %{!static: -ldl}}
+
+--
+*libgcc:
+%{static|static-libgcc|static-pie:-lgcc -lgcc_eh}%{!static:%{!static-libgcc:%{!static-pie:%{!shared-libgcc:-lgcc -lgcc_s_asneeded}%{shared-libgcc:-lgcc_s%{!shared: -lgcc}}}}}
+
+*startfile:
+%{!mandroid|tno-android-ld:%{shared:;      pg|p|profile:%{static-pie:grcrt1.o%s;:gcrt1.o%s};      static:crt1.o%s;      static-pie:rcrt1.o%s;      pie:Scrt1.o%s;      :crt1.o%s} crti.o%s    %{static:crtbeginT.o%s;      shared|static-pie|pie:crtbeginS.o%s;      :crtbegin.o%s}    %{fvtable-verify=none:%s;      fvtable-verify=preinit:vtv_start_preinit.o%s;      fvtable-verify=std:vtv_start.o%s} %{fopenacc|fopenmp:crtoffloadbegin%O%s};:%{shared: crtbegin_so%O%s;:  %{static: crtbegin_static%O%s;: crtbegin_dynamic%O%s}}}
+
+[exit 0]
+
+$ rpm -qf /usr/lib64/crt1.o /usr/lib64/crti.o /usr/lib64/crtn.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o /usr/lib64/libc.so /usr/lib64/libm.so /usr/lib64/libc_nonshared.a
+glibc-devel-2.44-2.fc45.x86_64
+glibc-devel-2.44-2.fc45.x86_64
+glibc-devel-2.44-2.fc45.x86_64
+gcc-16.2.1-3.fc45.x86_64
+glibc-devel-2.44-2.fc45.x86_64
+glibc-devel-2.44-2.fc45.x86_64
+glibc-devel-2.44-2.fc45.x86_64
+[exit 0]
+
+$ file /usr/lib64/libc.so /usr/lib64/libm.so; cat /usr/lib64/libc.so; echo ----; cat /usr/lib64/libm.so
+/usr/lib64/libc.so: ASCII text
+/usr/lib64/libm.so: ASCII text
+/* GNU ld script
+   Use the shared library, but some functions are only in
+   the static library, so try that secondarily.  */
+OUTPUT_FORMAT(elf64-x86-64)
+GROUP ( /lib64/libc.so.6 /usr/lib64/libc_nonshared.a  AS_NEEDED ( /lib64/ld-linux-x86-64.so.2 ) )
+----
+/* GNU ld script
+*/
+OUTPUT_FORMAT(elf64-x86-64)
+GROUP ( /lib64/libm.so.6  AS_NEEDED ( /lib64/libmvec.so.1 ) )
+[exit 0]
+
+$ ls -l /usr/lib/gcc/x86_64-redhat-linux/16/ | grep -E 'libgcc|crt'; cat /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s_asneeded.so 2>/dev/null; cat /usr/lib/gcc/x86_64-redhat-linux/16/libgcc_s.so 2>/dev/null
+-rw-r--r--. 1 root root     2776 Oct 29 06:00 crtbegin.o
+-rw-r--r--. 1 root root     3016 Oct 29 06:00 crtbeginS.o
+-rw-r--r--. 1 root root     3272 Oct 29 06:00 crtbeginT.o
+-rw-r--r--. 2 root root     1456 Oct 29 06:00 crtend.o
+-rw-r--r--. 2 root root     1456 Oct 29 06:00 crtendS.o
+-rw-r--r--. 1 root root     1864 Oct 29 06:00 crtfastmath.o
+-rw-r--r--. 1 root root     1608 Oct 29 06:00 crtoffloadbegin.o
+-rw-r--r--. 1 root root     1600 Oct 29 06:00 crtoffloadend.o
+-rw-r--r--. 1 root root     1864 Oct 29 06:00 crtoffloadtable.o
+-rw-r--r--. 1 root root     1872 Oct 29 06:00 crtoffloadtableS.o
+-rw-r--r--. 1 root root     1856 Oct 29 06:00 crtprec32.o
+-rw-r--r--. 1 root root     1864 Oct 29 06:00 crtprec64.o
+-rw-r--r--. 1 root root     1856 Oct 29 06:00 crtprec80.o
+-rw-r--r--. 1 root root  3350156 Oct 29 06:00 libgcc.a
+-rw-r--r--. 1 root root   462134 Oct 29 06:00 libgcc_eh.a
+-rw-r--r--. 1 root root      136 Oct 29 06:00 libgcc_s_asneeded.so
+-rw-r--r--. 1 root root      195 Oct 29 06:00 libgcc_s.so
+/* GNU ld script
+   Add DT_NEEDED entry for libgcc_s.so only if needed.  */
+OUTPUT_FORMAT(elf64-x86-64)
+INPUT ( AS_NEEDED ( -lgcc_s ) )
+/* GNU ld script
+   Use the shared library, but some functions are only in
+   the static library, so try that secondarily.  */
+OUTPUT_FORMAT(elf64-x86-64)
+GROUP ( /lib64/libgcc_s.so.1 libgcc.a )
+[exit 0]
+
+$ ar t /usr/lib64/libc_nonshared.a
+at_quick_exit.oS
+atexit.oS
+pthread_atfork.oS
+stack_chk_fail_local.oS
+[exit 0]
+
+$ nm /usr/lib64/crt1.o; size -A /usr/lib64/crt1.o | grep -v '^$'
+0000000000000000 r __abi_tag
+0000000000000000 D __data_start
+0000000000000000 W data_start
+0000000000000030 T _dl_relocate_static_pie
+0000000000000040 T _dl_relocate_static_pie_ifunc
+                 U _GLOBAL_OFFSET_TABLE_
+0000000000000000 R _IO_stdin_used
+                 U __libc_start_main
+                 U main
+0000000000000000 T _start
+/usr/lib64/crt1.o  :
+section                 size   addr
+.text                     69      0
+.eh_frame                112      0
+.data                      4      0
+.bss                       0      0
+.comment                 141      0
+.gnu.build.attributes     36      0
+.note.GNU-stack            0      0
+.note.gnu.property        80      0
+.annobin.notes           534      0
+.note.ABI-tag             32      0
+.rodata.cst4               4      0
+Total                   1012
+[exit 0]
+
+$ nm /usr/lib64/crti.o; size -A /usr/lib64/crti.o | grep -v '^$'
+0000000000000000 T _fini
+                 U _GLOBAL_OFFSET_TABLE_
+                 w __gmon_start__
+0000000000000000 T _init
+/usr/lib64/crti.o  :
+section                 size   addr
+.text                      0      0
+.data                      0      0
+.bss                       0      0
+.note.gnu.property        80      0
+.init                     22      0
+.fini                      8      0
+.note.GNU-stack            0      0
+.gnu.build.attributes    108      0
+Total                    218
+[exit 0]
+
+$ nm /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o; size -A /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o | grep -v '^$'
+0000000000000000 b completed.0
+0000000000000000 t deregister_tm_clones
+0000000000000070 t __do_global_dtors_aux
+0000000000000000 d __do_global_dtors_aux_fini_array_entry
+0000000000000000 R __dso_handle
+00000000000000a0 t frame_dummy
+0000000000000000 d __frame_dummy_init_array_entry
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+0000000000000030 t register_tm_clones
+                 U __TMC_END__
+0000000000000000 d __TMC_LIST__
+/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o  :
+section                 size   addr
+.text                    166      0
+.data                      0      0
+.bss                       1      0
+.tm_clone_table            0      0
+.rodata                    8      0
+.fini_array                8      0
+.init_array                8      0
+.comment                  47      0
+.note.GNU-stack            0      0
+.note.gnu.property        80      0
+.gnu.build.attributes     36      0
+Total                    354
+[exit 0]
+
+$ nm /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o; size -A /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o | grep -v '^$'
+0000000000000000 r __FRAME_END__
+0000000000000000 D __TMC_END__
+/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o  :
+section                 size   addr
+.text                      0      0
+.data                      0      0
+.bss                       0      0
+.eh_frame                  4      0
+.tm_clone_table            0      0
+.comment                  47      0
+.note.GNU-stack            0      0
+.note.gnu.property        80      0
+.gnu.build.attributes     36      0
+Total                    167
+[exit 0]
+
+$ nm /usr/lib64/crtn.o; size -A /usr/lib64/crtn.o | grep -v '^$'
+/usr/lib64/crtn.o  :
+section                 size   addr
+.text                      0      0
+.data                      0      0
+.bss                       0      0
+.note.gnu.property        80      0
+.init                      5      0
+.fini                      5      0
+.note.GNU-stack            0      0
+.gnu.build.attributes    108      0
+Total                    198
+[exit 0]
+
+$ objdump -d /usr/lib64/crti.o /usr/lib64/crtn.o | grep -v '^$'
+/usr/lib64/crti.o:     file format elf64-x86-64
+Disassembly of section .init:
+0000000000000000 <_init>:
+   0:	f3 0f 1e fa          	endbr64
+   4:	48 83 ec 08          	sub    $0x8,%rsp
+   8:	48 8b 05 00 00 00 00 	mov    0x0(%rip),%rax        # f <_init+0xf>
+   f:	48 85 c0             	test   %rax,%rax
+  12:	74 02                	je     16 <_init+0x16>
+  14:	ff d0                	call   *%rax
+Disassembly of section .fini:
+0000000000000000 <_fini>:
+   0:	f3 0f 1e fa          	endbr64
+   4:	48 83 ec 08          	sub    $0x8,%rsp
+/usr/lib64/crtn.o:     file format elf64-x86-64
+Disassembly of section .init:
+0000000000000000 <.init>:
+   0:	48 83 c4 08          	add    $0x8,%rsp
+   4:	c3                   	ret
+Disassembly of section .fini:
+0000000000000000 <.fini>:
+   0:	48 83 c4 08          	add    $0x8,%rsp
+   4:	c3                   	ret
+[exit 0]
+
+$ objdump -dr /usr/lib64/crt1.o | grep -v '^$'
+/usr/lib64/crt1.o:     file format elf64-x86-64
+Disassembly of section .text:
+0000000000000000 <_start>:
+   0:	f3 0f 1e fa          	endbr64
+   4:	31 ed                	xor    %ebp,%ebp
+   6:	49 89 d1             	mov    %rdx,%r9
+   9:	5e                   	pop    %rsi
+   a:	48 89 e2             	mov    %rsp,%rdx
+   d:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+  11:	50                   	push   %rax
+  12:	54                   	push   %rsp
+  13:	45 31 c0             	xor    %r8d,%r8d
+  16:	31 c9                	xor    %ecx,%ecx
+  18:	48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # 1f <_start+0x1f>
+			1b: R_X86_64_REX_GOTPCRELX	main-0x4
+  1f:	ff 15 00 00 00 00    	call   *0x0(%rip)        # 25 <_start+0x25>
+			21: R_X86_64_GOTPCRELX	__libc_start_main-0x4
+  25:	f4                   	hlt
+  26:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+  2d:	00 00 00 
+0000000000000030 <_dl_relocate_static_pie>:
+  30:	f3 0f 1e fa          	endbr64
+  34:	c3                   	ret
+  35:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+  3c:	00 00 00 00 
+0000000000000040 <_dl_relocate_static_pie_ifunc>:
+  40:	f3 0f 1e fa          	endbr64
+  44:	c3                   	ret
+[exit 0]
+
+$ gcc -print-file-name=libc.so; gcc -print-file-name=crt1.o; gcc -print-file-name=libm.a; gcc -print-search-dirs | sed -n '1,2p'
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.so
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libm.a
+install: /usr/lib/gcc/x86_64-redhat-linux/16/
+programs: =/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../x86_64-redhat-linux/bin/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../x86_64-redhat-linux/bin/
+[exit 0]
+
+$ ld --verbose | grep -n -E 'SEARCH_DIR|SEGMENT_START|SIZEOF_HEADERS|ENTRY|OUTPUT_FORMAT' | head -20
+16:OUTPUT_FORMAT("elf64-x86-64", "elf64-x86-64", "elf64-x86-64")
+18:ENTRY(_start)
+19:SEARCH_DIR("=/usr/x86_64-redhat-linux/lib64"); SEARCH_DIR("=/usr/lib64"); SEARCH_DIR("=/usr/local/lib64"); SEARCH_DIR("=/lib64"); SEARCH_DIR("=/usr/x86_64-redhat-linux/lib"); SEARCH_DIR("=/usr/local/lib"); SEARCH_DIR("=/lib"); SEARCH_DIR("=/usr/lib");
+22:  PROVIDE (__executable_start = SEGMENT_START("text-segment", 0x400000));
+23:  . = SEGMENT_START("text-segment", 0x400000) + SIZEOF_HEADERS;
+217:  . = SEGMENT_START("ldata-segment", .);
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hello.o -o hello_map -Wl,-Map=hello.map && cmp hello hello_map; grep -n -E '^ \.(text|init|plt|rodata|fini|interp)|^\.(text|init|plt|rodata|fini|interp|data|bss)|hello.o|crt1.o|crti.o|crtn.o|crtbegin.o|crtend.o' hello.map | head -80
+4:Removed property 0xc0000002 to merge /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o (0x3) and hello.o (not found)
+5:Updated property 0xc0010002 (0x1) to merge /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o (0x1) and /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o (0x0)
+6:Removed property 0xc0000002 to merge /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o (not found) and /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o (0x3)
+7:Removed property 0xc0000002 to merge /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o (not found) and /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o (0x3)
+12:                0x0000000000000000       0x50 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+14:                0x0000000000000000       0x50 /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+16:                0x0000000000000000       0x30 hello.o
+18:                0x0000000000000000       0x50 /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+20:                0x0000000000000000       0x50 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+29:LOAD /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+30:LOAD /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+31:LOAD /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+32:LOAD hello.o
+56:LOAD /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+57:LOAD /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+65:                0x0000000000400318       0x24 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+67:.interp         0x000000000040033c       0x1c
+69: .interp        0x000000000040033c       0x1c /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+76: .gnu.hash      0x0000000000400358       0x1c /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+80: .dynsym        0x0000000000400378       0x60 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+84: .dynstr        0x00000000004003d8       0x48 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+88: .gnu.version   0x0000000000400420        0x8 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+93:                0x0000000000400428        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+98:                0x0000000000400428       0x30 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+103: .rela.text     0x0000000000400458        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+108:                0x0000000000400458        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+114: .rela.got      0x0000000000400458       0x30 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+116: .rela.tls      0x0000000000400488        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+118: .rela.bss      0x0000000000400488        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+126: .rela.plt      0x0000000000400488       0x18 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+129: .rela.iplt     0x00000000004004a0        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+135:.rodata         0x00000000004004a0       0x1d
+137: .rodata.cst4   0x00000000004004a0        0x4 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+140: .rodata        0x00000000004004a8        0x8 /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+142: .rodata        0x00000000004004b0        0xd hello.o
+144:.rodata1
+149: .eh_frame_hdr  0x00000000004004c0       0x34 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+155: .eh_frame      0x00000000004004f8       0x58 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+157: .eh_frame      0x0000000000400550       0x28 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+159: .eh_frame      0x0000000000400578        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+160: .eh_frame      0x0000000000400578       0x20 hello.o
+162: .eh_frame      0x0000000000400598        0x4 /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+185:                0x000000000040059c        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+187:                0x000000000040059c        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+189:                0x000000000040059c        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+191:                0x000000000040059c        0x0 hello.o
+193:                0x000000000040059c        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+195:                0x000000000040059c        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+201:                0x00000000004005a0       0x40 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+205: .note.ABI-tag  0x00000000004005e0       0x20 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+220:.init           0x0000000000401000       0x1b
+222: .init          0x0000000000401000       0x16 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+224: .init          0x0000000000401016        0x5 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+226:.plt            0x0000000000401020       0x20
+228: .plt           0x0000000000401020       0x20 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+231: .iplt          0x0000000000401040        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+233:.plt.got        0x0000000000401040        0x0
+235: .plt.got       0x0000000000401040        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+237:.plt.sec
+240:.text           0x0000000000401040      0x10b
+247: .text          0x0000000000401040       0x45 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o
+251: .text          0x0000000000401085        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+253: .text          0x0000000000401090       0xa6 /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+254: .text          0x0000000000401136       0x15 hello.o
+256: .text          0x000000000040114b        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o
+257: .text          0x000000000040114b        0x0 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+260:.fini           0x000000000040114c        0xd
+262: .fini          0x000000000040114c        0x8 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o
+264: .fini          0x0000000000401154        0x5 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+301:.init_array     0x0000000000402df8        0x8
+304: *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
+305: .init_array    0x0000000000402df8        0x8 /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+308:.fini_array     0x0000000000402e00        0x8
+311: *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
+312: .fini_array    0x0000000000402e00        0x8 /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o
+316: *crtbegin.o(.ctors)
+318: *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+323: *crtbegin.o(.dtors)
+325: *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+332:.data.rel.ro    0x0000000000402e08        0x0
+grep: write error: Broken pipe
+[exit 0]

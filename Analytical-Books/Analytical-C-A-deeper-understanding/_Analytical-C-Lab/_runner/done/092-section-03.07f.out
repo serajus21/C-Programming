@@ -1,0 +1,50 @@
+
+$ nm -D /lib64/libc.so.6 | grep -E ' (puts|__libc_start_main)@@'
+000000000007d390 T __libc_start_main@@GLIBC_2.34
+00000000000d9a60 T puts@@GLIBC_2.2.5
+[exit 0]
+
+$ grep -m1 'model name' /proc/cpuinfo
+model name	: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+[exit 0]
+
+$ nm where_pie | grep -w main; readelf -d /lib64/libc.so.6 | grep -E 'RELR|RELACOUNT'; LD_DEBUG=statistics ./where_pie 2>&1 | grep -E 'relative|number of relocations'
+0000000000001139 T main
+ 0x0000000000000024 (RELR)               0x27908
+ 0x0000000000000023 (RELRSZ)             280 (bytes)
+ 0x0000000000000025 (RELRENT)            8 (bytes)
+     45545:	                 number of relocations: 100
+     45545:	      number of relocations from cache: 7
+     45545:	        number of relative relocations: 3
+     45545:	           final number of relocations: 102
+     45545:	final number of relocations from cache: 7
+[exit 0]
+
+$ readelf --dyn-syms where | grep -w puts; readelf --dyn-syms where_pie | grep -w puts
+     4: 0000000000401030     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.2.5 (3)
+     3: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.2.5 (3)
+[exit 0]
+
+$ ls -ld /lib64
+lrwxrwxrwx. 1 root root 9 Jul 15 06:00 /lib64 -> usr/lib64
+[exit 0]
+
+$ avr-objdump -dr /usr/avr/lib/avr5/crtatmega328p.o | sed -n '/init9/,$p' | head -12
+Disassembly of section .init9:
+
+00000000 <.init9>:
+   0:	0e 94 00 00 	call	0	; 0x0 <.init9>
+			0: R_AVR_CALL	main
+   4:	0c 94 00 00 	jmp	0	; 0x0 <.init9>
+			4: R_AVR_CALL	exit
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break __vdso_clock_gettime' -ex run -ex bt ./clock 2>&1 | grep -E '^#|Breakpoint 1,'
+[exit 1]
+
+$ env -i ./stack | head -4
+argc = 1 at 0x7ffe565ef47c
+argv = 0x7ffe565ef5e8, argv[argc] = (nil)
+envp = 0x7ffe565ef5f8, environ = 0x7ffe565ef5f8
+auxv 33: 0x7fc4773f4000
+[exit 0]

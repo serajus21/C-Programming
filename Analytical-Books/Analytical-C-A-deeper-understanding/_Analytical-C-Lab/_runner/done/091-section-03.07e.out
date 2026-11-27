@@ -1,0 +1,174 @@
+
+$ man 2 execve 2>/dev/null | col -b | sed -n '/^DESCRIPTION/,/^RETURN VALUE/p' | head -60
+DESCRIPTION
+     execve()  executes	 the  program referred to by pathname.	This causes the
+     program that is currently being run by the calling process to be  replaced
+     with  a  new program, with newly initialized stack, heap, and (initialized
+     and uninitialized) data segments.
+
+     pathname must be either a binary executable, or a script starting	with  a
+     line of the form:
+
+	 #!interpreter [optional-arg]
+
+     For details of the latter case, see "Interpreter scripts" below.
+
+     argv  is  an array of pointers to strings passed to the new program as its
+     command-line arguments.  By convention, the first of these strings	 (i.e.,
+     argv[0])  should  contain the filename associated with the file being exe‐
+     cuted.  The argv array must be terminated by a null  pointer.   (Thus,  in
+     the new program, argv[argc] will be a null pointer.)
+
+     envp  is  an  array  of  pointers	to  strings, conventionally of the form
+     key=value, which are passed as the environment of the  new	 program.   The
+     envp array must be terminated by a null pointer.
+
+     This  manual  page	 describes  the	 Linux	system	call  in detail; for an
+     overview of the nomenclature and the many, often preferable,  standardised
+     variants of this function provided by libc, including ones that search the
+     PATH environment variable, see exec(3).
+
+     The  argument  vector and environment can be accessed by the new program's
+     main function, when it is defined as:
+
+	 int main(int argc, char *argv[], char *envp[])
+
+     Note, however, that the use of a third argument to the  main  function  is
+     not  specified in POSIX.1; according to POSIX.1, the environment should be
+     accessed via the external variable environ(7).
+
+     execve() does not return on  success,  and	 the  text,  initialized  data,
+     uninitialized data (bss), and stack of the calling process are overwritten
+     according to the contents of the newly loaded program.
+
+     If	 the  current  program is being ptraced, a SIGTRAP signal is sent to it
+     after a successful execve().
+
+     If the set-user-ID bit is set on the program file referred to by pathname,
+     then the effective user ID of the calling process is changed  to  that  of
+     the  owner of the program file.  Similarly, if the set-group-ID bit is set
+     on the program file, then the effective group ID of the calling process is
+     set to the group of the program file.
+
+     The aforementioned transformations of the effective IDs are not  performed
+     (i.e.,  the  set-user-ID  and set-group-ID bits are ignored) if any of the
+     following is true:
+
+     •	the  no_new_privs  attribute  is  set  for  the	 calling  thread   (see
+	prctl(2));
+
+     •	the  underlying	 filesystem  is	 mounted nosuid (the MS_NOSUID flag for
+	mount(2)); or
+
+sed: couldn't write 79 items to stdout: Broken pipe
+col: write failed: Broken pipe
+col: write error
+[exit 0]
+
+$ man 2 execve 2>/dev/null | col -b | grep -n -B2 -A8 'PT_INTERP'
+92-
+93-     If	 the executable is a dynamically linked ELF executable, the interpreter
+94:     named in the PT_INTERP segment is used to load the needed shared  objects.
+95-     This  interpreter is typically /lib/ld-linux.so.2 for binaries linked with
+96-     glibc (see ld-linux.so(8)).
+97-
+98-   Effect on process attributes
+99-     All process attributes are preserved during an execve(), except  the  fol‐
+100-     lowing:
+101-
+102-     •	The  dispositions of any signals that are being caught are reset to the
+--
+278-
+279-     EINVAL
+280:	    An	ELF executable had more than one PT_INTERP segment (i.e., tried
+281-	    to name more than one interpreter).
+282-
+283-     EIO    An I/O error occurred.
+284-
+285-     EISDIR
+286-	    An ELF interpreter was a directory.
+287-
+288-     ELIBBAD
+[exit 0]
+
+$ man 8 ld.so 2>/dev/null | col -b | sed -n '/^DESCRIPTION/,+12p'
+DESCRIPTION
+     The programs ld.so and ld-linux.so*  find	and  load  the	shared	objects
+     (shared  libraries)  needed  by a program, prepare the program to run, and
+     then run it.
+
+     Linux binaries require dynamic linking (linking at run  time)  unless  the
+     -static option was given to ld(1) during compilation.
+
+     The  program  ld.so handles a.out binaries, a binary format used long ago.
+     The program ld-linux.so* (/lib/ld-linux.so.1 for libc5, /lib/ld-linux.so.2
+     for glibc2) handles binaries that are in the more modern ELF format.  Both
+     programs have the same behavior, and use the same support files  and  pro‐
+     grams (ldd(1), ldconfig(8), and /etc/ld.so.conf).
+[exit 0]
+
+$ man 8 ld.so 2>/dev/null | col -b | grep -n -A8 '^ *LD_BIND_NOW'
+224:     LD_BIND_NOW (since glibc 2.1.1)
+225-	    If set to a nonempty string, causes the dynamic linker  to	resolve
+226-	    all	 symbols  at program startup instead of deferring function call
+227-	    resolution to the point when they are first	 referenced.   This  is
+228-	    useful when using a debugger.
+229-
+230-     LD_LIBRARY_PATH
+231-	    A  list of directories in which to search for ELF libraries at exe‐
+232-	    cution time.  The items in the list are separated by either	 colons
+[exit 0]
+
+$ man 7 vdso 2>/dev/null | col -b | sed -n '/^DESCRIPTION/,+14p'
+DESCRIPTION
+     The  "vDSO" (virtual dynamic shared object) is a small shared library that
+     the kernel automatically maps into the address space of all user-space ap‐
+     plications.  Applications usually do not need to concern  themselves  with
+     these  details as the vDSO is most commonly called by the C library.  This
+     way you can code in the normal way using standard functions and the C  li‐
+     brary  will take care of using any functionality that is available via the
+     vDSO.
+
+     Why does the vDSO exist at all?  There are some system  calls  the	 kernel
+     provides  that user-space code ends up using frequently, to the point that
+     such calls can dominate overall performance.  This is due both to the fre‐
+     quency of the call as well as the	context-switch	overhead  that	results
+     from exiting user space and entering the kernel.
+
+[exit 0]
+
+$ man 3 getauxval 2>/dev/null | col -b | grep -n -A4 -E '^ *AT_(ENTRY|BASE|PHDR|RANDOM|SYSINFO_EHDR)'
+26:     AT_BASE
+27-	    The base address of the program interpreter (usually,  the	dynamic
+28-	    linker).
+29-
+30:     AT_BASE_PLATFORM
+31-	    A  pointer	to  a string (PowerPC and MIPS only).  On PowerPC, this
+32-	    identifies the real platform;  may	differ	from  AT_PLATFORM.   On
+33-	    MIPS, this identifies the ISA level (since Linux 5.7).
+34-
+--
+45:     AT_ENTRY
+46-	    The entry address of the executable.
+47-
+48-     AT_EUID
+49-	    The effective user ID of the thread.
+--
+115:     AT_PHDR
+116-	    The address of the program headers of the executable.
+117-
+118-     AT_PHENT
+119-	    The size of program header entry.
+--
+129:     AT_RANDOM
+130-	    The address of sixteen bytes containing a random value.
+131-
+132-     AT_SECURE
+133-	    Has a nonzero value if this executable should be treated  securely.
+--
+148:     AT_SYSINFO_EHDR
+149-	    The	 address of a page containing the virtual Dynamic Shared Object
+150-	    (vDSO) that the kernel creates in order to provide fast implementa‐
+151-	    tions of certain system calls.
+152-
+[exit 0]

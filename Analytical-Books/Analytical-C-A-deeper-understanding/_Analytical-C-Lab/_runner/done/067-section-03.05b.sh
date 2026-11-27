@@ -1,0 +1,15 @@
+F="$PWD/../_build/sections/03.05/fedora"; cd "$F" || exit 1
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+O="-std=c23 -Wall -Wextra -pedantic"
+run "readelf -x .rela.text hello.o"
+run "readelf -x .symtab hello.o"
+run "nm hello.o; nm -a hello.o"
+run "ld hello.o -o hello_ld"
+run "objdump -h hello.o"
+run "gcc $O hello.c -o hello -Wl,-Map=hello.map && grep -A8 '^\\.rodata ' hello.map"
+run "readelf -x .text hello.o"
+run "xxd -s 0x40 -l 0x22 hello.o"
+run "readelf -S -W hello_ld 2>/dev/null | head -3; ls hello_ld 2>&1"
+run "avr-objdump -dr avr_hello.o | sed -n '/<main>:/,/<.L3>/p'"
+run "avr-nm avr_hello.elf | grep -E 'do_copy_data|__data_load_start|__data_start|__data_end'"
+run "avr-objdump -d avr_hello.elf | sed -n '/<__do_copy_data>:/,/<__bad_interrupt>/p' | head -24"

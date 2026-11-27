@@ -36,3 +36,9 @@ the author's workspace). The runner is `_Analytical-C-Lab/_runner/`: a systemd u
 `_Analytical-C-Lab/`, and its combined output and exit status go to `done/NAME.out` and `done/NAME.meta`.
 Setup: `setup-runner.sh`; stop: `systemctl --user disable --now analytical-c-lab.path`.
 Each section's Fedora build products are kept in `sections/CC.SS/fedora/`.
+
+## Revision log after v1.18 (note added November 27, 2026)
+`index/build_index.js` holds the revision log only up to v1.18. From v1.19 on, rows are appended directly to
+`_index.docx` (the title page's "Version" is bumped at the same time) with
+`python3 tools/add_revision.py _index.docx new.docx OLD NEW "Mon DD, YYYY" "text"`.
+Do not regenerate `_index.docx` from `build_index.js` without first copying the later rows into it.

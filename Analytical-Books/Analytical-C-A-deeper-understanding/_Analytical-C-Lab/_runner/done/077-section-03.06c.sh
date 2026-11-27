@@ -1,0 +1,28 @@
+F="$PWD/../_build/sections/03.06/fedora"; cd "$F" || exit 1
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+O="-std=c23 -Wall -Wextra -pedantic"
+run "gcc $O cube.c -o cube"
+run "gcc $O -lm cube.c -o cube1 && ./cube1 && ./cube1 2"
+run "gcc $O cube.c -o cube2 -lm && ./cube2 && cmp cube1 cube2 && echo identical"
+run "gcc $O -Wl,--as-needed -lm cube.c -o cube3"
+run "gcc $O cube.c -o cube4 -Wl,--as-needed -lm && ./cube4"
+run "gcc $O -static -lm cube.c -o cube5"
+run "gcc $O -static cube.c -o cube6 -lm && ./cube6 8"
+run "gcc $O cube.c -o cube7 -lm -Wl,-y,cbrt; gcc $O -lm cube.c -o cube8 -Wl,-y,cbrt"
+run "gcc $O -static cube.c -o cube9 -lm -Wl,--trace | grep -E 'libm|cube'"
+run "readelf -d cube1 | grep NEEDED; readelf -d cube | grep NEEDED"
+run "gcc $O cube.c -c && nm cube.o"
+run "gcc $O hello.c -o hello && gcc $O -static hello.c -o hello_static && ls -l hello hello_static && file hello hello_static"
+run "ldd hello; ldd cube1; ldd hello_static"
+run "nm hello | wc -l; nm hello_static | wc -l; size hello hello_static"
+run "readelf -l hello_static | grep -E 'INTERP|There are|Entry'; readelf -d hello_static"
+run "nm hello_static | grep -w -E 'puts|_IO_puts|main|_start|__libc_start_main'"
+run "./hello_static; readelf -l hello | grep -A1 INTERP"
+run "man ldd 2>/dev/null | col -b | grep -n -i -B2 -A6 'security'"
+run "rpm -q glibc-static; ls -l /usr/lib64/libc.a /usr/lib64/libm.a 2>&1; cat /usr/lib64/libm.a 2>/dev/null | head -c 300 | strings | head"
+run "nm -A /usr/lib64/libm.a 2>/dev/null | grep -w 'T cbrt'; nm -D /lib64/libm.so.6 | grep -w cbrt"
+mkdir -p ao && cd ao && cp ../hello.c . 
+run "gcc $O hello.c && ls && file a.out && ./a.out"
+cd ..
+run "gcc $O greet.c -o greet; gcc $O -c greet.c greet_def.c && gcc greet.o greet_def.o -o greet -Wl,-y,greet && ./greet && objdump -d greet | grep -A1 'call.*<greet>' && nm greet | grep -w greet"
+run "gcc $O -c greet.c && objdump -dr greet.o | grep -A1 call"

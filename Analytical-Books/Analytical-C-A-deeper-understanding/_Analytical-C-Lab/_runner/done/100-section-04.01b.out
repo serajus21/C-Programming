@@ -1,0 +1,42 @@
+
+$ sed 's/10;/2;/' div10.c > div2.c; gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE div2.c -o - | grep -A3 '^tenth:'
+tenth:
+	movl	%edi, %eax
+	shrl	%eax
+	ret
+[exit 0]
+
+$ gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE div16.c -o - | grep -A3 '^tenth:'
+tenth:
+	movl	%edi, %eax
+	shrl	$4, %eax
+	ret
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic zero.c -o zero && ./zero
+[0] [0] [0] [0xff] [0B101]
+long unsigned
+[exit 0]
+
+$ cp same perm_demo && chmod 640 perm_demo && stat -c '%a %A' perm_demo && chmod 755 perm_demo && stat -c '%a %A' perm_demo
+640 -rw-r-----
+755 -rwxr-xr-x
+[exit 0]
+
+$ for n in 255 256 65535 65536; do printf '%d: %o %x\n' $n $n $n; done
+255: 377 ff
+256: 400 100
+65535: 177777 ffff
+65536: 200000 10000
+[exit 0]
+
+$ ls -l /usr/bin/passwd | cut -c1-10; stat -c '%a %A' /usr/bin/passwd /tmp
+-rwsr-xr-x
+4755 -rwsr-xr-x
+1777 drwxrwxrwt
+[exit 0]
+
+$ getconf PAGESIZE; printf '%x\n' $(getconf PAGESIZE)
+4096
+1000
+[exit 0]

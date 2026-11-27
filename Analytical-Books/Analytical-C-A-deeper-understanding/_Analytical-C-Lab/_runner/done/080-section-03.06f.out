@@ -1,0 +1,31 @@
+
+$ man gcc 2>/dev/null | col -b | sed -n '15216,15232p'
+	 It makes a difference where in the command you write this option; the
+	 linker searches and processes libraries and object files in the order
+	 they are specified.  Thus, foo.o -lz bar.o searches library z after
+	 file foo.o but before bar.o.  If bar.o refers to functions in z, those
+	 functions may not be loaded.
+
+     -lobjc
+	 You need this special case of the -l option in order to link an
+	 Objective-C or Objective-C++ program.
+
+     -nostartfiles
+	 Do not use the standard system startup files when linking.  The
+	 standard system libraries are used normally, unless -nostdlib,
+	 -nolibc, or -nodefaultlibs is used.
+
+     -nodefaultlibs
+	 Do not use the standard system libraries when linking.	 Only the
+[exit 0]
+
+$ man gcc 2>/dev/null | col -b | grep -n -B1 -A6 '^ *-o file' | head -20
+1247-
+1248:     -o file
+1249-     --output=file
+1250-     --output file
+1251-	 Place the primary output in file file.	 This applies to whatever sort
+1252-	 of output is being produced, whether it be an executable file, an
+1253-	 object file, an assembler file or preprocessed C code.
+1254-
+[exit 0]

@@ -1,0 +1,31 @@
+
+$ which strace gdb ltrace setarch; uname -r; cat /proc/sys/kernel/randomize_va_space
+/usr/bin/strace
+/usr/bin/gdb
+/usr/bin/ltrace
+/usr/bin/setarch
+7.3.4-300.fc45.x86_64
+2
+[exit 0]
+
+$ grep -o -w -E 'user_shstk|ibt|shstk' /proc/cpuinfo | sort | uniq -c
+      8 ibt
+      8 user_shstk
+[exit 0]
+
+$ grep -E 'x86_Thread|Speculation' /proc/self/status
+Speculation_Store_Bypass:	thread vulnerable
+SpeculationIndirectBranch:	conditional enabled
+x86_Thread_features:	
+x86_Thread_features_locked:	
+[exit 0]
+
+$ cat /etc/ld.so.conf; ls /etc/ld.so.conf.d | head; ldconfig -p | grep -E 'libc.so.6|libm.so.6'
+include ld.so.conf.d/*.conf
+customLib.conf
+libiscsi-x86_64.conf
+llvm22-x86_64.conf
+pipewire-jack-x86_64.conf
+	libm.so.6 (libc6,x86-64) => /lib64/libm.so.6
+	libc.so.6 (libc6,x86-64) => /lib64/libc.so.6
+[exit 0]

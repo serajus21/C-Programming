@@ -1,0 +1,110 @@
+
+$ readelf -S -W /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o | grep -E ' \.text|Al'; readelf -S -W hello.o | grep -E ' \.text|Al'
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 1] .text             PROGBITS        0000000000000000 000040 0000a6 00  AX  0   0 16
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 1] .text             PROGBITS        0000000000000000 000040 000015 00  AX  0   0  1
+[exit 0]
+
+$ ld --help | grep -A2 -E 'separate-code'
+  -z separate-code            Create separate code program header (default)
+  -z noseparate-code          Don't create separate code program header
+  --rosegment                 With -z separate-code, create a single read-only segment (default)
+  --no-rosegment              With -z separate-code, creste two read-only segments
+  -z common                   Generate common symbols with STT_COMMON type
+  -z nocommon                 Generate common symbols with STT_OBJECT type
+[exit 0]
+
+$ man gcc 2>/dev/null | col -b | sed -n '1248,1262p'
+     -o file
+     --output=file
+     --output file
+	 Place the primary output in file file.	 This applies to whatever sort
+	 of output is being produced, whether it be an executable file, an
+	 object file, an assembler file or preprocessed C code.
+
+	 If -o is not specified, the default is to put an executable file in
+	 a.out, the object file for source.suffix in source.o, its assembler
+	 file in source.s, a precompiled header file in source.suffix.gch, and
+	 all preprocessed C source on standard output.
+
+	 Though -o names only the primary output, it also affects the naming of
+	 auxiliary and dump outputs.  See the examples below.  Unless
+	 overridden, both auxiliary outputs and dump outputs are placed in the
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c greet_def.c && gcc greet_def.o -o nomain
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o: in function `_start':
+(.text+0x1b): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ nm /usr/lib/gcc/x86_64-redhat-linux/16/libgcc.a 2>/dev/null | grep -E ' T (__divti3|__udivti3|__popcountdi2)$'
+0000000000000000 T __popcountdi2
+0000000000000000 T __divti3
+0000000000000000 T __udivti3
+[exit 0]
+
+$ cmp hello ao/a.out && echo identical
+identical
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall avr_div.c -o avr_div.elf -Wl,-Map=avr_div.map && sed -n '1,12p' avr_div.map && avr-objdump -d avr_div.elf | grep -E 'call.*udivmod'
+Archive member included to satisfy reference by file (symbol)
+
+/usr/lib/gcc/avr/15.3.0/avr5/libgcc.a(_udivmodhi4.o)
+                              /tmp/cc4jgcQI.o (__udivmodhi4)
+/usr/lib/gcc/avr/15.3.0/avr5/libgcc.a(_exit.o)
+                              /usr/lib/gcc/avr/15.3.0/../../../../avr/lib/avr5/crtatmega328p.o (exit)
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+  a0:	0e 94 54 00 	call	0xa8	; 0xa8 <__udivmodhi4>
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -c avr_div.c && avr-objdump -dr avr_div.o | grep -A1 call
+   0:	00 d0       	rcall	.+0      	; 0x2 <L0^A>
+			0: R_AVR_13_PCREL	L0^A
+--
+   2:	00 d0       	rcall	.+0      	; 0x4 <L0^A>
+			2: R_AVR_13_PCREL	L0^A
+--
+  20:	0e 94 00 00 	call	0	; 0x0 <main>
+			20: R_AVR_CALL	__udivmodhi4
+[exit 0]
+
+$ avr-objdump -d avr_hello.elf | sed -n '/<__vectors>:/,/<__ctors_end>/p' | sed -n '2,5p;26,28p'
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+[exit 0]
+
+$ avr-objdump -d avr_hello.elf | sed -n '/<__bad_interrupt>:/,/<main>/p'; avr-objdump -d avr_hello.elf | sed -n '/^0000008a/,/^00000092/p'
+00000092 <__bad_interrupt>:
+  92:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000096 <main>:
+0000008a <L0^A>:
+  8a:	0e 94 4b 00 	call	0x96	; 0x96 <main>
+  8e:	0c 94 65 00 	jmp	0xca	; 0xca <_exit>
+
+00000092 <__bad_interrupt>:
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -dumpspecs 2>/dev/null | grep -A1 -E '^\*(lib|link_gcc_c_sequence|startfile):'
+*link_gcc_c_sequence:
+--start-group %G %{!nolibc:%L} --end-group
+--
+*lib:
+%{!mmcu=avr1:-lc} %(avrlibc_devicelib)
+--
+*startfile:
+ %(avrlibc_startfile) 
+[exit 0]
+
+$ readelf -n hello | grep -A1 'Build ID'
+readelf: Warning: Gap in build notes detected from 0x401067 to 0x401084
+    Build ID: ddb234d9f741fd5bee907a9e3fca18f11cccdc7a
+
+[exit 0]

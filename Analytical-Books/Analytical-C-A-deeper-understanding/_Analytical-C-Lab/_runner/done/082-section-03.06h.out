@@ -1,0 +1,13 @@
+
+$ nm hello_ns | grep -w main; ./hello_ns; echo status $?
+0000000000401020 T main
+bash: line 1: 37325 Segmentation fault         (core dumped) ./hello_ns
+status 139
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,--trace | grep -c 'libc.a'; gcc -std=c23 -Wall -Wextra -pedantic -static hello.c -o hs -Wl,--trace | grep 'libc.a' | head -5
+3
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a
+/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/libc.a
+[exit 0]

@@ -1,0 +1,41 @@
+
+$ readelf --debug-dump=info where_g | grep -n -B2 -A7 ': local$'
+112-    <e8>   DW_AT_call_all_tail_calls: 1
+113- <2><e8>: Abbrev Number: 12 (DW_TAG_variable)
+114:    <e9>   DW_AT_name        : (indirect string, offset: 0x57): local
+115-    <ed>   DW_AT_decl_file   : 1
+116-    <ee>   DW_AT_decl_line   : 10
+117-    <ef>   DW_AT_decl_column : 9
+118-    <f0>   DW_AT_type        : <0x5d>
+119-    <f4>   DW_AT_location    : 2 byte block: 91 6c 	(DW_OP_fbreg: -20)
+120- <2><f7>: Abbrev Number: 0
+121- <1><f8>: Abbrev Number: 0
+[exit 0]
+
+$ readelf --debug-dump=info where_g | grep -n -A6 'DW_TAG_compile_unit'
+9: <0><c>: Abbrev Number: 4 (DW_TAG_compile_unit)
+10-    <d>   DW_AT_producer    : (indirect string, offset: 0x5d): GNU C23 16.2.1 20261029 (Red Hat 16.2.1-3) -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -g -std=c23
+11-    <11>   DW_AT_language    : 29	(C11)
+12-    <12>   DW_AT_language_name: 3	(C)
+13-    <13>   DW_AT_language_version: 0x31647	(202311)
+14-    <17>   DW_AT_name        : (indirect line string, offset: 0): where.c
+15-    <1b>   DW_AT_comp_dir    : (indirect line string, offset: 0x8): /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.08/fedora
+[exit 0]
+
+$ readelf --debug-dump=decodedline where_g | head -30
+Contents of the .debug_line section:
+
+where.c:
+File name                        Line number    Starting address    View    Stmt
+where.c                                    9            0x401146               x
+where.c                                   10            0x40114e               x
+where.c                                   11            0x401155               x
+where.c                                   12            0x40116c               x
+where.c                                   13            0x401180               x
+where.c                                   14            0x401196               x
+where.c                                   15            0x4011ad               x
+where.c                                   16            0x4011b3               x
+where.c                                    -            0x4011b5
+
+
+[exit 0]

@@ -1,0 +1,365 @@
+
+$ cat noinclude.c glued.c indent.c
+// noinclude.c
+// hello.c without its first line.
+int main(void) {
+    printf("hello, world\n");
+    return 0;
+}
+// glued.c
+// Two spaces removed from hello.c.
+#include <stdio.h>
+
+intmain(void) {
+    printf("hello, world\n");
+    return0;
+}
+// indent.c
+// The layout says one thing, the tokens another.
+#include <stdio.h>
+
+int check(int err) {
+    if (err != 0)
+        printf("first check failed\n");
+        return 1;
+    printf("all checks passed\n");
+    return 0;
+}
+
+int main(void) {
+    return check(0);
+}
+[exit 0]
+
+$ gcc -std=c23 noinclude.c -o noinclude; ls noinclude 2>&1
+noinclude.c: In function ‘main’:
+noinclude.c:4:5: error: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    4 |     printf("hello, world\n");
+      |     ^~~~~~
+noinclude.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+  +++ |+#include <stdio.h>
+    1 | // noinclude.c
+noinclude.c:4:5: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
+    4 |     printf("hello, world\n");
+      |     ^~~~~~
+noinclude.c:4:5: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+ls: cannot access 'noinclude': No such file or directory
+[exit 2]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic glued.c -o glued
+glued.c:5:1: error: return type defaults to ‘int’ [-Wimplicit-int]
+    5 | intmain(void) {
+      | ^~~~~~~
+glued.c: In function ‘intmain’:
+glued.c:7:5: error: ‘return0’ undeclared (first use in this function)
+    7 |     return0;
+      |     ^~~~~~~
+glued.c:7:5: note: each undeclared identifier is reported only once for each function it appears in
+glued.c:8:1: warning: control reaches end of non-void function [-Wreturn-type]
+    8 | }
+      | ^
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c indent.c
+indent.c: In function ‘check’:
+indent.c:6:5: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+    6 |     if (err != 0)
+      |     ^~
+indent.c:8:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+    8 |         return 1;
+      |         ^~~~~~
+[exit 0]
+
+$ gcc -std=c23 bugs.c -o bugs && ./bugs
+0 1 11 30 30
+-86833936
+[exit 0]
+
+$ gcc -std=c23 -Wall bugs.c -o bugs
+bugs.c: In function ‘is_zero’:
+bugs.c:6:9: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+    6 |     if (x = 0)                          // meant: x == 0
+      |         ^
+bugs.c: In function ‘main’:
+bugs.c:44:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+   44 |     printf("%d\n", 3.5);                // wrong conversion for a double
+      |             ~^     ~~~
+      |              |     |
+      |              int   double
+      |             %f
+bugs.c: In function ‘sign’:
+bugs.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+   29 | }                                       // no return when x == 0
+      | ^
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra bugs.c -o bugs
+bugs.c: In function ‘is_zero’:
+bugs.c:6:9: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+    6 |     if (x = 0)                          // meant: x == 0
+      |         ^
+bugs.c: In function ‘count_below’:
+bugs.c:14:18: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+   14 |         if (a[i] < limit)               // int compared with unsigned
+      |                  ^
+bugs.c: In function ‘main’:
+bugs.c:44:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+   44 |     printf("%d\n", 3.5);                // wrong conversion for a double
+      |             ~^     ~~~
+      |              |     |
+      |              int   double
+      |             %f
+bugs.c: In function ‘sign’:
+bugs.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+   29 | }                                       // no return when x == 0
+      | ^
+bugs.c: In function ‘days’:
+bugs.c:34:15: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |     case 2: d = 28;                     // forgot break: falls through
+      |             ~~^~~~
+bugs.c:35:5: note: here
+   35 |     case 4: case 6: case 9: case 11: d = 30; break;
+      |     ^~~~
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -O2 bugs.c -o bugs2 2>&1 | grep -E 'warning|error'; ./bugs2
+bugs.c:6:9: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+bugs.c:14:18: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+bugs.c:44:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+bugs.c:34:15: warning: this statement may fall through [-Wimplicit-fallthrough=]
+bugs.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+bugs.c:22:15: warning: ‘total’ is used uninitialized [-Wuninitialized]
+0 1 11 0 30
+-1125812560
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -Werror bugs.c -o bugsW; ls bugsW 2>&1
+bugs.c: In function ‘is_zero’:
+bugs.c:6:9: error: suggest parentheses around assignment used as truth value [-Werror=parentheses]
+    6 |     if (x = 0)                          // meant: x == 0
+      |         ^
+bugs.c: In function ‘count_below’:
+bugs.c:14:18: error: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Werror=sign-compare]
+   14 |         if (a[i] < limit)               // int compared with unsigned
+      |                  ^
+bugs.c: In function ‘main’:
+bugs.c:44:14: error: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Werror=format=]
+   44 |     printf("%d\n", 3.5);                // wrong conversion for a double
+      |             ~^     ~~~
+      |              |     |
+      |              int   double
+      |             %f
+bugs.c: In function ‘sign’:
+bugs.c:29:1: error: control reaches end of non-void function [-Werror=return-type]
+   29 | }                                       // no return when x == 0
+      | ^
+bugs.c: In function ‘days’:
+bugs.c:34:15: error: this statement may fall through [-Werror=implicit-fallthrough=]
+   34 |     case 2: d = 28;                     // forgot break: falls through
+      |             ~~^~~~
+bugs.c:35:5: note: here
+   35 |     case 4: case 6: case 9: case 11: d = 30; break;
+      |     ^~~~
+cc1: all warnings being treated as errors
+ls: cannot access 'bugsW': No such file or directory
+[exit 2]
+
+$ gcc -std=c23 -Wall -Wextra -Werror=return-type bugs.c -o bugsR 2>&1 | grep -E 'warning:|error:'
+bugs.c:6:9: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+bugs.c:14:18: warning: comparison of integer expressions of different signedness: ‘int’ and ‘unsigned int’ [-Wsign-compare]
+bugs.c:44:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘double’ [-Wformat=]
+bugs.c:29:1: error: control reaches end of non-void function [-Werror=return-type]
+bugs.c:34:15: warning: this statement may fall through [-Wimplicit-fallthrough=]
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra cascade.c -o cascade
+cascade.c:10:1: error: expected ‘;’, identifier or ‘(’ before ‘int’
+   10 | int main(void) {
+      | ^~~
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra brace.c -o brace
+brace.c: In function ‘twice’:
+brace.c:12:5: warning: ‘main’ is normally a non-static function [-Wmain]
+   12 | int main(void) {
+      |     ^~~~
+brace.c:15:1: error: expected declaration or statement at end of input
+   15 | }
+      | ^
+brace.c:16: warning: control reaches end of non-void function [-Wreturn-type]
+brace.c: At top level:
+brace.c:12:5: warning: ‘main’ defined but not used [-Wunused-function]
+   12 | int main(void) {
+      |     ^~~~
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -DSTAGE=1 phases.c -o phases1
+phases.c:4:10: fatal error: stdoi.h: No such file or directory
+    4 | #include <stdoi.h>                      // preprocessor: no such header
+      |          ^~~~~~~~~
+compilation terminated.
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -DSTAGE=2 phases.c -o phases2
+phases.c: In function ‘main’:
+phases.c:12:13: error: expected expression before ‘;’ token
+   12 |     int n = ;                           // compiler: not C
+      |             ^
+phases.c:12:9: warning: unused variable ‘n’ [-Wunused-variable]
+   12 |     int n = ;                           // compiler: not C
+      |         ^
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -DSTAGE=3 phases.c -o phases3
+/tmp/ccMtC5uv.s: Assembler messages:
+phases.c:14: Error: number of operands mismatch for `movq'
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -DSTAGE=4 phases.c -o phases4
+/usr/bin/ld.bfd: /tmp/ccebmwlI.o: in function `main':
+phases.c:(.text+0x5): undefined reference to `undefined_elsewhere'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ gcc -std=c23 pedantic.c -o ped && ./ped; gcc -std=c23 -pedantic pedantic.c -o ped2; gcc -std=c23 -pedantic-errors pedantic.c -o ped3; gcc -std=gnu23 -pedantic pedantic.c -o ped4
+0 4
+pedantic.c: In function ‘main’:
+pedantic.c:6:9: warning: ISO C forbids zero-size array ‘empty’ [-Wpedantic]
+    6 |     int empty[0];                                       // a zero-length array
+      |         ^~~~~
+pedantic.c:7:15: warning: ISO C forbids braced-groups within expressions [-Wpedantic]
+    7 |     int max = ({ int a = 3, b = 4; a > b ? a : b; });   // a statement expression
+      |               ^
+pedantic.c: In function ‘main’:
+pedantic.c:6:9: error: ISO C forbids zero-size array ‘empty’ [-Wpedantic]
+    6 |     int empty[0];                                       // a zero-length array
+      |         ^~~~~
+pedantic.c:7:15: error: ISO C forbids braced-groups within expressions [-Wpedantic]
+    7 |     int max = ({ int a = 3, b = 4; a > b ? a : b; });   // a statement expression
+      |               ^
+pedantic.c: In function ‘main’:
+pedantic.c:6:9: warning: ISO C forbids zero-size array ‘empty’ [-Wpedantic]
+    6 |     int empty[0];                                       // a zero-length array
+      |         ^~~~~
+pedantic.c:7:15: warning: ISO C forbids braced-groups within expressions [-Wpedantic]
+    7 |     int max = ({ int a = 3, b = 4; a > b ? a : b; });   // a statement expression
+      |               ^
+[exit 0]
+
+$ for o in '' '-Wall' '-Wall -Wextra' '-Wall -Wextra -pedantic'; do printf '%-26s %s\n' "[$o]" $(gcc -std=c23 $o -Q --help=warnings,c | grep -c '\[enabled\]'); done; gcc -Q --help=warnings,c | grep -c -E '^  -W'
+[]                         41
+[-Wall]                    94
+[-Wall -Wextra]            112
+[-Wall -Wextra -pedantic]  116
+215
+[exit 0]
+
+$ gcc -std=c23 -Q --help=warnings,c | grep -E '^  -W(format|return-type|parentheses|uninitialized|sign-compare|implicit-fallthrough|implicit-function-declaration|main|shadow|conversion) '
+  -Wconversion                		[disabled]
+  -Wformat                    		-Wformat=1
+  -Wimplicit-function-declaration 	
+  -Wmain                      		
+  -Wparentheses               		[disabled]
+  -Wreturn-type               		
+  -Wsign-compare              		[disabled]
+  -Wuninitialized             		[disabled]
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -Q --help=warnings,c | grep -E '^  -W(format|return-type|parentheses|uninitialized|maybe-uninitialized|sign-compare|implicit-fallthrough|shadow|conversion) '
+  -Wconversion                		[disabled]
+  -Wformat                    		-Wformat=1
+  -Wmaybe-uninitialized       		[enabled]
+  -Wparentheses               		[enabled]
+  -Wreturn-type               		[enabled]
+  -Wsign-compare              		[enabled]
+  -Wuninitialized             		[enabled]
+[exit 0]
+
+$ LANG=C gcc -std=c23 -Wall -Wextra -c indent.c
+indent.c: In function 'check':
+indent.c:6:5: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+    6 |     if (err != 0)
+      |     ^~
+indent.c:8:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+    8 |         return 1;
+      |         ^~~~~~
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -fno-diagnostics-show-caret -c indent.c; echo; gcc -std=c23 -Wall -Wextra -fdiagnostics-format=json -c indent.c 2>&1 | head -c 600
+indent.c: In function ‘check’:
+indent.c:6:5: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+indent.c:8:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+
+gcc: error: unrecognized argument in option ‘-fdiagnostics-format=json’
+gcc: note: valid arguments to ‘-fdiagnostics-format=’ are: sarif-file sarif-stderr text
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -fdiagnostics-format=sarif-stderr -c indent.c 2>&1 | head -c 300
+{"$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+ "version": "2.1.0",
+ "runs": [{"tool": {"driver": {"name": "GNU C23",
+                               "fullName": "GNU C23 (GCC) version 16.2.1 20261029 (Red Hat 16.2.1-3) (x86_64-redhat-linux)"[exit 0]
+
+$ man gcc 2>/dev/null | col -b | grep -n -A6 -E '^ +-Wall$|^ +-Wextra$|^ +-Werror$|^ +-Wpedantic$|^ +-pedantic-errors$' | head -80
+5097:     -Werror
+5098-	 Turn all warnings into errors.
+5099-
+5100-     -Werror=
+5101-	 Turn the specified warning into an error.  The specifier for a warning
+5102-	 is appended; for example -Werror=switch turns the warnings controlled
+5103-	 by -Wswitch into errors.  This switch takes a negative form, to be
+--
+5155:     -Wpedantic
+5156-     -pedantic
+5157-     --pedantic
+5158-	 Issue all the warnings demanded by strict ISO C and ISO C++; diagnose
+5159-	 all programs that use forbidden extensions, and some other programs
+5160-	 that do not follow ISO C and ISO C++.	This follows the version of the
+5161-	 ISO C or C++ standard specified by any -std option used.
+--
+5192:     -pedantic-errors
+5193-     --pedantic-errors
+5194-	 Give an error whenever the base standard (see -Wpedantic) requires a
+5195-	 diagnostic, in some cases where there is undefined behavior at
+5196-	 compile-time and in some other cases that do not prevent compilation
+5197-	 of programs that are valid according to the standard. This is not
+5198-	 equivalent to -Werror=pedantic: the latter option is unlikely to be
+--
+5245:     -Wall
+5246-     --all-warnings
+5247-	 This enables all the warnings about constructions that some users
+5248-	 consider questionable, and that are easy to avoid (or modify to
+5249-	 prevent the warning), even in conjunction with macros.	 This also
+5250-	 enables some language-specific warnings described in C++ Dialect
+5251-	 Options and Objective-C and Objective-C++ Dialect Options.
+--
+5300:     -Wextra
+5301-     --extra-warnings
+5302-	 This enables some extra warning flags that are not enabled by -Wall.
+5303-	 (This option used to be called -W.  The older name is still supported,
+5304-	 but the newer name is more descriptive.)
+5305-
+5306-	 -Wabsolute-value (only for C/ObjC) -Walloc-size
+[exit 0]
+
+$ info gcc 'Warnings and Errors' 2>&1 | head -40
+bash: line 1: info: command not found
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_warn.c -o avr_warn.elf
+In file included from avr_warn.c:4:
+/usr/avr/include/util/delay.h:91:3: warning: #warning "F_CPU not defined for <util/delay.h>" [-Wcpp]
+   91 | # warning "F_CPU not defined for <util/delay.h>"
+      |   ^~~~~~~
+avr_warn.c: In function 'main':
+avr_warn.c:7:12: warning: unsigned conversion from 'int' to 'uint8_t' {aka 'unsigned char'} changes value from '256' to '0' [-Woverflow]
+    7 |     DDRB = 1 << 8;                      // PB8 does not exist: PORTB has bits 0 to 7
+      |            ^
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic -DF_CPU=16000000UL avr_warn.c -o avr_warn16.elf
+avr_warn.c: In function 'main':
+avr_warn.c:7:12: warning: unsigned conversion from 'int' to 'uint8_t' {aka 'unsigned char'} changes value from '256' to '0' [-Woverflow]
+    7 |     DDRB = 1 << 8;                      // PB8 does not exist: PORTB has bits 0 to 7
+      |            ^
+[exit 0]

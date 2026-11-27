@@ -1,0 +1,45 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic fixed.c -o fixed && ./fixed
+got 5
+3 1
+[exit 0]
+
+$ readelf --debug-dump=info where_g | grep -n -B3 -A3 'DW_AT_frame_base'
+108-    <d2>   DW_AT_type        : <0x5d>
+109-    <d6>   DW_AT_low_pc      : 0x401146
+110-    <de>   DW_AT_high_pc     : 0x6f
+111:    <e6>   DW_AT_frame_base  : 1 byte block: 9c 	(DW_OP_call_frame_cfa)
+112-    <e8>   DW_AT_call_all_tail_calls: 1
+113- <2><e8>: Abbrev Number: 12 (DW_TAG_variable)
+114-    <e9>   DW_AT_name        : (indirect string, offset: 0x57): local
+[exit 0]
+
+$ objdump -d where | sed -n '/<main>:/,/^$/p' > a.txt; objdump -d where_g | sed -n '/<main>:/,/^$/p' > b.txt; cmp a.txt b.txt && echo same-code; size where where_g
+same-code
+   text	   data	    bss	    dec	    hex	filename
+   1276	    544	      8	   1828	    724	where
+   1276	    544	      8	   1828	    724	where_g
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c noinclude.c; echo gcc-exit $?
+noinclude.c: In function ‘main’:
+noinclude.c:4:5: error: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+    4 |     printf("hello, world\n");
+      |     ^~~~~~
+noinclude.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+  +++ |+#include <stdio.h>
+    1 | // noinclude.c
+noinclude.c:4:5: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
+    4 |     printf("hello, world\n");
+      |     ^~~~~~
+noinclude.c:4:5: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+gcc-exit 1
+[exit 0]
+
+$ gcc -std=c23 -O2 -Wall -Wextra -c bugs.c 2>&1 | grep -A4 'uninitialized'
+bugs.c:22:15: warning: ‘total’ is used uninitialized [-Wuninitialized]
+   22 |         total += a[i];
+      |         ~~~~~~^~~~~~~
+bugs.c: In function ‘main’:
+bugs.c:20:9: note: ‘total’ was declared here
+[exit 0]

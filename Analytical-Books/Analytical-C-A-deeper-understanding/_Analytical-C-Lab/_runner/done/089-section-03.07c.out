@@ -1,0 +1,174 @@
+
+$ nm hello | grep -w -E 'main|_start'; cmp hello ../../03.06/fedora/hello && echo same-as-03.06
+0000000000401136 T main
+0000000000401040 T _start
+same-as-03.06
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex starti -ex 'info registers rip rsp rdx' -ex 'info symbol $pc' -ex 'x/gx 0x403000' -ex 'x/gx 0x402fd8' -ex 'x/3gx 0x402fe8' -ex 'x/6gx $rsp' -ex 'info proc mappings' ./hello
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <ima:enforcing>
+  <https://debuginfod.fedoraproject.org/>
+  <ima:ignore>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+
+Program stopped.
+0x00007ffff7fee920 in _start () from /lib64/ld-linux-x86-64.so.2
+rip            0x7ffff7fee920      0x7ffff7fee920 <_start>
+rsp            0x7fffffffe3a0      0x7fffffffe3a0
+rdx            0x0                 0
+_start in section .text of /lib64/ld-linux-x86-64.so.2
+0x403000 <puts@got.plt>:	0x0000000000401036
+0x402fd8:	0x0000000000000000
+0x402fe8:	0x0000000000402e08	0x0000000000000000
+0x402ff8:	0x0000000000000000
+0x7fffffffe3a0:	0x0000000000000001	0x00007fffffffe6e4
+0x7fffffffe3b0:	0x0000000000000000	0x00007fffffffe764
+0x7fffffffe3c0:	0x00007fffffffe774	0x00007fffffffe78b
+process 45023
+Mapped address spaces:
+
+Start Addr         End Addr           Size               Offset             Perms File 
+0x0000000000400000 0x0000000000401000 0x1000             0x0                r--p  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x0000000000401000 0x0000000000402000 0x1000             0x1000             r-xp  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x0000000000402000 0x0000000000404000 0x2000             0x1000             rw-p  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x00007ffff7fb9000 0x00007ffff7fbd000 0x4000             0x0                r--p  [vvar] 
+0x00007ffff7fbd000 0x00007ffff7fbf000 0x2000             0x0                r--p  [vvar_vclock] 
+0x00007ffff7fbf000 0x00007ffff7fc1000 0x2000             0x0                r-xp  [vdso] 
+0x00007ffff7fc1000 0x00007ffff7fce000 0xd000             0x0                r--p  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7fce000 0x00007ffff7ffb000 0x2d000            0xd000             r-xp  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7ffb000 0x00007ffff7ffe000 0x3000             0x39000            rw-p  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7ffe000 0x00007ffff7fff000 0x1000             0x0                rw-p   
+0x00007ffffffde000 0x00007ffffffff000 0x21000            0x0                rw-p  [stack] 
+0xffffffffff600000 0xffffffffff601000 0x1000             0x0                --xp  [vsyscall] 
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break _start' -ex run -ex 'info registers rip rsp rdx' -ex 'info symbol $rdx' -ex 'x/gx 0x403000' -ex 'x/gx 0x402fd8' -ex 'info symbol *(long *)0x402fd8' -ex 'x/3gx 0x402fe8' -ex 'info symbol *(long *)0x402ff8' -ex 'x/4gx $rsp' -ex 'x/s *(char **)($rsp+8)' ./hello
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <ima:enforcing>
+  <https://debuginfod.fedoraproject.org/>
+  <ima:ignore>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+Breakpoint 1 at 0x401040
+
+Breakpoint 1.2, 0x00007ffff7fee920 in _start () from /lib64/ld-linux-x86-64.so.2
+rip            0x7ffff7fee920      0x7ffff7fee920 <_start>
+rsp            0x7fffffffe3a0      0x7fffffffe3a0
+rdx            0x0                 0
+No symbol matches $rdx.
+0x403000 <puts@got.plt>:	0x0000000000401036
+0x402fd8:	0x0000000000000000
+No symbol matches *(long *)0x402fd8.
+0x402fe8:	0x0000000000402e08	0x0000000000000000
+0x402ff8:	0x0000000000000000
+No symbol matches *(long *)0x402ff8.
+0x7fffffffe3a0:	0x0000000000000001	0x00007fffffffe6e4
+0x7fffffffe3b0:	0x0000000000000000	0x00007fffffffe764
+0x7fffffffe6e4:	"/home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello"
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break main' -ex run -ex bt -ex 'x/gx 0x403000' -ex 'info proc mappings' -ex 'break *0x401144' -ex continue -ex 'x/gx 0x403000' -ex 'info symbol *(long *)0x403000' -ex 'p (void *)puts' ./hello
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <ima:enforcing>
+  <https://debuginfod.fedoraproject.org/>
+  <ima:ignore>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+Breakpoint 1 at 0x40113a
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+
+Breakpoint 1, 0x000000000040113a in main ()
+#0  0x000000000040113a in main ()
+0x403000 <puts@got.plt>:	0x0000000000401036
+process 45049
+Mapped address spaces:
+
+Start Addr         End Addr           Size               Offset             Perms File 
+0x0000000000400000 0x0000000000401000 0x1000             0x0                r--p  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x0000000000401000 0x0000000000402000 0x1000             0x1000             r-xp  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x0000000000402000 0x0000000000403000 0x1000             0x1000             r--p  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x0000000000403000 0x0000000000404000 0x1000             0x2000             rw-p  /home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello 
+0x00007ffff7da2000 0x00007ffff7da5000 0x3000             0x0                rw-p   
+0x00007ffff7da5000 0x00007ffff7e1f000 0x7a000            0x0                r--p  /usr/lib64/libc.so.6 
+0x00007ffff7e1f000 0x00007ffff7f95000 0x176000           0x7a000            r-xp  /usr/lib64/libc.so.6 
+0x00007ffff7f95000 0x00007ffff7f99000 0x4000             0x1ef000           r--p  /usr/lib64/libc.so.6 
+0x00007ffff7f99000 0x00007ffff7f9b000 0x2000             0x1f3000           rw-p  /usr/lib64/libc.so.6 
+0x00007ffff7f9b000 0x00007ffff7fa5000 0xa000             0x0                rw-p   
+0x00007ffff7fa5000 0x00007ffff7fb9000 0x14000            0x0                r--p  /etc/ld.so.cache 
+0x00007ffff7fb9000 0x00007ffff7fbd000 0x4000             0x0                r--p  [vvar] 
+0x00007ffff7fbd000 0x00007ffff7fbf000 0x2000             0x0                r--p  [vvar_vclock] 
+0x00007ffff7fbf000 0x00007ffff7fc1000 0x2000             0x0                r-xp  [vdso] 
+0x00007ffff7fc1000 0x00007ffff7fce000 0xd000             0x0                r--p  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7fce000 0x00007ffff7ffb000 0x2d000            0xd000             r-xp  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7ffb000 0x00007ffff7ffd000 0x2000             0x39000            r--p  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7ffd000 0x00007ffff7ffe000 0x1000             0x3b000            rw-p  /usr/lib64/ld-linux-x86-64.so.2 
+0x00007ffff7ffe000 0x00007ffff7fff000 0x1000             0x0                rw-p   
+0x00007ffffffde000 0x00007ffffffff000 0x21000            0x0                rw-p  [stack] 
+0xffffffffff600000 0xffffffffff601000 0x1000             0x0                --xp  [vsyscall] 
+Breakpoint 2 at 0x401144
+
+Breakpoint 2, 0x0000000000401144 in main ()
+0x403000 <puts@got.plt>:	0x00007ffff7e7ea60
+puts in section .text of /lib64/libc.so.6
+$1 = (void *) 0x7ffff7e7ea60 <puts>
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break before' -ex run -ex bt -ex 'break bye' -ex continue -ex bt -ex 'break after' -ex continue -ex bt ./order
+Breakpoint 1 at 0x40114a
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+
+Breakpoint 1, 0x000000000040114a in before ()
+#0  0x000000000040114a in before ()
+#1  0x00007ffff7e22494 in __libc_start_main_impl () from /lib64/libc.so.6
+#2  0x0000000000401075 in _start ()
+Breakpoint 2 at 0x40116c
+
+Breakpoint 2, 0x000000000040116c in bye ()
+#0  0x000000000040116c in bye ()
+#1  0x00007ffff7e3b8ef in __run_exit_handlers () from /lib64/libc.so.6
+#2  0x00007ffff7e3b9ce in exit () from /lib64/libc.so.6
+#3  0x00007ffff7e22308 in __libc_start_call_main () from /lib64/libc.so.6
+#4  0x00007ffff7e22418 in __libc_start_main_impl () from /lib64/libc.so.6
+#5  0x0000000000401075 in _start ()
+Breakpoint 3 at 0x40115b
+
+Breakpoint 3, 0x000000000040115b in after ()
+#0  0x000000000040115b in after ()
+#1  0x00007ffff7fcf012 in _dl_call_fini (closure_map=closure_map@entry=0x7ffff7ffe3c0) at dl-call_fini.c:43
+#2  0x00007ffff7fd30ae in _dl_fini () at dl-fini.c:120
+#3  0x00007ffff7e3b8ef in __run_exit_handlers () from /lib64/libc.so.6
+#4  0x00007ffff7e3b9ce in exit () from /lib64/libc.so.6
+#5  0x00007ffff7e22308 in __libc_start_call_main () from /lib64/libc.so.6
+#6  0x00007ffff7e22418 in __libc_start_main_impl () from /lib64/libc.so.6
+#7  0x0000000000401075 in _start ()
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break main' -ex run -ex 'info registers rdi rsi rdx' -ex 'x/s *(char **)$rsi' ./hello
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <ima:enforcing>
+  <https://debuginfod.fedoraproject.org/>
+  <ima:ignore>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+Breakpoint 1 at 0x40113a
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+
+Breakpoint 1, 0x000000000040113a in main ()
+rdi            0x1                 1
+rsi            0x7fffffffe3a8      140737488348072
+rdx            0x7fffffffe3b8      140737488348088
+0x7fffffffe6e4:	"/home/serajus21/Documents/C-Programming/Analytical-Books/Analytical-C-A-deeper-understanding/_build/sections/03.07/fedora/hello"
+[exit 0]

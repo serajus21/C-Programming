@@ -1,0 +1,29 @@
+0000000000401146 <main>:
+  401146:	55                   	push   %rbp
+  401147:	48 89 e5             	mov    %rsp,%rbp
+  40114a:	48 83 ec 10          	sub    $0x10,%rsp
+  40114e:	c7 45 fc 02 00 00 00 	movl   $0x2,-0x4(%rbp)
+  401155:	b8 46 11 40 00       	mov    $0x401146,%eax
+  40115a:	48 89 c6             	mov    %rax,%rsi
+  40115d:	bf f8 04 40 00       	mov    $0x4004f8,%edi
+  401162:	b8 00 00 00 00       	mov    $0x0,%eax
+  401167:	e8 d4 fe ff ff       	call   401040 <printf@plt>
+  40116c:	be 14 30 40 00       	mov    $0x403014,%esi
+  401171:	bf 06 05 40 00       	mov    $0x400506,%edi
+  401176:	b8 00 00 00 00       	mov    $0x0,%eax
+  40117b:	e8 c0 fe ff ff       	call   401040 <printf@plt>
+  401180:	48 8d 45 fc          	lea    -0x4(%rbp),%rax
+  401184:	48 89 c6             	mov    %rax,%rsi
+  401187:	bf 11 05 40 00       	mov    $0x400511,%edi
+  40118c:	b8 00 00 00 00       	mov    $0x0,%eax
+  401191:	e8 aa fe ff ff       	call   401040 <printf@plt>
+  401196:	b8 30 10 40 00       	mov    $0x401030,%eax
+  40119b:	48 89 c6             	mov    %rax,%rsi
+  40119e:	bf 1c 05 40 00       	mov    $0x40051c,%edi
+  4011a3:	b8 00 00 00 00       	mov    $0x0,%eax
+  4011a8:	e8 93 fe ff ff       	call   401040 <printf@plt>
+  4011ad:	8b 45 fc             	mov    -0x4(%rbp),%eax
+  4011b0:	83 e8 02             	sub    $0x2,%eax
+  4011b3:	c9                   	leave
+  4011b4:	c3                   	ret
+

@@ -1,0 +1,203 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic same.c -o same && ./same
+57 57 57 57
+10 47
+8
+[exit 0]
+
+$ gcc -std=c17 -Wall -Wextra -pedantic same.c -o same17 && ./same17
+same.c: In function ‘main’:
+same.c:6:44: warning: binary constants are a C23 feature or GCC extension [-Wpedantic]
+    6 |     printf("%d %d %d %d\n", 57, 071, 0x39, 0b111001);
+      |                                            ^~~~~~~~
+same.c:7:23: warning: binary constants are a C23 feature or GCC extension [-Wpedantic]
+    7 |     printf("%d %d\n", 0b1010, 0x2F);
+      |                       ^~~~~~
+57 57 57 57
+10 47
+8
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic read_digits.c -o read_digits && ./read_digits
+"307" in base 10:
+  0 x 10 + 3 = 3
+  3 x 10 + 0 = 30
+  30 x 10 + 7 = 307
+  value: 307
+"111001" in base 2:
+  0 x 2 + 1 = 1
+  1 x 2 + 1 = 3
+  3 x 2 + 1 = 7
+  7 x 2 + 0 = 14
+  14 x 2 + 0 = 28
+  28 x 2 + 1 = 57
+  value: 57
+"71" in base 8:
+  0 x 8 + 7 = 7
+  7 x 8 + 1 = 57
+  value: 57
+"2F" in base 16:
+  0 x 16 + 2 = 2
+  2 x 16 + 15 = 47
+  value: 47
+"19" in base 8:
+  0 x 8 + 1 = 1
+  '9' is not a digit in base 8
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic write_digits.c -o write_digits && ./write_digits
+57 in base 2:
+  57 / 2 = 28, remainder 1: digit 1
+  28 / 2 = 14, remainder 0: digit 0
+  14 / 2 = 7, remainder 0: digit 0
+  7 / 2 = 3, remainder 1: digit 1
+  3 / 2 = 1, remainder 1: digit 1
+  1 / 2 = 0, remainder 1: digit 1
+  read upward: 111001
+57 in base 8:
+  57 / 8 = 7, remainder 1: digit 1
+  7 / 8 = 0, remainder 7: digit 7
+  read upward: 71
+300 in base 16:
+  300 / 16 = 18, remainder 12: digit C
+  18 / 16 = 1, remainder 2: digit 2
+  1 / 16 = 0, remainder 1: digit 1
+  read upward: 12C
+0 in base 2:
+  0 / 2 = 0, remainder 0: digit 0
+  read upward: 0
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic printf_bases.c -o printf_bases && ./printf_bases
+decimal  57
+octal    71    071
+hex      39    39    0x39    0X39
+binary   111001    0b111001
+padded   [00111001]  [0039]  [      39]  [0x0039]
+big      3735928559 = 0xdeadbeef = 033653337357
+[exit 0]
+
+$ gcc -std=c17 -Wall -Wextra -pedantic printf_bases.c -o pb17
+printf_bases.c: In function ‘main’:
+printf_bases.c:10:23: warning: ISO C17 does not support the ‘%b’ gnu_printf format [-Wformat=]
+   10 |     printf("binary   %b    %#b\n", x, x);
+      |                       ^
+printf_bases.c:10:30: warning: ISO C17 does not support the ‘%b’ gnu_printf format [-Wformat=]
+   10 |     printf("binary   %b    %#b\n", x, x);
+      |                              ^
+printf_bases.c:11:26: warning: ISO C17 does not support the ‘%b’ gnu_printf format [-Wformat=]
+   11 |     printf("padded   [%08b]  [%04X]  [%8x]  [%#06x]\n", x, x, x, x);
+      |                          ^
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic nibbles.c -o nibbles && ./nibbles
+dec  bin   oct  hex
+  0  0000    0    0
+  1  0001    1    1
+  2  0010    2    2
+  3  0011    3    3
+  4  0100    4    4
+  5  0101    5    5
+  6  0110    6    6
+  7  0111    7    7
+  8  1000   10    8
+  9  1001   11    9
+ 10  1010   12    A
+ 11  1011   13    B
+ 12  1100   14    C
+ 13  1101   15    D
+ 14  1110   16    E
+ 15  1111   17    F
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic octal_trap.c -o octal_trap
+octal_trap.c: In function ‘main’:
+octal_trap.c:7:17: error: invalid digit ‘9’ in octal constant
+    7 |     int month = 09;
+      |                 ^~
+[exit 1]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hexdump_me.c -o hexdump_me && ./hexdump_me && xxd bytes.bin && od -A d -t o1 bytes.bin && od -A x -t x1 bytes.bin
+00000000: 7f45 4c46 3939 3939 ff00                 .ELF9999..
+0000000 177 105 114 106 071 071 071 071 377 000
+0000010
+000000 7f 45 4c 46 39 39 39 39 ff 00
+00000a
+[exit 0]
+
+$ gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE div10.c -o - | grep -v -E '^\s*\.(file|ident|section)'
+	.text
+	.p2align 4
+	.globl	tenth
+	.type	tenth, @function
+tenth:
+	movl	%edi, %eax
+	movl	$3435973837, %edx
+	imulq	%rdx, %rax
+	shrq	$35, %rax
+	ret
+	.size	tenth, .-tenth
+[exit 0]
+
+$ gcc -std=c23 -O2 -c -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE div10.c -o div10.o && objdump -d div10.o | sed -n '/<tenth>:/,$p'
+0000000000000000 <tenth>:
+   0:	89 f8                	mov    %edi,%eax
+   2:	ba cd cc cc cc       	mov    $0xcccccccd,%edx
+   7:	48 0f af c2          	imul   %rdx,%rax
+   b:	48 c1 e8 23          	shr    $0x23,%rax
+   f:	c3                   	ret
+[exit 0]
+
+$ gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE -DX div10.c -o - >/dev/null; sed 's/10;/16;/' div10.c > div16.c; gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE div16.c -o - | grep -E 'shr|imul|mov'
+	movl	%edi, %eax
+	shrl	$4, %eax
+[exit 0]
+
+$ sed 's/10;/7;/' div10.c > div7.c; gcc -std=c23 -O2 -S -fno-asynchronous-unwind-tables -fcf-protection=none -fno-stack-protector -U_FORTIFY_SOURCE div7.c -o - | grep -v -E '^\s*\.(file|ident|section|text|p2align|globl|type|size)'
+tenth:
+	movl	%edi, %eax
+	imulq	$613566757, %rax, %rax
+	shrq	$32, %rax
+	subl	%eax, %edi
+	shrl	%edi
+	addl	%edi, %eax
+	shrl	$2, %eax
+	ret
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_bases.c avr_stdio.c -o avr_bases.elf && avr-size avr_bases.elf && avr-objdump -d avr_bases.elf | grep -E 'call.*div' 
+   text	   data	    bss	    dec	    hex	filename
+   2098	     72	      6	   2176	    880	avr_bases.elf
+ 11a:	0e 94 08 01 	call	0x210	; 0x210 <__udivmodhi4>
+ 6fa:	3e d0       	rcall	.+124    	; 0x778 <.L_div_add>
+ 6fe:	3c d0       	rcall	.+120    	; 0x778 <.L_div_add>
+[exit 0]
+
+$ printf '#include <avr/io.h>\nRAMEND FLASHEND E2END RAMSTART PORTB DDRB PINB SREG\n' | avr-gcc -mmcu=atmega328p -E -P -x c - | tail -1
+0x8FF 0x7FFF 0x3FF (0x100) (*(volatile uint8_t *)((0x05) + 0x20)) (*(volatile uint8_t *)((0x04) + 0x20)) (*(volatile uint8_t *)((0x03) + 0x20)) (*(volatile uint8_t *)((0x3F) + 0x20))
+[exit 0]
+
+$ ldd --version | head -1
+ldd (GNU libc) 2.44
+[exit 0]
+
+$ stat -c '%a %A %n' same same.c; ls -l same | cut -c1-10
+755 -rwxr-xr-x same
+600 -rw------- same.c
+-rwxr-xr-x
+[exit 0]
+
+$ fc-list | grep -i -c bengali; fc-list :lang=bn family | sort -u | head -5
+10
+Noto Sans Bengali
+Noto Serif Bengali
+[exit 0]
+
+$ printf '%d %o %x %X %#x\n' 57 57 57 57 57; echo $((16#2F)) $((2#111001)) $((8#71)) $((0x39)) $((071))
+57 71 39 39 0x39
+47 57 57 57 57
+[exit 0]
+
+$ head -c 16 same | xxd
+00000000: 7f45 4c46 0201 0100 0000 0000 0000 0000  .ELF............
+[exit 0]

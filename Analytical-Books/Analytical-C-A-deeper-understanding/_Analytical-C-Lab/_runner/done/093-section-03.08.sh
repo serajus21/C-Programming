@@ -1,0 +1,28 @@
+F="$PWD/../_build/sections/03.08/fedora"; mkdir -p "$F"; cd "$F" || exit 1
+tar xzf ../src.tgz 2>/dev/null; cp ../../03.01/noinclude.c ../../03.01/glued.c ../../03.01/indent.c .
+run() { printf '\n$ %s\n' "$*"; bash -c "$*" 2>&1; printf '[exit %s]\n' "$?"; }
+run "cat noinclude.c glued.c indent.c"
+run "gcc -std=c23 noinclude.c -o noinclude; ls noinclude 2>&1"
+run "gcc -std=c23 -Wall -Wextra -pedantic glued.c -o glued"
+run "gcc -std=c23 -Wall -Wextra -pedantic -c indent.c"
+run "gcc -std=c23 bugs.c -o bugs && ./bugs"
+run "gcc -std=c23 -Wall bugs.c -o bugs"
+run "gcc -std=c23 -Wall -Wextra bugs.c -o bugs"
+run "gcc -std=c23 -Wall -Wextra -O2 bugs.c -o bugs2 2>&1 | grep -E 'warning|error'; ./bugs2"
+run "gcc -std=c23 -Wall -Wextra -Werror bugs.c -o bugsW; ls bugsW 2>&1"
+run "gcc -std=c23 -Wall -Wextra -Werror=return-type bugs.c -o bugsR 2>&1 | grep -E 'warning:|error:'"
+run "gcc -std=c23 -Wall -Wextra cascade.c -o cascade"
+run "gcc -std=c23 -Wall -Wextra brace.c -o brace"
+for s in 1 2 3 4; do run "gcc -std=c23 -Wall -Wextra -pedantic -DSTAGE=$s phases.c -o phases$s"; done
+run "gcc -std=c23 pedantic.c -o ped && ./ped; gcc -std=c23 -pedantic pedantic.c -o ped2; gcc -std=c23 -pedantic-errors pedantic.c -o ped3; gcc -std=gnu23 -pedantic pedantic.c -o ped4"
+run "for o in '' '-Wall' '-Wall -Wextra' '-Wall -Wextra -pedantic'; do printf '%-26s %s\n' \"[\$o]\" \$(gcc -std=c23 \$o -Q --help=warnings,c | grep -c '\\[enabled\\]'); done; gcc -Q --help=warnings,c | grep -c -E '^  -W'"
+run "gcc -std=c23 -Q --help=warnings,c | grep -E '^  -W(format|return-type|parentheses|uninitialized|sign-compare|implicit-fallthrough|implicit-function-declaration|main|shadow|conversion) '"
+run "gcc -std=c23 -Wall -Wextra -Q --help=warnings,c | grep -E '^  -W(format|return-type|parentheses|uninitialized|maybe-uninitialized|sign-compare|implicit-fallthrough|shadow|conversion) '"
+run "LANG=C gcc -std=c23 -Wall -Wextra -c indent.c"
+run "gcc -std=c23 -Wall -Wextra -fno-diagnostics-show-caret -c indent.c; echo; gcc -std=c23 -Wall -Wextra -fdiagnostics-format=json -c indent.c 2>&1 | head -c 600"
+run "gcc -std=c23 -Wall -Wextra -fdiagnostics-format=sarif-stderr -c indent.c 2>&1 | head -c 300"
+run "man gcc 2>/dev/null | col -b | grep -n -A6 -E '^ +-Wall\$|^ +-Wextra\$|^ +-Werror\$|^ +-Wpedantic\$|^ +-pedantic-errors\$' | head -80"
+run "info gcc 'Warnings and Errors' 2>&1 | head -40"
+A="avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic"
+run "$A avr_warn.c -o avr_warn.elf"
+run "$A -DF_CPU=16000000UL avr_warn.c -o avr_warn16.elf"

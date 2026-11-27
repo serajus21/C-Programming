@@ -1,0 +1,56 @@
+
+$ readelf -h /bin/ls /lib64/libc.so.6 | grep -E 'File|Type'
+File: /bin/ls
+  Type:                              DYN (Position-Independent Executable file)
+File: /lib64/libc.so.6
+  Type:                              DYN (Shared object file)
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -c hello.c -o hello.o && cp hello.o s.o && strip s.o && nm s.o; readelf -S -W s.o | grep -c '\]'; gcc s.o -o s
+nm: s.o: no symbols
+11
+/usr/bin/ld.bfd: error in s.o(.eh_frame); no .eh_frame_hdr table will be created
+/usr/bin/ld.bfd: /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o: in function `_start':
+(.text+0x1b): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+[exit 1]
+
+$ cp hello.o su.o && strip --strip-unneeded su.o && nm su.o && gcc su.o -o su && ./su
+0000000000000000 T main
+                 U puts
+hello, world
+[exit 0]
+
+$ sed 's/zeros\[0\]/zeros[5]/; s/    return elsewhere;/    counter = 7;\n    return elsewhere;/' sections.c > sections3.c && gcc -std=c23 -Wall -Wextra -pedantic -c sections3.c -o s3.o && readelf -r -W s3.o | grep -E 'zeros|counter'
+0000000000000031  0000000a00000002 R_X86_64_PC32          0000000000000000 zeros + 10
+0000000000000045  0000000900000002 R_X86_64_PC32          0000000000000000 counter - 4
+0000000000000064  0000000900000002 R_X86_64_PC32          0000000000000000 counter - 8
+[exit 0]
+
+$ gcc -std=c23 -Wall -Wextra -pedantic -fPIE -c hello.c -o hpie.o && readelf -r -W hpie.o
+
+Relocation section '.rela.text' at offset 0x1a8 contains 2 entries:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000007  0000000300000002 R_X86_64_PC32          0000000000000000 .rodata - 4
+000000000000000f  0000000500000004 R_X86_64_PLT32         0000000000000000 puts - 4
+
+Relocation section '.rela.eh_frame' at offset 0x1d8 contains 1 entry:
+    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
+0000000000000020  0000000200000002 R_X86_64_PC32          0000000000000000 .text + 0
+[exit 0]
+
+$ objdump -s -j .comment hello.o | tail -3; gcc -std=c23 -Wall -Wextra -pedantic hello.c -o hello && readelf -p .comment hello
+ 0000 00474343 3a202847 4e552920 31362e32  .GCC: (GNU) 16.2
+ 0010 2e312032 30323631 30323920 28526564  .1 20261029 (Red
+ 0020 20486174 2031362e 322e312d 332900     Hat 16.2.1-3). 
+
+String dump of section '.comment':
+  [     0]  GCC: (GNU) 16.2.1 20260819 (Red Hat 16.2.1-2)
+  [    2e]  GCC: (GNU) 16.2.1 20261029 (Red Hat 16.2.1-3)
+
+[exit 0]
+
+$ printf 'int counter = 1;\nint elsewhere = 0;\n' > else2.c && gcc -std=c23 -Wall -Wextra -pedantic -c sections.c && gcc -std=c23 -Wall -Wextra -pedantic sections.o else2.c -o s4
+/usr/bin/ld.bfd: /tmp/ccJkAqwX.o:(.data+0x0): multiple definition of `counter'; sections.o:(.data+0x0): first defined here
+collect2: error: ld returned 1 exit status
+[exit 1]

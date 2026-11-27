@@ -1,0 +1,211 @@
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break *0x401040' -ex run -ex 'info registers rip rsp rdx' -ex 'info symbol $rdx' -ex 'x/gx 0x402fd8' -ex 'info symbol *(long *)0x402fd8' -ex 'x/3gx 0x402fe8' -ex 'info symbol *(long *)0x402ff8' -ex 'x/gx 0x403000' -ex 'x/4gx $rsp' ./hello 2>&1 | grep -v -i debuginfod | grep -v -E '^ *<|^This GDB|^Enable|^To make'
+
+Breakpoint 1 at 0x401040
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+
+Breakpoint 1, 0x0000000000401040 in _start ()
+rip            0x401040            0x401040 <_start>
+rsp            0x7fffffffe3a0      0x7fffffffe3a0
+rdx            0x7ffff7fd2ea0      140737353952928
+_dl_fini in section .text of /lib64/ld-linux-x86-64.so.2
+0x402fd8:	0x00007ffff7e22390
+__libc_start_main_impl in section .text of /lib64/libc.so.6
+0x402fe8:	0x0000000000402e08	0x00007ffff7ffe3c0
+0x402ff8:	0x00007ffff7fe2f60
+_dl_runtime_resolve_xsavec in section .text of /lib64/ld-linux-x86-64.so.2
+0x403000 <puts@got.plt>:	0x0000000000401036
+0x7fffffffe3a0:	0x0000000000000001	0x00007fffffffe6e4
+0x7fffffffe3b0:	0x0000000000000000	0x00007fffffffe764
+[exit 0]
+
+$ gdb -batch -nx -ex 'set debuginfod enabled off' -ex 'break *0x40105f' -ex run -ex 'info registers rdi rsi rdx rcx r8 r9 rsp' -ex 'x/2gx $rsp' ./hello 2>&1 | grep -v -i debuginfod | grep -v -E '^ *<|^This GDB|^Enable|^To make'
+
+Breakpoint 1 at 0x40105f
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+
+Breakpoint 1, 0x000000000040105f in _start ()
+rdi            0x401136            4198710
+rsi            0x1                 1
+rdx            0x7fffffffe3a8      140737488348072
+rcx            0x0                 0
+r8             0x0                 0
+r9             0x7ffff7fd2ea0      140737353952928
+rsp            0x7fffffffe390      0x7fffffffe390
+0x7fffffffe390:	0x00007fffffffe398	0x0000000000000038
+[exit 0]
+
+$ strace -e trace=execve,write,exit_group ./hello
+execve("./hello", ["./hello"], 0x7ffddcc085a0 /* 49 vars */) = 0
+write(1, "hello, world\n", 13hello, world
+)          = 13
+exit_group(0)                           = ?
++++ exited with 0 +++
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_life.c -o avr_life.elf && avr-size avr_life.elf && avr-objdump -d avr_life.elf | sed -n '/<__ctors_end>:/,$p'
+   text	   data	    bss	    dec	    hex	filename
+    188	      2	      1	    191	     bf	avr_life.elf
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+
+00000074 <__do_copy_data>:
+  74:	11 e0       	ldi	r17, 0x01	; 1
+
+00000076 <.Loc.1>:
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+
+00000078 <.Loc.2>:
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+
+0000007a <.Loc.3>:
+  7a:	ec eb       	ldi	r30, 0xBC	; 188
+
+0000007c <.Loc.4>:
+  7c:	f0 e0       	ldi	r31, 0x00	; 0
+
+0000007e <.Loc.5>:
+  7e:	02 c0       	rjmp	.+4      	; 0x84 <.L__do_copy_data_start>
+
+00000080 <.L__do_copy_data_loop>:
+  80:	05 90       	lpm	r0, Z+
+
+00000082 <.Loc.7>:
+  82:	0d 92       	st	X+, r0
+
+00000084 <.L__do_copy_data_start>:
+  84:	a2 30       	cpi	r26, 0x02	; 2
+
+00000086 <.Loc.9>:
+  86:	b1 07       	cpc	r27, r17
+
+00000088 <.Loc.10>:
+  88:	d9 f7       	brne	.-10     	; 0x80 <.L__do_copy_data_loop>
+
+0000008a <__do_clear_bss>:
+  8a:	21 e0       	ldi	r18, 0x01	; 1
+
+0000008c <.Loc.1>:
+  8c:	a2 e0       	ldi	r26, 0x02	; 2
+
+0000008e <.Loc.2>:
+  8e:	b1 e0       	ldi	r27, 0x01	; 1
+
+00000090 <.Loc.3>:
+  90:	01 c0       	rjmp	.+2      	; 0x94 <.Loc.5>
+
+00000092 <.Loc.4>:
+  92:	1d 92       	st	X+, r1
+
+00000094 <.Loc.5>:
+  94:	a3 30       	cpi	r26, 0x03	; 3
+
+00000096 <.Loc.6>:
+  96:	b2 07       	cpc	r27, r18
+
+00000098 <.Loc.7>:
+  98:	e1 f7       	brne	.-8      	; 0x92 <.Loc.4>
+
+0000009a <L0^A>:
+  9a:	0e 94 53 00 	call	0xa6	; 0xa6 <main>
+  9e:	0c 94 5c 00 	jmp	0xb8	; 0xb8 <_exit>
+
+000000a2 <__bad_interrupt>:
+  a2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000a6 <main>:
+  a6:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <ready>
+  aa:	90 91 02 01 	lds	r25, 0x0102	; 0x800102 <count>
+  ae:	89 0f       	add	r24, r25
+  b0:	84 b9       	out	0x04, r24	; 4
+  b2:	87 e0       	ldi	r24, 0x07	; 7
+  b4:	90 e0       	ldi	r25, 0x00	; 0
+  b6:	08 95       	ret
+
+000000b8 <_exit>:
+  b8:	f8 94       	cli
+
+000000ba <__stop_program>:
+  ba:	ff cf       	rjmp	.-2      	; 0xba <__stop_program>
+[exit 0]
+
+$ avr-nm -n avr_life.elf | grep -v -E ' N | a |Lname|Loc' | head -60
+00000000 A __flmap
+00000000 A __flmap_init_label
+00000000 W __heap_end
+00000000 A __TEXT_REGION_ORIGIN__
+00000000 W __vector_default
+00000000 T __vectors
+00000003 A __FUSE_REGION_LENGTH__
+00000068 T __ctors_end
+00000068 T __ctors_start
+00000068 T __dtors_end
+00000068 T __dtors_start
+00000068 W __init
+00000068 T __progmem_end
+00000068 T __progmem_start
+00000068 T __trampolines_end
+00000068 T __trampolines_start
+00000074 T __do_copy_data
+00000074 t L0
+00000080 t .L__do_copy_data_loop
+00000084 t .L__do_copy_data_start
+0000008a T __do_clear_bss
+0000008a t L0
+0000008a t L0
+0000008a t L0
+00000092 t .do_clear_bss_loop
+00000094 t .do_clear_bss_start
+0000009a t L0
+0000009a t L0
+000000a2 T __bad_interrupt
+000000a2 W __vector_1
+000000a2 W __vector_10
+000000a2 W __vector_11
+000000a2 W __vector_12
+000000a2 W __vector_13
+000000a2 W __vector_14
+000000a2 W __vector_15
+000000a2 W __vector_16
+000000a2 W __vector_17
+000000a2 W __vector_18
+000000a2 W __vector_19
+000000a2 W __vector_2
+000000a2 W __vector_20
+000000a2 W __vector_21
+000000a2 W __vector_22
+000000a2 W __vector_23
+000000a2 W __vector_24
+000000a2 W __vector_25
+000000a2 W __vector_3
+000000a2 W __vector_4
+000000a2 W __vector_5
+000000a2 W __vector_6
+000000a2 W __vector_7
+000000a2 W __vector_8
+000000a2 W __vector_9
+000000a6 T main
+000000b8 T _exit
+000000b8 W exit
+000000b8 t L0
+000000ba t __stop_program
+000000bc A __data_load_start
+[exit 0]
+
+$ avr-gcc -mmcu=atmega328p -std=c11 -Os -Wall -Wextra -pedantic avr_hello.c -o avr_hello.elf && avr-objdump -h avr_hello.elf | head -8
+
+avr_hello.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000010  00800100  000000ce  00000142  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000000ce  00000000  00000000  00000074  2**1
+[exit 0]

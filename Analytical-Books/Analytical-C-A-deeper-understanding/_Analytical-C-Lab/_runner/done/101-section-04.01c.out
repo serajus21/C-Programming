@@ -1,0 +1,23 @@
+
+$ gcc -std=c23 -Wall -Wextra -pedantic hexdump_me.c -o hexdump_me && rm -f bytes.bin && ./hexdump_me && xxd bytes.bin && od -A d -t o1 bytes.bin && od -A x -t x1 bytes.bin && od -A d -t d1 bytes.bin
+00000000: 7f45 4c46 3939 3939 ff00                 .ELF9999..
+0000000 177 105 114 106 071 071 071 071 377 000
+0000010
+000000 7f 45 4c 46 39 39 39 39 ff 00
+00000a
+0000000  127   69   76   70   57   57   57   57   -1    0
+0000010
+[exit 0]
+
+$ for f in ../*.c; do cmp -s $f $(basename $f) && echo "same $f" || echo "DIFF $f"; done
+same ../avr_bases.c
+same ../avr_stdio.c
+same ../div10.c
+same ../hexdump_me.c
+same ../nibbles.c
+same ../octal_trap.c
+same ../printf_bases.c
+same ../read_digits.c
+same ../same.c
+same ../write_digits.c
+[exit 0]
